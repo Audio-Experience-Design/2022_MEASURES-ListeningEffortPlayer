@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 0,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 104.0, 113.0, 1285.0, 712.0 ],
+		"rect" : [ 598.0, 739.0, 1285.0, 637.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,7 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-127",
@@ -508,7 +509,7 @@
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 1370.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/Idle/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/Idle/"
 				}
 
 			}
@@ -547,7 +548,7 @@
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 1156.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/Idle/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/Idle/"
 				}
 
 			}
@@ -586,7 +587,7 @@
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 940.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/Idle/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/Idle/"
 				}
 
 			}
@@ -1223,7 +1224,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 0,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1256,6 +1257,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Arial",
@@ -1473,7 +1475,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 200.0, 765.0, 214.0, 22.0 ],
-					"text" : "349.997772 250.597061 4.011775"
+					"text" : "-0. 108.8 0."
 				}
 
 			}
@@ -1644,7 +1646,7 @@
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 68.0, 253.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/Masking/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/Masking/"
 				}
 
 			}
@@ -1678,8 +1680,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 126.0, 63.0, 358.0, 22.0 ],
-					"text" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos"
+					"patching_rect" : [ 126.0, 63.0, 340.0, 22.0 ],
+					"text" : "c:/Users/timmb/Documents/dev/ListeningProjectAssets/Videos"
 				}
 
 			}
@@ -1711,14 +1713,14 @@
 				"box" : 				{
 					"autopopulate" : 1,
 					"id" : "obj-29",
-					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4" ],
+					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0101_reencode.mp4", ",", "ASLQ0101_reencode_libvpx.webm", ",", "ASLQ0101_reencode_major_compatible_metadata.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k_time_base_1_90k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_90_time_base_1_180.mp4", ",", "ASLQ0101_reencode_tes2t.mp4", ",", "ASLQ0101_reencode_test.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4", ",", "ieee01L03.avi", ",", "ieee01L03.mp4", ",", "ieee01L03_ffmpeg_reencode.mp4", ",", "ieee01L03_ffmpeg_reencode_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps_mp42_metadata_sound_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_major_brand_mp42.mp4", ",", "ieee01L03_with_sound.mp4", ",", "test.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 700.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/ASLQ Sentences/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/ASLQ Sentences/"
 				}
 
 			}
@@ -1750,14 +1752,14 @@
 				"box" : 				{
 					"autopopulate" : 1,
 					"id" : "obj-25",
-					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4" ],
+					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0101_reencode.mp4", ",", "ASLQ0101_reencode_libvpx.webm", ",", "ASLQ0101_reencode_major_compatible_metadata.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k_time_base_1_90k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_90_time_base_1_180.mp4", ",", "ASLQ0101_reencode_tes2t.mp4", ",", "ASLQ0101_reencode_test.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4", ",", "ieee01L03.avi", ",", "ieee01L03.mp4", ",", "ieee01L03_ffmpeg_reencode.mp4", ",", "ieee01L03_ffmpeg_reencode_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps_mp42_metadata_sound_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_major_brand_mp42.mp4", ",", "ieee01L03_with_sound.mp4", ",", "test.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 486.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/ASLQ Sentences/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/ASLQ Sentences/"
 				}
 
 			}
@@ -1801,14 +1803,14 @@
 				"box" : 				{
 					"autopopulate" : 1,
 					"id" : "obj-15",
-					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4" ],
+					"items" : [ "ASLQ0101.mp4", ",", "ASLQ0101_reencode.mp4", ",", "ASLQ0101_reencode_libvpx.webm", ",", "ASLQ0101_reencode_major_compatible_metadata.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_180k_time_base_1_90k.mp4", ",", "ASLQ0101_reencode_major_compatible_metadata_timescale_90_time_base_1_180.mp4", ",", "ASLQ0101_reencode_tes2t.mp4", ",", "ASLQ0101_reencode_test.mp4", ",", "ASLQ0102.mp4", ",", "ASLQ0103.mp4", ",", "ASLQ0104.mp4", ",", "ASLQ0105.mp4", ",", "ASLQ0106.mp4", ",", "ASLQ0107.mp4", ",", "ASLQ0108.mp4", ",", "ASLQ0109.mp4", ",", "ASLQ0110.mp4", ",", "ieee01L03.avi", ",", "ieee01L03.mp4", ",", "ieee01L03_ffmpeg_reencode.mp4", ",", "ieee01L03_ffmpeg_reencode_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps.mp4", ",", "ieee01L03_ffmpeg_reencode_30.01fps_mp42_metadata_sound_1920.mp4", ",", "ieee01L03_ffmpeg_reencode_major_brand_mp42.mp4", ",", "ieee01L03_with_sound.mp4", ",", "test.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "int", "", "" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 270.0, 255.0, 100.0, 22.0 ],
-					"prefix" : "c:/Users/timmb/Documents/windev/ListeningProjectAssets/Videos/ASLQ Sentences/"
+					"prefix" : "~/Documents/dev/ListeningProjectAssets/Videos/ASLQ Sentences/"
 				}
 
 			}
