@@ -6,10 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/MenuVideoSelection.unity
+    path: Assets/Listening Effort/MenuVideoSelection.unity
     guid: dcaba45048c044735b1eff74ac3dbe0d
   - enabled: 1
-    path: Assets/Scenes/MainScene.unity
+    path: Assets/Listening Effort/MainScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: a4fb6cfefb56e60409d80def882471f0,
