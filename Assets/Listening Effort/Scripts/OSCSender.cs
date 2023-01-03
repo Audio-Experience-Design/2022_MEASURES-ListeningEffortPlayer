@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityOSC;
@@ -12,6 +13,8 @@ public class OSCSender : MonoBehaviour
 	public bool LogSentOscMessages;
 	public string ClientIP = "127.0.0.1";
 	public int Port = 6789;
+	public VideoCatalogue VideoCatalogue;
+
 	// ClientIP that was used to set up the OSC Client, cached so we can detect change
 	private string currentClientIP;
 
@@ -97,6 +100,7 @@ public class OSCSender : MonoBehaviour
 			// Formatting might have changed
 			ClientIP = oscClient.ClientIPAddress.ToString();
 			Debug.Log($"OSC Client address set to {ClientIP}:{Port}.");
+			SendVideoNames();
 		}
 		else
 		{
@@ -175,7 +179,7 @@ public class OSCSender : MonoBehaviour
 	}
 
 
-	void Send(string address, ArrayList arguments)
+	void Send<Collection>(string address, Collection arguments) where Collection: IEnumerable
 	{
 		OSCMessage m = new OSCMessage(address);
 		foreach (object argument in arguments)
@@ -188,4 +192,19 @@ public class OSCSender : MonoBehaviour
 			Debug.Log($"Sent OSC Message: {m.ToString()}");
 		}
 	}
+
+    public void SendVideoNames()
+    {
+		var clipSets = new (string type, IEnumerable<string> names)[]
+		{
+            ("masking", VideoCatalogue.MaskingVideos.Select(clip => clip.name)),
+            ("sentence", VideoCatalogue.SentenceVideos.Select(clip => clip.name)),
+            ("idle", VideoCatalogue.IdleVideos.Select(clip => clip.name)),
+        };
+		foreach (var (type, names) in clipSets)
+        {
+			Send($"/video/names/{type}", names);
+        }
+    }
+
 }

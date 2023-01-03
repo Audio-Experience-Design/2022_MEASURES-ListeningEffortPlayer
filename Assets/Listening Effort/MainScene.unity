@@ -1065,6 +1065,69 @@ Transform:
   m_Father: {fileID: 915077000}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &833115700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 833115701}
+  - component: {fileID: 833115702}
+  m_Layer: 0
+  m_Name: VideoCatalogue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &833115701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833115700}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &833115702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833115700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2ce1e98eeada27439bc9e4964af3181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaskingVideos:
+  - {fileID: 32900000, guid: 6c2576f79f256f941b507a7672904ca4, type: 3}
+  - {fileID: 32900000, guid: f1f804c886d44374eb1a625d2133c7b6, type: 3}
+  - {fileID: 32900000, guid: 7e795a07975a3b6498d8c642fe8821d4, type: 3}
+  SentenceVideos:
+  - {fileID: 32900000, guid: b980a643702278948a1e4bb6b77e0ee5, type: 3}
+  - {fileID: 32900000, guid: 765a44b43c628c549a54be79f0135e17, type: 3}
+  - {fileID: 32900000, guid: db7870283627d1f4fadcb75f068d7517, type: 3}
+  - {fileID: 32900000, guid: dee045ad30a3412418c225315d83f57c, type: 3}
+  - {fileID: 32900000, guid: a51cb9f42a4942d49b7368cf10039210, type: 3}
+  - {fileID: 32900000, guid: c3591fea8f5e6924488204e008c9fd79, type: 3}
+  - {fileID: 32900000, guid: dc2641712d2d9704a8182e1d9cc25c60, type: 3}
+  - {fileID: 32900000, guid: e73f31ffa98a2574ca99ef95d8dce7a0, type: 3}
+  - {fileID: 32900000, guid: d65e878503a436f46893e866644907b7, type: 3}
+  - {fileID: 32900000, guid: eb7c60ff8e8531b43b1d49085c4820c8, type: 3}
+  IdleVideos:
+  - {fileID: 32900000, guid: 14855f015dc8cae42abfa2cecfa7e2be, type: 3}
+  - {fileID: 32900000, guid: 49c9dc66dec66c2489a31513b0f67973, type: 3}
+  - {fileID: 32900000, guid: 394932a2385051e42a7baf7b39fadb10, type: 3}
 --- !u!1 &915076996
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,6 +2099,7 @@ MonoBehaviour:
   LogSentOscMessages: 0
   ClientIP: 127.0.0.1
   Port: 6789
+  VideoCatalogue: {fileID: 833115702}
 --- !u!1 &1832189893
 GameObject:
   m_ObjectHideFlags: 0
@@ -2053,7 +2117,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &1832189894
 AudioListener:
   m_ObjectHideFlags: 0

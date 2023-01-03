@@ -111,6 +111,12 @@ public class OSCController : MonoBehaviour
 		}
 	};
 
+	private readonly MessageSpecification sendVideoNamesMessageSpecification = new MessageSpecification
+	{
+		address = "/send_video_names",
+
+	};
+
 	// This is used by OSCSender
 	public int GetIDForVideoPlayer(VideoPlayer player)
 	{
@@ -327,6 +333,11 @@ public class OSCController : MonoBehaviour
 				colorCalibrationSphere.SetBrightness((float)message.Data[1]);
 			}
 		}
+
+		else if (isMatch(message, sendVideoNamesMessageSpecification))
+        {
+			oscSender.SendVideoNames();
+        }
 
 		else
 		{
