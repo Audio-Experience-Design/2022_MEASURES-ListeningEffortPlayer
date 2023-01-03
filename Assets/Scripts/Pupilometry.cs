@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using ViveSR.anipal.Eye;
+//using ViveSR.anipal.Eye;
 
 // Some strange stuff happens to the instance of this class with the callback being
 // called on a null instance. It might be to do with the Marshal function pointer.
@@ -39,36 +39,36 @@ public class Pupilometry : MonoBehaviour
 	{
 		sLogChanges = logChanges;
 
-		if (!isCallbackAdded && (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING || SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT))
-		{
-			SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-			isCallbackAdded = true;
+		//if (!isCallbackAdded && (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING || SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT))
+		//{
+		//	SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
+		//	isCallbackAdded = true;
 
-		}
+		//}
 	}
 
-	private void EyeCallback(ref EyeData_v2 eye_data)
-	{
-		Data data = new Data
-		{
-			hasUser = !eye_data.no_user,
-			leftPupilDiameterMm = eye_data.verbose_data.left.pupil_diameter_mm,
-			rightPupilDiameterMm = eye_data.verbose_data.right.pupil_diameter_mm,
-			isLeftPupilDiameterValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
-			isRightPupilDiameterValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
-			leftPupilPosition = eye_data.verbose_data.left.pupil_position_in_sensor_area,
-			rightPupilPosition = eye_data.verbose_data.right.pupil_position_in_sensor_area,
-			isLeftPupilPositionValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
-			isRightPupilPositionValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
-		};
+	//private void EyeCallback(ref EyeData_v2 eye_data)
+	//{
+	//	Data data = new Data
+	//	{
+	//		hasUser = !eye_data.no_user,
+	//		leftPupilDiameterMm = eye_data.verbose_data.left.pupil_diameter_mm,
+	//		rightPupilDiameterMm = eye_data.verbose_data.right.pupil_diameter_mm,
+	//		isLeftPupilDiameterValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
+	//		isRightPupilDiameterValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
+	//		leftPupilPosition = eye_data.verbose_data.left.pupil_position_in_sensor_area,
+	//		rightPupilPosition = eye_data.verbose_data.right.pupil_position_in_sensor_area,
+	//		isLeftPupilPositionValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
+	//		isRightPupilPositionValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
+	//	};
 
-		if (sLogChanges)
-		{
-			Debug.Log("Pupilometry data: " + data);
-		}
+	//	if (sLogChanges)
+	//	{
+	//		Debug.Log("Pupilometry data: " + data);
+	//	}
 
-		DataChanged?.Invoke(this, data);
-	}
+	//	DataChanged?.Invoke(this, data);
+	//}
 
 
 }
