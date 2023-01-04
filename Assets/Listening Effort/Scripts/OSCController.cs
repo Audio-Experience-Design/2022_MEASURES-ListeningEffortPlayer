@@ -227,14 +227,20 @@ public class OSCController : MonoBehaviour
 		{
 			Debug.Assert(message.Data.Count >= 2);
 			int i = (int)message.Data[0];
+			string videoName = (string)message.Data[1];
 			if (i < 0 || videoPlayers.Length < i)
 			{
 				Debug.LogError($"{message.Address} message received for video player ID {i}. Valid video player IDs are at least 0 and at most {videoPlayers.Length - 1}");
 			}
+			else if (!oscSender.VideoCatalogue.Contains(videoName))
+            {
+				Debug.LogError($"{message.Address} message received with unrecognised video name: {name}");
+            }
 			else
 			{
 				videoPlayers[i].Stop();
-				videoPlayers[i].url = (string)message.Data[1];
+				//videoPlayers[i].url = (string)message.Data[1];
+				videoPlayers[i].clip = oscSender.VideoCatalogue.GetClip(videoName);
 				videoPlayers[i].isLooping = false;
 				videoPlayers[i].Prepare();
 				//videoPlayers[i].Play();
