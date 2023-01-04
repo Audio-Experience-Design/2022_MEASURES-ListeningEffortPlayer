@@ -16,6 +16,7 @@ public class OSCController : MonoBehaviour
 	[SerializeField] private ColorCalibrationSphere colorCalibrationSphere;
 
 	public OSCSender oscSender;
+	public GameObject LoadingScreen;
 
 	/// Container for the cameraObject that we can rotate manually
 	public GameObject cameraRigObject;
@@ -290,6 +291,7 @@ public class OSCController : MonoBehaviour
 				GetComponent<OSCSender>().Port = port;
 			}
 			oscSender.SendVideoPositions(videoPlayerPivotTransforms, videoPlayerQuadTransforms);
+			LoadingScreen.SetActive(false);
 		}
 
 		else if (isMatch(message, videoPositionMessageSpecification))

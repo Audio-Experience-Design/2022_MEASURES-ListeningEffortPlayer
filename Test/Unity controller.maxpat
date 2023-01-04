@@ -44,7 +44,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 576.0, 550.0, 165.0, 22.0 ],
+					"patching_rect" : [ 571.0, 556.0, 165.0, 22.0 ],
 					"text" : "udpsend 192.168.2.191 7000"
 				}
 
@@ -2419,6 +2419,15 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
+					"order" : 1,
+					"source" : [ "obj-12", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-152", 0 ],
+					"order" : 0,
 					"source" : [ "obj-12", 0 ]
 				}
 
