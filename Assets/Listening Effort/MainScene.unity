@@ -765,6 +765,11 @@ PrefabInstance:
       propertyPath: m_Looping
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
+        type: 3}
+      propertyPath: m_AudioOutputMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
       propertyPath: VideoPath
@@ -1933,6 +1938,37 @@ MonoBehaviour:
   - {fileID: 32900000, guid: 14855f015dc8cae42abfa2cecfa7e2be, type: 3}
   - {fileID: 32900000, guid: 49c9dc66dec66c2489a31513b0f67973, type: 3}
   - {fileID: 32900000, guid: 394932a2385051e42a7baf7b39fadb10, type: 3}
+--- !u!1 &960145989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 960145990}
+  m_Layer: 0
+  m_Name: 3DTI Toolkit
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &960145990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960145989}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -71.796364, y: 38.042717, z: 80.29936}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &999505413
 GameObject:
   m_ObjectHideFlags: 0
@@ -3077,6 +3113,11 @@ PrefabInstance:
       propertyPath: m_Looping
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
+        type: 3}
+      propertyPath: m_AudioOutputMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
       propertyPath: VideoPath
@@ -3746,6 +3787,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Looping
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
+        type: 3}
+      propertyPath: m_AudioOutputMode
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
