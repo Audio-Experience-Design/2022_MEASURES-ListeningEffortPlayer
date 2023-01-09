@@ -1919,16 +1919,16 @@ MonoBehaviour:
   - {fileID: 32900000, guid: f1f804c886d44374eb1a625d2133c7b6, type: 3}
   - {fileID: 32900000, guid: 7e795a07975a3b6498d8c642fe8821d4, type: 3}
   SentenceVideos:
-  - {fileID: 32900000, guid: b980a643702278948a1e4bb6b77e0ee5, type: 3}
-  - {fileID: 32900000, guid: 765a44b43c628c549a54be79f0135e17, type: 3}
-  - {fileID: 32900000, guid: db7870283627d1f4fadcb75f068d7517, type: 3}
-  - {fileID: 32900000, guid: dee045ad30a3412418c225315d83f57c, type: 3}
-  - {fileID: 32900000, guid: a51cb9f42a4942d49b7368cf10039210, type: 3}
-  - {fileID: 32900000, guid: c3591fea8f5e6924488204e008c9fd79, type: 3}
-  - {fileID: 32900000, guid: dc2641712d2d9704a8182e1d9cc25c60, type: 3}
-  - {fileID: 32900000, guid: e73f31ffa98a2574ca99ef95d8dce7a0, type: 3}
-  - {fileID: 32900000, guid: d65e878503a436f46893e866644907b7, type: 3}
-  - {fileID: 32900000, guid: eb7c60ff8e8531b43b1d49085c4820c8, type: 3}
+  - {fileID: 32900000, guid: c347c1f41de3099449f4119e33473ca2, type: 3}
+  - {fileID: 32900000, guid: b3671a66bbcc90b45b8fea0b58f02e6d, type: 3}
+  - {fileID: 32900000, guid: 0c312e2169b56634d8f2c1cd3a583b29, type: 3}
+  - {fileID: 32900000, guid: e23d10f0e8e2f2e4d93652456b6410f3, type: 3}
+  - {fileID: 32900000, guid: b0ae2d5ee36e655498406f04e09e6b78, type: 3}
+  - {fileID: 32900000, guid: 13d381ae04d765446af7a1226c28410e, type: 3}
+  - {fileID: 32900000, guid: f05eafe181c9e574cbb5d7bfbb32ad00, type: 3}
+  - {fileID: 32900000, guid: 6372b6e731d15ae49b104c3d5b01334a, type: 3}
+  - {fileID: 32900000, guid: fd2d2f1af68bf7943acefa63a34d2ef3, type: 3}
+  - {fileID: 32900000, guid: dffc7b71952976740b6f46ee3c607050, type: 3}
   IdleVideos:
   - {fileID: 32900000, guid: 14855f015dc8cae42abfa2cecfa7e2be, type: 3}
   - {fileID: 32900000, guid: 49c9dc66dec66c2489a31513b0f67973, type: 3}
