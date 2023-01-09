@@ -2137,8 +2137,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 571.0, 518.0, 195.0, 22.0 ],
-					"text" : "/set_client_address 127.0.0.1 7100"
+					"patching_rect" : [ 571.0, 518.0, 222.0, 22.0 ],
+					"text" : "/set_client_address 192.168.2.189 7100"
 				}
 
 			}
@@ -2157,7 +2157,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-74",
-					"items" : "<empty>",
+					"items" : [ "Condition_1", ",", "Condition_2", ",", "Condition_3" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
