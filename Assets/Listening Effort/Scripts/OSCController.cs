@@ -160,20 +160,25 @@ public class OSCController : MonoBehaviour
 		}
 	}
 
-	void Start()
+	void OnEnable()
 	{
 		Debug.Assert(videoPlayers.Length == 4);
 		Debug.Log($"Opening OSC server on port {listenPort}.");
 		osc.Open(listenPort);
 	}
 
-	//void OnDisable()
-	//{
-	//    Debug.Log($"Closing OSC server.");
-	//    osc.Close();
-	//}
+    void OnDisable()
+    {
+		osc.Close();
+    }
 
-	private void playVideo(VideoPlayer videoPlayer, string absolutePath)
+    //void OnDisable()
+    //{
+    //    Debug.Log($"Closing OSC server.");
+    //    osc.Close();
+    //}
+
+    private void playVideo(VideoPlayer videoPlayer, string absolutePath)
 	{
 		videoPlayer.Stop();
 		videoPlayer.url = absolutePath;
@@ -241,13 +246,16 @@ public class OSCController : MonoBehaviour
 				videoPlayers[i].Stop();
 				//videoPlayers[i].url = (string)message.Data[1];
 				videoPlayers[i].clip = oscSender.VideoCatalogue.GetClip(videoName);
-				videoPlayers[i].isLooping = false;
+                videoPlayers[i].SetTargetAudioSource(0, videoPlayers[i].GetComponentInChildren<AudioSource>());
+                videoPlayers[i].isLooping = false;
 				videoPlayers[i].Prepare();
 				//videoPlayers[i].Play();
 				// videoPlayers[i] will play automatically due to VideoController
 				Debug.Log($"{message.Address} set video player {i} to {(string)message.Data[1]}");
-			}
-		}
+                Debug.Assert(videoPlayers[i].GetComponentInChildren<AudioSource>() == videoPlayers[i].GetTargetAudioSource(0));
+				Debug.Assert(videoPlayers[i].GetComponentInChildren<AudioSource>().spatialize == true);
+            }
+        }
 
 		else if (isMatch(message, setIdleVideoMessageSpecification))
 		{
