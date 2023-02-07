@@ -1,18 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!244 &-4880435683064262925
+--- !u!244 &-7083590160147715636
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_EffectID: 5badbe4b0c7c40542b04dc97ce9ddc84
+  m_EffectID: ac45521b56ec09b4fb9e441808c2ccc7
   m_EffectName: 3DTI Spatializer Core
-  m_MixLevel: 970c369bd46ea8b4899e412da80b5fa5
+  m_MixLevel: cc1bcfb643ab07d41a0590ce573eccb7
   m_Parameters:
   - m_ParameterName: Wetness
-    m_GUID: 8873201117516e347a99071d642c20bb
+    m_GUID: 8d2f3cfbe6c2d37478c8c85e0c9445a2
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
@@ -53,7 +53,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 24400004}
-  - {fileID: -4880435683064262925}
+  - {fileID: -7083590160147715636}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
