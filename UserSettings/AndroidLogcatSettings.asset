@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "PA7J50PGFB190085W",
         "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
-        "processId": 10700,
+        "processId": 10970,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -66,6 +66,84 @@
             "deviceId": "PA7J50PGFB190085W",
             "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
             "processId": 10700,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 13004,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 5055,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 5449,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 5781,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 6082,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 6352,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 9143,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 9471,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 9890,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 10287,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 10652,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 10810,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 10970,
             "exited": false
         }
     ],
