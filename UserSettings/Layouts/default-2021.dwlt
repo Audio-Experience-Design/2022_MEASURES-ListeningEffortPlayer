@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2560
     height: 1357.3334
   m_ShowMode: 4
-  m_Title: Audio Mixer
+  m_Title: Android Logcat
   m_RootView: {fileID: 8}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 106
+  controlID: 110
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -94,8 +94,8 @@ MonoBehaviour:
     y: 0
     width: 516
     height: 791.3333
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
   m_ActualView: {fileID: 22}
   m_Panes:
   - {fileID: 22}
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 104
+  controlID: 37
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: AudioMixerWindow
+  m_Name: ProjectBrowser
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -171,14 +171,14 @@ MonoBehaviour:
     y: 0
     width: 1357.3334
     height: 516.00006
-  m_MinSize: {x: 101, y: 121}
-  m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 16}
+  m_MinSize: {x: 231, y: 271}
+  m_MaxSize: {x: 10001, y: 10021}
+  m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
   - {fileID: 16}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 105
+  controlID: 38
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -299,7 +299,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 19
+  controlID: 39
 --- !u!114 &13
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -331,7 +331,7 @@ MonoBehaviour:
   - {fileID: 15}
   - {fileID: 14}
   m_Selected: 5
-  m_LastSelected: 4
+  m_LastSelected: 6
 --- !u!114 &14
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -362,8 +362,8 @@ MonoBehaviour:
     m_SaveData: []
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 
-    m_LastClickedID: 0
+    m_SelectedIDs: a248b4ad
+    m_LastClickedID: -1380693854
     m_ExpandedIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -441,7 +441,7 @@ MonoBehaviour:
     m_SaveData: []
   m_MixersTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: c2600000
+    m_SelectedIDs: 
     m_LastClickedID: 24770
     m_ExpandedIDs: 12eb343c
     m_RenameOverlay:
@@ -558,7 +558,7 @@ MonoBehaviour:
       oldMaxSizes: 
       oldSplitSize: 0
     m_HorizontalSplitter:
-      ID: 2682
+      ID: 49
       splitterInitialOffset: 0
       currentActiveSplitter: -1
       realSizes:
@@ -743,36 +743,36 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Plugins/Android_64
+    - Assets/TextMesh Pro/Resources/Shaders
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Plugins/Android_64
+  - Assets/TextMesh Pro/Resources/Shaders
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\timmb\Documents\dev\ListeningEffortPlayer
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 88d50000
-    m_LastClickedID: 54664
-    m_ExpandedIDs: 00000000ca600000cc600000ce600000de600000e8600000166100004e82000070830000a4890000a889000000ca9a3bffffff7f
+    m_SelectedIDs: 16950000
+    m_LastClickedID: 38166
+    m_ExpandedIDs: 00000000f89400000c9500001895000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: HighQuality
-      m_OriginalName: HighQuality
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 35240
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 7}
     m_SearchString: 
@@ -786,7 +786,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ca600000cc600000ce600000
+    m_ExpandedIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -813,7 +813,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c6230000c2600000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -916,9 +916,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 9e5d0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 02b8ffff52b8ffff8eb8fffffcb8ffffecb9ffff3cbaffff7abaffffb2bcffffe8beffff40bfffff84bffffff0bfffffc8c0ffff1cc1ffff5ac1ffffc4c1ffff1cc2ffff22c2ffffacc3ffff00c4ffff3ec4ffffa8c4ffffb2c5ffff06c6ffff44c6ffffaec6ffff64c8ffffc6c8ffff14c9ffff78c9ffff00ccffff5accffffa2ccffffbeceffff4ad0ffff92d0ffffc8d0ffffe4d2ffffaadfffffe6dfffff40e0ffff22e1ffff5ee1ffffb8e1ffffc2e2ffff06e3ffff60e3ffff80e4ffffbee4ffffdce6ffff90e9ffffcce9ffff26eaffff06ebffff42ebffff9cebffff28edffff64edffffcaedffff58f0ffff94f0fffff6f0ffff06f2ffff42f2ffffa4f2ffff9ef3ffffdaf3ffff3cf4ffff1af5ffff66f5ffffc8f5ffff02f7ffff42f7ffff5ef9ffff24fbffffaa770000b877000004810000128100008894000096940000c6980000d4980000669f0000749f0000a6a30000b4a3000084a80000e4a80000f2a8000096be0000e4be0000f6be000004bf00000ec400003ac40000b8cc0000c6cc0000
+      m_ExpandedIDs: 5cadffff98adfffffaadffffa4aeffffe2aeffff3eb1ffff4ec0ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1190,9 +1190,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 30, y: 0, z: 0}
+    m_Target: {x: 8.474155, y: -5.2563133, z: -3.0545974}
     speed: 2
-    m_Value: {x: 30, y: 0, z: 0}
+    m_Value: {x: 8.474155, y: -5.2563133, z: -3.0545974}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1239,13 +1239,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.4406582, y: -0.43975228, z: 0.2628882, w: -0.7371157}
+    m_Target: {x: -0.14803009, y: -0.848532, z: 0.31533542, w: -0.39832374}
     speed: 2
-    m_Value: {x: -0.44065568, y: -0.43974978, z: 0.2628867, w: -0.73711145}
+    m_Value: {x: 0.14803009, y: 0.848532, z: -0.31533542, w: 0.39832374}
   m_Size:
-    m_Target: 27.29941
+    m_Target: 14.328489
     speed: 2
-    m_Value: 27.29941
+    m_Value: 14.328489
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1332,7 +1332,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
