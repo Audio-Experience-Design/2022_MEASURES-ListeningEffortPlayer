@@ -2,24 +2,12 @@
     "m_SelectedDeviceId": "PA7J50PGFB190085W",
     "m_SelectedPackage": {
         "deviceId": "PA7J50PGFB190085W",
-        "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
-        "processId": 19421,
+        "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+        "processId": 28329,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
-        {
-            "deviceId": "PA7J50PGFB190085W",
-            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
-            "processId": 16302,
-            "exited": true
-        },
-        {
-            "deviceId": "PA7J50PGFB190085W",
-            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
-            "processId": 16511,
-            "exited": true
-        },
         {
             "deviceId": "PA7J50PGFB190085W",
             "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
@@ -36,12 +24,24 @@
             "deviceId": "PA7J50PGFB190085W",
             "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
             "processId": 17151,
-            "exited": false
+            "exited": true
         },
         {
             "deviceId": "PA7J50PGFB190085W",
             "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
             "processId": 19421,
+            "exited": true
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.PreverbalStudio.com.timmb.ListeningEffortPlayer",
+            "processId": 27744,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+            "processId": 28329,
             "exited": false
         }
     ],
