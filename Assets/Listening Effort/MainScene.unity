@@ -688,7 +688,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 177e0daa60af6404192fac2840bef19b,
     type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -924,7 +924,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VideoClip
       value: 
-      objectReference: {fileID: 32900000, guid: dffc7b71952976740b6f46ee3c607050,
+      objectReference: {fileID: 32900000, guid: 1750736bb16c4634f8bfa0f26dfde9a5,
         type: 3}
     - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
@@ -2086,24 +2086,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaskingVideos:
-  - {fileID: 32900000, guid: 6c2576f79f256f941b507a7672904ca4, type: 3}
-  - {fileID: 32900000, guid: f1f804c886d44374eb1a625d2133c7b6, type: 3}
-  - {fileID: 32900000, guid: 7e795a07975a3b6498d8c642fe8821d4, type: 3}
+  - {fileID: 32900000, guid: ec15da24323884c468aa8bd723cd5b98, type: 3}
+  - {fileID: 32900000, guid: 34f4f1f4ffb0dad4cb87378f17c1f99a, type: 3}
+  - {fileID: 32900000, guid: 7f2078bcb6bf1984d8e2f3dededc8e42, type: 3}
   SentenceVideos:
-  - {fileID: 32900000, guid: c347c1f41de3099449f4119e33473ca2, type: 3}
-  - {fileID: 32900000, guid: b3671a66bbcc90b45b8fea0b58f02e6d, type: 3}
-  - {fileID: 32900000, guid: 0c312e2169b56634d8f2c1cd3a583b29, type: 3}
-  - {fileID: 32900000, guid: e23d10f0e8e2f2e4d93652456b6410f3, type: 3}
-  - {fileID: 32900000, guid: b0ae2d5ee36e655498406f04e09e6b78, type: 3}
-  - {fileID: 32900000, guid: 13d381ae04d765446af7a1226c28410e, type: 3}
-  - {fileID: 32900000, guid: f05eafe181c9e574cbb5d7bfbb32ad00, type: 3}
-  - {fileID: 32900000, guid: 6372b6e731d15ae49b104c3d5b01334a, type: 3}
-  - {fileID: 32900000, guid: fd2d2f1af68bf7943acefa63a34d2ef3, type: 3}
-  - {fileID: 32900000, guid: dffc7b71952976740b6f46ee3c607050, type: 3}
+  - {fileID: 32900000, guid: 1750736bb16c4634f8bfa0f26dfde9a5, type: 3}
+  - {fileID: 32900000, guid: ef728d7057836094e9893c106de4fd8f, type: 3}
+  - {fileID: 32900000, guid: 83c3e8bafe85fa94594ddd172933e506, type: 3}
+  - {fileID: 32900000, guid: a26c0b221258d034881229f42c3a3624, type: 3}
+  - {fileID: 32900000, guid: 64d56ecf3c9dced46842377b1e4929ca, type: 3}
+  - {fileID: 32900000, guid: 4ee332c3e5d0a834e91fc22eeb2bd54f, type: 3}
+  - {fileID: 32900000, guid: 5feccc8b48439ad4dbb144ac04c525aa, type: 3}
+  - {fileID: 32900000, guid: c2d899fafd6e389459bcd3c2b8c66c5d, type: 3}
   IdleVideos:
-  - {fileID: 32900000, guid: 14855f015dc8cae42abfa2cecfa7e2be, type: 3}
-  - {fileID: 32900000, guid: 49c9dc66dec66c2489a31513b0f67973, type: 3}
-  - {fileID: 32900000, guid: 394932a2385051e42a7baf7b39fadb10, type: 3}
+  - {fileID: 32900000, guid: 0f577a3f683e02043b0ef7af6bb395e0, type: 3}
 --- !u!1 &895131418 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1598546753420112728, guid: 6c978cd6c4019c54ba1c44950616850d,
@@ -2122,7 +2118,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 177e0daa60af6404192fac2840bef19b,
     type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -3206,7 +3202,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081776650}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8270fa749a5a13947aca46346140260b, type: 3}
   m_Name: 
@@ -3396,7 +3392,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VideoClip
       value: 
-      objectReference: {fileID: 32900000, guid: 0c312e2169b56634d8f2c1cd3a583b29,
+      objectReference: {fileID: 32900000, guid: 83c3e8bafe85fa94594ddd172933e506,
         type: 3}
     - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
@@ -3529,7 +3525,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 177e0daa60af6404192fac2840bef19b,
     type: 2}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -3630,7 +3626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &1714221526
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4330,7 +4326,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VideoClip
       value: 
-      objectReference: {fileID: 32900000, guid: b3671a66bbcc90b45b8fea0b58f02e6d,
+      objectReference: {fileID: 32900000, guid: ef728d7057836094e9893c106de4fd8f,
         type: 3}
     - target: {fileID: 1598546754056605563, guid: 6c978cd6c4019c54ba1c44950616850d,
         type: 3}
