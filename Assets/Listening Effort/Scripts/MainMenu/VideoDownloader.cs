@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using Debug = UnityEngine.Debug;
 
 public class VideoDownloader : MonoBehaviour
 {
     public Text StatusText;
-    public string VideoName;
+    public InputField inputField;
+    //public string VideoName;
     // for testing video
     //private VideoPlayer _player;
     private UnityWebRequest _mostRecentRequest;
+    private Coroutine _currentDownloadCoroutine;
     //private bool _isDownloading;
     private bool _isAborting;
     private VideoPlayer _player;
@@ -23,13 +27,15 @@ public class VideoDownloader : MonoBehaviour
     /// <summary>
     /// This indicates this video is downloaded and ready to go.
     /// </summary>
-    private bool isReady;
+    private bool _isReady;
 
-    public bool IsReady {
-        get => isReady;
-        private set {
-            isReady = value;
-            IsReadyChanged?.Invoke(this, isReady);
+    public bool IsReady
+    {
+        get => _isReady;
+        private set
+        {
+            _isReady = value;
+            IsReadyChanged?.Invoke(this, _isReady);
         }
     }
 
@@ -41,14 +47,23 @@ public class VideoDownloader : MonoBehaviour
         _player = gameObject.AddComponent<VideoPlayer>();
         _originalStatusText = StatusText.text;
 
-        string PrefsKey = $"{VideoName}_url)";
-        InputField inputField = GetComponentInChildren<InputField>();
+        string PrefsKey = $"lastContentURL";
+        //InputField inputField = GetComponentInChildren<InputField>();
 
 
         inputField.onEndEdit.AddListener((string url) =>
         {
             PlayerPrefs.SetString(PrefsKey, url);
-                StartCoroutine(downloadVideo(url));
+            Debug.Log("Starting coroutine downloadVideo");
+            if (_currentDownloadCoroutine != null && _mostRecentRequest != null)
+            {
+                Debug.Log("Stopping previous downloadVideo coroutine");
+                StopCoroutine(_currentDownloadCoroutine);
+            }
+            _currentDownloadCoroutine = null;
+            _mostRecentRequest = null;
+
+            _currentDownloadCoroutine = StartCoroutine(downloadVideo(url));
 
         });
 
@@ -66,18 +81,29 @@ public class VideoDownloader : MonoBehaviour
 
         // To prevent overwriting of values, if there is already a request
         // in process we need to stop it first
-        if (_mostRecentRequest != null)
+        int secondsPassed = 0;
+        while (_mostRecentRequest != null && secondsPassed < 30)
         {
+            StatusText.text = $"Cancelling previous download... (timeout in {30 - secondsPassed} seconds)";
             if (!_isAborting)
             {
                 _mostRecentRequest.Abort();
-                StatusText.text = "Cancelling previous download...";
                 _isAborting = true;
             }
-            yield return 0;
+            secondsPassed++;
+            yield return new WaitForSecondsRealtime(1);
+        }
+        if (_mostRecentRequest != null)
+        {
+            Debug.LogWarning($"Timed out waiting for previous request to cancel.");
+            _mostRecentRequest = null;
         }
         _isAborting = false;
         IsReady = false;
+
+        VideoCatalogue.DownloadedMaskingVideos.Clear();
+        VideoCatalogue.DownloadedSpeechVideos.Clear();
+        VideoCatalogue.DownloadedIdleVideos.Clear();
 
         if (String.IsNullOrWhiteSpace(url))
         {
@@ -85,12 +111,11 @@ public class VideoDownloader : MonoBehaviour
             yield break;
         }
 
-
         StatusText.text = "Connecting...";
         //var thisRequest = new UnityWebRequest(url);
         //_mostRecentRequest = thisRequest;
         _mostRecentRequest = new UnityWebRequest(url);
-        string savePath = Path.Combine(Application.persistentDataPath, $"{VideoName}.mp4");
+        string savePath = Path.Combine(Application.persistentDataPath, $"content.zip");
         _mostRecentRequest.downloadHandler = new DownloadHandlerFile(savePath)
         {
             removeFileOnAbort = true
@@ -107,40 +132,121 @@ public class VideoDownloader : MonoBehaviour
             // END OF THIS REQUEST
             StatusText.text = "Download error: " + _mostRecentRequest.error;
             _mostRecentRequest = null;
+            yield break;
         }
-        else
+        StatusText.text = "Unzipping file...";
+
+        // unzip content.zip
+        // create "content" directory
+        string contentPath = Path.Combine(Application.persistentDataPath, "content");
+        try
         {
-            Debug.Assert(_mostRecentRequest.downloadHandler.isDone);
-            StatusText.text = "Checking video";
-
-            _player.url = savePath;
-            _player.source = VideoSource.Url;
-
-            _player.prepareCompleted += (source) =>
+            if (Directory.Exists(contentPath))
             {
-                //// test that we haven't had a new request come in
-                //if (thisRequest == _mostRecentRequest)
-                //{
-                int width = _player.texture.width;
-                int height = _player.texture.height;
-                Debug.Log($"{VideoName} downloaded and of size {width}x{height}.");
-                StatusText.text = $"Video downloaded successfully. Size: {width}x{height}.";
-                IsReady = true;
-                // END OF THIS REQUEST
-                _mostRecentRequest = null;
-            };
-
-            _player.errorReceived += (source, message) =>
-            {
-                StatusText.text = "Video error: " + message.Replace(savePath, url);
-                // END OF THIS REQUEST
-                _mostRecentRequest = null;
-            };
-
-            _player.Prepare();
-            // Request is not finished - will be completed by one of the above
-            // callbacks
+                Directory.Delete(contentPath, true);
+            }
         }
+        catch (Exception e)
+        {
+            StatusText.text = $"ERROR: Failed to delete previously downloaded content: {e.ToString()}";
+            // END OF THIS REQUEST
+            _mostRecentRequest = null;
+            yield break;
+        }
+        try
+        {
+            Directory.CreateDirectory(contentPath);
+        }
+        catch (Exception e)
+        {
+            StatusText.text = $"ERROR: Failed to create content directory: {e.ToString()}";
+            // END OF THIS REQUEST
+            _mostRecentRequest = null;
+            yield break;
+        }
+        try
+        {
+            System.IO.Compression.ZipFile.ExtractToDirectory(savePath, contentPath);
+        }
+        catch (Exception e)
+        {
+            StatusText.text = $"ERROR: Failed to extract downloaded zip file: {e.ToString()}";
+            // END OF THIS REQUEST
+            _mostRecentRequest = null;
+            yield break;
+        }
+        string[] videoTypes =
+        {
+            "idle",
+            "masking",
+            "speech",
+        };
+        int numVideos = 0;
+        foreach (string videoType in videoTypes)
+        {
+            // check directory exists in contentPath
+            if (!Directory.Exists(Path.Combine(contentPath, videoType)))
+            {
+                StatusText.text = $"ERROR: Failed to find expected folder {videoType} in downloaded content. Note: folder names should be lowercase.";
+                // END OF THIS REQUEST
+                _mostRecentRequest = null;
+                yield break;
+            }
+            // iterate through the files in this folder
+            string[] videoPaths = Directory.GetFiles(Path.Combine(contentPath, videoType), "*.mp4");
+            if (videoPaths.Length == 0)
+            {
+                StatusText.text = $"ERROR: No videos found in folder {videoType}.";
+                // END OF THIS REQUEST
+                _mostRecentRequest = null;
+                yield break;
+            }
+            foreach (string video in videoPaths)
+            {
+                StatusText.text = $"Checking video: {video}...";
+                yield return null;
+                bool isLoadedOK = false;
+                bool isError = false;
+                _player.url = video;
+                _player.source = VideoSource.Url;
+                _player.prepareCompleted += (source) =>
+                {
+                    int width = _player.texture.width;
+                    int height = _player.texture.height;
+                    Debug.Log($"{Path.GetFileName(video)} checked and of size {width}x{height}.");
+                    StatusText.text = $"Video downloaded successfully. Size: {width}x{height}.";
+                    isLoadedOK = true;
+                };
+
+                _player.errorReceived += (source, message) =>
+                {
+                    Debug.Log(message);
+                    StatusText.text = "Video error: " + message;
+                    isError = true;
+                };
+
+                while (!isLoadedOK && !isError)
+                {
+                    yield return null;
+                }
+
+                if (isError)
+                {
+                    // END OF THIS REQUEST
+                    _mostRecentRequest = null;
+                    yield break;
+                }
+
+                Debug.Assert(isLoadedOK);
+                VideoCatalogue.GetDownloadedVideoDictionary(videoType).Add(Path.GetFileName(video), video);
+
+                numVideos++;
+            }
+        }
+        StatusText.text = $"Download successful. {numVideos} videos loaded.";
+        Debug.Log($"{numVideos} downloaded and checked OK. Ready to proceed.");
+        IsReady = true;
+        _mostRecentRequest = null;
     }
 
     // Update is called once per frame
@@ -148,7 +254,7 @@ public class VideoDownloader : MonoBehaviour
     {
         if (_mostRecentRequest != null)
         {
-            if (_mostRecentRequest.downloadProgress > 0)
+            if (_mostRecentRequest.downloadProgress > 0.0 && _mostRecentRequest.downloadProgress < 1.0)
             {
                 StatusText.text = $"Downloading... {(int)(100 * _mostRecentRequest.downloadProgress)}% complete";
             }

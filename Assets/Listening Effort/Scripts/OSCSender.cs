@@ -198,7 +198,7 @@ public class OSCSender : MonoBehaviour
 		var clipSets = new (string type, IEnumerable<string> names)[]
 		{
             ("masking", VideoCatalogue.MaskingVideos.Select(clip => clip.name)),
-            ("sentence", VideoCatalogue.SentenceVideos.Select(clip => clip.name)),
+            ("speech", VideoCatalogue.SpeechVideos.Select(clip => clip.name)),
             ("idle", VideoCatalogue.IdleVideos.Select(clip => clip.name)),
         };
 		foreach (var (type, names) in clipSets)
