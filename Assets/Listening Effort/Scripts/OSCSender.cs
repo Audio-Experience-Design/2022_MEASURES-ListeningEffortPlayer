@@ -189,7 +189,7 @@ public class OSCSender : MonoBehaviour
 		oscClient.Send(m);
 		if (LogSentOscMessages)
 		{
-			Debug.Log($"Sent OSC Message: {m.ToString()}");
+			Debug.Log($"Sent OSC to {currentClientIP}:{oscClient.Port}: {m.ToString()}");
 		}
 	}
 

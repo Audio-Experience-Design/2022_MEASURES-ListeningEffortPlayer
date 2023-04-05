@@ -6,9 +6,10 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 //using ViveSR.anipal.Eye;
 using UnityEngine.XR;
-using Tobii.XR;
+//using Tobii.XR;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using Unity.XR.PXR;
 
 
 // Some strange stuff happens to the instance of this class with the callback being
@@ -37,27 +38,8 @@ public class Pupilometry : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		//      var devices = new List<InputDevice>();
-		//      InputDevices.GetDevicesAtXRNode(XRNode.LeftEye, devices);
-
-		//int i = 0;
-		//      foreach (var device in devices)
-		//      {
-		//          //device = devices[0];
-		//          Debug.Log(string.Format($"{++i}: Device name '{0}' with role '{1}'", device.name, device.characteristics.ToString()));
-
-		//	Eyes eyes;
-		//	if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.eyesData, out eyes))
-		//	{
-		//		//eyes.leftEyePosition;
-		//	}
-		//      }
-		//if (devices.Count == 0)
-		//{
-		//	Debug.Log("No left eye devices found");
-		//}
-
-		TobiiXR.Start(GetComponent<TobiiXR_Settings>());
+		//TobiiXR.Start(GetComponent<TobiiXR_Settings>());
+		
     }
 
 
@@ -66,49 +48,47 @@ public class Pupilometry : MonoBehaviour
 	{
 		sLogChanges = logChanges;
 
-        //if (!isCallbackAdded && (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING || SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT))
-        //{
-        //	SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-        //	isCallbackAdded = true;
-
-        //}
-
-        //TobiiXR_EyeTrackingData eyeTrackingData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.Local);
-		//eyeTrackingData.
-
 		// with licence we can activate advanced features for tobii:
 
 		//var data = TobiiXR.Advanced.LatestData;
-  //      // Get a timestamp from the host system clock
-  //      var now = TobiiXR.Advanced.GetSystemTimestamp();
+		//      // Get a timestamp from the host system clock
+		//      var now = TobiiXR.Advanced.GetSystemTimestamp();
 
-  //      // Calculate system latency in milliseconds and print it
-  //      var latency = (now - data.SystemTimestamp) / 1000.0f;
-  //      Debug.Log(string.Format("System latency was {0:0.00} ms", latency));
+		//      // Calculate system latency in milliseconds and print it
+		//      var latency = (now - data.SystemTimestamp) / 1000.0f;
+		//      Debug.Log(string.Format("System latency was {0:0.00} ms", latency));
+
+		// Get eye tracking data from the pico
+		Data data = new Data();
+		
+		//PXR_EyeTracking.GetLeftEyePoseStatus(out uint leftEyePoseStatus);
+		//data.isLeftPupilPositionValid = leftEyePoseStatus == 1;
+		
+		// this returns true even if the eye isn't being tracked.
+		// but an untracked eye always returns 0.0
+		PXR_EyeTracking.GetLeftEyePositionGuide(out Vector3 leftPosition);
+		data.leftPupilPosition = new Vector2(leftPosition.x, leftPosition.y);
+		data.isLeftPupilPositionValid = data.leftPupilPosition != Vector2.zero;
+
+		// repeat for right eye
+		//PXR_EyeTracking.GetRightEyePoseStatus(out uint rightEyePoseStatus);
+		//data.isRightPupilPositionValid = rightEyePoseStatus == 1;
+		PXR_EyeTracking.GetRightEyePositionGuide(out Vector3 rightPosition);
+		data.rightPupilPosition = new Vector2(rightPosition.x, rightPosition.y);
+		data.isRightPupilPositionValid= data.rightPupilPosition != Vector2.zero;
+
+		//data.isRightPupilPositionValid = PXR_EyeTracking.GetRightEyePositionGuide(out Vector3 rightPosition);
+		//data.rightPupilPosition = new Vector2(rightPosition.x, rightPosition.y);
+		data.isLeftPupilDiameterValid = false;
+		data.isRightPupilDiameterValid=false;
+		data.leftPupilDiameterMm = 0;
+		data.rightPupilDiameterMm = 0;
+        if (sLogChanges)
+		{
+			Debug.Log("Pupilometry data: " + data);
+		}
+		DataChanged?.Invoke(this, data);
     }
-
-	//private void EyeCallback(ref EyeData_v2 eye_data)
-	//{
-	//	Data data = new Data
-	//	{
-	//		hasUser = !eye_data.no_user,
-	//		leftPupilDiameterMm = eye_data.verbose_data.left.pupil_diameter_mm,
-	//		rightPupilDiameterMm = eye_data.verbose_data.right.pupil_diameter_mm,
-	//		isLeftPupilDiameterValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
-	//		isRightPupilDiameterValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_DIAMETER_VALIDITY),
-	//		leftPupilPosition = eye_data.verbose_data.left.pupil_position_in_sensor_area,
-	//		rightPupilPosition = eye_data.verbose_data.right.pupil_position_in_sensor_area,
-	//		isLeftPupilPositionValid = eye_data.verbose_data.left.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
-	//		isRightPupilPositionValid = eye_data.verbose_data.right.GetValidity(SingleEyeDataValidity.SINGLE_EYE_DATA_PUPIL_POSITION_IN_SENSOR_AREA_VALIDITY),
-	//	};
-
-	//	if (sLogChanges)
-	//	{
-	//		Debug.Log("Pupilometry data: " + data);
-	//	}
-
-	//	DataChanged?.Invoke(this, data);
-	//}
 
 
 }

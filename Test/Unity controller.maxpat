@@ -40,6 +40,28 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-8",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1391.0, 555.0, 83.0, 22.0 ],
+					"text" : "print unrouted"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 926.0, 686.0, 97.0, 22.0 ],
+					"text" : "print pupilometry"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-53",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -2144,8 +2166,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 571.0, 518.0, 222.0, 22.0 ],
-					"text" : "/set_client_address 192.168.2.189 7100"
+					"patching_rect" : [ 571.0, 518.0, 220.0, 22.0 ],
+					"text" : "/set_client_address 192.168.2.111 7100"
 				}
 
 			}
@@ -2378,6 +2400,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-101", 1 ],
 					"source" : [ "obj-102", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-8", 0 ],
+					"source" : [ "obj-102", 1 ]
 				}
 
 			}
@@ -2831,6 +2860,15 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 0 ],
+					"order" : 1,
+					"source" : [ "obj-5", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 0 ],
+					"order" : 0,
 					"source" : [ "obj-5", 0 ]
 				}
 

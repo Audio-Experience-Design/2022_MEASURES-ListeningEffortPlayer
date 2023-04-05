@@ -3621,7 +3621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UserHeadPosition: {fileID: 1832189896}
-  pupilometry: {fileID: 0}
+  pupilometry: {fileID: 905427547}
   LogSentOscMessages: 0
   ClientIP: 127.0.0.1
   Port: 6789
@@ -3883,7 +3883,7 @@ MonoBehaviour:
   useDefaultFps: 1
   customFps: 0
   screenFade: 0
-  eyeTracking: 0
+  eyeTracking: 1
   trackingMode: 0
   faceTracking: 0
   lipsyncTracking: 0
