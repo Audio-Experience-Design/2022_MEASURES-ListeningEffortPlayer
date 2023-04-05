@@ -3,7 +3,7 @@
     "m_SelectedPackage": {
         "deviceId": "PA7J50PGFB190085W",
         "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
-        "processId": 28329,
+        "processId": 31012,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -42,6 +42,30 @@
             "deviceId": "PA7J50PGFB190085W",
             "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
             "processId": 28329,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+            "processId": 28825,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+            "processId": 29229,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+            "processId": 29909,
+            "exited": false
+        },
+        {
+            "deviceId": "PA7J50PGFB190085W",
+            "name": "com.ImperialCollegeLondon.UnityWrapperSample3DTI",
+            "processId": 31012,
             "exited": false
         }
     ],

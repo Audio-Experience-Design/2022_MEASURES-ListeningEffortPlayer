@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+//using System.Diagnostics;
 using System.Runtime.InteropServices;
 using UnityEngine;
 //using ViveSR.anipal.Eye;
+using UnityEngine.XR;
 
 // Some strange stuff happens to the instance of this class with the callback being
 // called on a null instance. It might be to do with the Marshal function pointer.
@@ -31,11 +33,54 @@ public class Pupilometry : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-	}
+        var devices = new List<InputDevice>();
+        InputDevices.GetDevicesAtXRNode(XRNode.LeftEye, devices);
+
+		// Get Eyes input feature from device
+
+
+		// Get Eye state from VR device using Unity Input System
+
+
+		int i = 0;
+        foreach (var device in devices)
+        {
+            //device = devices[0];
+            Debug.Log(string.Format($"{++i}: Device name '{0}' with role '{1}'", device.name, device.characteristics.ToString()));
+
+			Eyes eyes;
+			if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.eyesData, out eyes))
+			{
+				//eyes.leftEyePosition;
+			}
+
+            //isValid = device.isValid;
+            //InputDevices.deviceConnected += (connectedDevice) =>
+            //{
+            //    if (device == connectedDevice)
+            //    {
+            //        isValid = true;
+            //        Debug.Log($"{sideName()} controller connected", this);
+            //    }
+            //};
+            //InputDevices.deviceDisconnected += (disconnectedDevice) =>
+            //{
+            //    if (device == disconnectedDevice)
+            //    {
+            //        isValid = false;
+            //        Debug.Log($"{sideName()} controller disconnected", this);
+            //    }
+            //};
+        }
+		if (devices.Count == 0)
+		{
+			Debug.Log("No left eye devices found");
+		}
+    }
 
 
 
-	void Update()
+    void Update()
 	{
 		sLogChanges = logChanges;
 
@@ -45,6 +90,8 @@ public class Pupilometry : MonoBehaviour
 		//	isCallbackAdded = true;
 
 		//}
+
+
 	}
 
 	//private void EyeCallback(ref EyeData_v2 eye_data)
