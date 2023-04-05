@@ -6,6 +6,10 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 //using ViveSR.anipal.Eye;
 using UnityEngine.XR;
+using Tobii.XR;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
+
 
 // Some strange stuff happens to the instance of this class with the callback being
 // called on a null instance. It might be to do with the Marshal function pointer.
@@ -33,49 +37,27 @@ public class Pupilometry : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-        var devices = new List<InputDevice>();
-        InputDevices.GetDevicesAtXRNode(XRNode.LeftEye, devices);
+		//      var devices = new List<InputDevice>();
+		//      InputDevices.GetDevicesAtXRNode(XRNode.LeftEye, devices);
 
-		// Get Eyes input feature from device
+		//int i = 0;
+		//      foreach (var device in devices)
+		//      {
+		//          //device = devices[0];
+		//          Debug.Log(string.Format($"{++i}: Device name '{0}' with role '{1}'", device.name, device.characteristics.ToString()));
 
+		//	Eyes eyes;
+		//	if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.eyesData, out eyes))
+		//	{
+		//		//eyes.leftEyePosition;
+		//	}
+		//      }
+		//if (devices.Count == 0)
+		//{
+		//	Debug.Log("No left eye devices found");
+		//}
 
-		// Get Eye state from VR device using Unity Input System
-
-
-		int i = 0;
-        foreach (var device in devices)
-        {
-            //device = devices[0];
-            Debug.Log(string.Format($"{++i}: Device name '{0}' with role '{1}'", device.name, device.characteristics.ToString()));
-
-			Eyes eyes;
-			if (device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.eyesData, out eyes))
-			{
-				//eyes.leftEyePosition;
-			}
-
-            //isValid = device.isValid;
-            //InputDevices.deviceConnected += (connectedDevice) =>
-            //{
-            //    if (device == connectedDevice)
-            //    {
-            //        isValid = true;
-            //        Debug.Log($"{sideName()} controller connected", this);
-            //    }
-            //};
-            //InputDevices.deviceDisconnected += (disconnectedDevice) =>
-            //{
-            //    if (device == disconnectedDevice)
-            //    {
-            //        isValid = false;
-            //        Debug.Log($"{sideName()} controller disconnected", this);
-            //    }
-            //};
-        }
-		if (devices.Count == 0)
-		{
-			Debug.Log("No left eye devices found");
-		}
+		TobiiXR.Start(GetComponent<TobiiXR_Settings>());
     }
 
 
@@ -84,15 +66,26 @@ public class Pupilometry : MonoBehaviour
 	{
 		sLogChanges = logChanges;
 
-		//if (!isCallbackAdded && (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING || SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT))
-		//{
-		//	SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
-		//	isCallbackAdded = true;
+        //if (!isCallbackAdded && (SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.WORKING || SRanipal_Eye_Framework.Status == SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT))
+        //{
+        //	SRanipal_Eye_v2.WrapperRegisterEyeDataCallback(Marshal.GetFunctionPointerForDelegate((SRanipal_Eye_v2.CallbackBasic)EyeCallback));
+        //	isCallbackAdded = true;
 
-		//}
+        //}
 
+        //TobiiXR_EyeTrackingData eyeTrackingData = TobiiXR.GetEyeTrackingData(TobiiXR_TrackingSpace.Local);
+		//eyeTrackingData.
 
-	}
+		// with licence we can activate advanced features for tobii:
+
+		//var data = TobiiXR.Advanced.LatestData;
+  //      // Get a timestamp from the host system clock
+  //      var now = TobiiXR.Advanced.GetSystemTimestamp();
+
+  //      // Calculate system latency in milliseconds and print it
+  //      var latency = (now - data.SystemTimestamp) / 1000.0f;
+  //      Debug.Log(string.Format("System latency was {0:0.00} ms", latency));
+    }
 
 	//private void EyeCallback(ref EyeData_v2 eye_data)
 	//{

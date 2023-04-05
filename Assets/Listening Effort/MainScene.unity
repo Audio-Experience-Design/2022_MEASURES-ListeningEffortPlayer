@@ -1984,6 +1984,7 @@ GameObject:
   m_Component:
   - component: {fileID: 905427548}
   - component: {fileID: 905427547}
+  - component: {fileID: 905427549}
   m_Layer: 0
   m_Name: Pupilometry
   m_TagString: Untagged
@@ -2019,6 +2020,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &905427549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905427546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 323f6169a2404ef4293c9be9671a1803, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Settings:
+    EyeTrackingFilter: {fileID: 0}
+    StandaloneEyeTrackingProviders:
+    - TypeName: HTCProvider
+    - TypeName: Tobii.XR.TobiiProvider
+    - TypeName: Tobii.XR.NoseDirectionProvider
+    - TypeName: Tobii.XR.MouseProvider
+    AndroidEyeTrackingProviders:
+    - TypeName: Tobii.XR.TobiiProvider
+    - TypeName: Tobii.XR.PicoXRProvider
+    - TypeName: Tobii.XR.NoseDirectionProvider
+    - TypeName: Tobii.XR.MouseProvider
+    LayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    HowLongToKeepCandidatesInSeconds: 1
+    AdvancedEnabled: 0
+    OcumenLicense: 
+    PopupLicenseValidationErrors: 0
+    LicenseAsset: {fileID: 0}
 --- !u!1 &960145989
 GameObject:
   m_ObjectHideFlags: 0
