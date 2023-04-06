@@ -66,16 +66,16 @@ public class Pupilometry : MonoBehaviour
 		
 		// this returns true even if the eye isn't being tracked.
 		// but an untracked eye always returns 0.0
-		PXR_EyeTracking.GetLeftEyePositionGuide(out Vector3 leftPosition);
+		bool leftSuccess = PXR_EyeTracking.GetLeftEyePositionGuide(out Vector3 leftPosition);
 		data.leftPupilPosition = new Vector2(leftPosition.x, leftPosition.y);
-		data.isLeftPupilPositionValid = data.leftPupilPosition != Vector2.zero;
+		data.isLeftPupilPositionValid = leftSuccess && data.leftPupilPosition != Vector2.zero;
 
 		// repeat for right eye
 		//PXR_EyeTracking.GetRightEyePoseStatus(out uint rightEyePoseStatus);
 		//data.isRightPupilPositionValid = rightEyePoseStatus == 1;
-		PXR_EyeTracking.GetRightEyePositionGuide(out Vector3 rightPosition);
+		bool rightSuccess = PXR_EyeTracking.GetRightEyePositionGuide(out Vector3 rightPosition);
 		data.rightPupilPosition = new Vector2(rightPosition.x, rightPosition.y);
-		data.isRightPupilPositionValid= data.rightPupilPosition != Vector2.zero;
+		data.isRightPupilPositionValid= rightSuccess && data.rightPupilPosition != Vector2.zero;
 
 		//data.isRightPupilPositionValid = PXR_EyeTracking.GetRightEyePositionGuide(out Vector3 rightPosition);
 		//data.rightPupilPosition = new Vector2(rightPosition.x, rightPosition.y);
@@ -87,6 +87,7 @@ public class Pupilometry : MonoBehaviour
 		{
 			Debug.Log("Pupilometry data: " + data);
 		}
+
 		DataChanged?.Invoke(this, data);
     }
 

@@ -195,13 +195,7 @@ public class OSCSender : MonoBehaviour
 
     public void SendVideoNames()
     {
-		var clipSets = new (string type, IEnumerable<string> names)[]
-		{
-            ("masking", VideoCatalogue.MaskingVideos.Select(clip => clip.name)),
-            ("speech", VideoCatalogue.SpeechVideos.Select(clip => clip.name)),
-            ("idle", VideoCatalogue.IdleVideos.Select(clip => clip.name)),
-        };
-		foreach (var (type, names) in clipSets)
+		foreach (var (type, names) in VideoCatalogue.GetVideoNames())
         {
 			Send($"/video/names/{type}", names);
         }

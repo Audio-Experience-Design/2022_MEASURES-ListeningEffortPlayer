@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LoadingScreen : MonoBehaviour
 {
-    public TMPro.TMP_Text loadingText;
-    public OSCController oscController;
+    public Text loadingText;
 
     public void Awake()
     {
@@ -18,7 +18,7 @@ public class LoadingScreen : MonoBehaviour
             .Where(ip => ip.AddressFamily == AddressFamily.InterNetwork)
             .Where(ip => !(ip.ToString() == "127.0.0.1"))
             .Select(ip => ip.ToString())
-            .Select(ipAddresses => $"{ipAddresses}:{oscController.listenPort}")
+            .Select(ipAddresses => $"{ipAddresses}:{OSCController.listenPort}")
             .Aggregate((head, tail) => $"{head}\n{tail}");
 
         loadingText.text = loadingText.text.Replace("{IP_ADDRESS}", $"{ipAddresses}");

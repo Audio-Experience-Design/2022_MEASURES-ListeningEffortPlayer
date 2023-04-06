@@ -27,7 +27,7 @@ public class VideoDownloader : MonoBehaviour
     /// <summary>
     /// This indicates this video is downloaded and ready to go.
     /// </summary>
-    private bool _isReady;
+    private bool _isReady = true;
 
     public bool IsReady
     {
@@ -108,6 +108,7 @@ public class VideoDownloader : MonoBehaviour
         if (String.IsNullOrWhiteSpace(url))
         {
             StatusText.text = _originalStatusText;
+            IsReady = true;
             yield break;
         }
 

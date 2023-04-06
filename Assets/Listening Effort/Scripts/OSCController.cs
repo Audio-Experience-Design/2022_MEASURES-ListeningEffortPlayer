@@ -6,7 +6,7 @@ using UnityOSC;
 public class OSCController : MonoBehaviour
 {
 	private OSCReceiver osc = new OSCReceiver();
-	public int listenPort = 7100;
+	public static readonly int listenPort = 7100;
 	public bool logReceivedMessages;
 	//public string videoDirectory;
 
@@ -245,7 +245,16 @@ public class OSCController : MonoBehaviour
 			{
 				videoPlayers[i].Stop();
 				//videoPlayers[i].url = (string)message.Data[1];
-				videoPlayers[i].clip = oscSender.VideoCatalogue.GetClip(videoName);
+				if (oscSender.VideoCatalogue.IsUsingDownloadedVideos)
+				{
+					videoPlayers[i].url = oscSender.VideoCatalogue.GetURL(videoName);
+					videoPlayers[i].source = VideoSource.Url;
+				}
+				else
+				{
+                    videoPlayers[i].clip = oscSender.VideoCatalogue.GetClip(videoName);
+					videoPlayers[i].source = VideoSource.VideoClip;
+                }
                 videoPlayers[i].SetTargetAudioSource(0, videoPlayers[i].GetComponentInChildren<AudioSource>());
                 videoPlayers[i].isLooping = false;
 				videoPlayers[i].Prepare();
@@ -265,11 +274,23 @@ public class OSCController : MonoBehaviour
 			{
 				Debug.LogError($"{message.Address} message received for video player ID {i}. Valid video player  IDs (that can receive an idle video message) are at least 1 and at most { videoPlayers.Length - 1}");
 			}
+			else if (!oscSender.VideoCatalogue.Contains((string)message.Data[1]))
+			{
+                Debug.LogError($"{message.Address} message received with unrecognised video name: {(string)message.Data[1]}");
+            }
 			else
 			{
 				var videoManager = videoPlayers[i].GetComponent<VideoManager>();
-				videoManager.IdleVideoPath = (string)message.Data[1];
-				if (!videoPlayers[i].isPlaying)
+				var catalogue = oscSender.VideoCatalogue;
+				if (catalogue.IsUsingDownloadedVideos)
+				{
+					videoManager.IdleVideoURL = catalogue.GetURL((string)message.Data[1]);
+				}
+				else
+				{
+					videoManager.IdleVideoClip = catalogue.GetClip((string)message.Data[1]);
+                }
+                if (!videoPlayers[i].isPlaying)
 				{
 					videoManager.StartIdleVideo();
 				}

@@ -18,7 +18,7 @@ public class VideoCatalogue : MonoBehaviour
     public static Dictionary<string, string> DownloadedMaskingVideos = new Dictionary<string, string>();
     public static Dictionary<string, string> DownloadedSpeechVideos = new Dictionary<string, string>();
     public static Dictionary<string, string> DownloadedIdleVideos = new Dictionary<string, string>();
-    
+
     public static Dictionary<string, string> GetDownloadedVideoDictionary(string type)
     {
         switch (type)
@@ -35,6 +35,28 @@ public class VideoCatalogue : MonoBehaviour
         }
     }
 
+    public (string type, IEnumerable<string> names)[] GetVideoNames()
+    {
+        if (IsUsingDownloadedVideos)
+        {
+            return new (string type, IEnumerable<string> names)[]
+            {
+                ("masking", DownloadedMaskingVideos.Keys),
+                ("speech", DownloadedSpeechVideos.Keys),
+                ("idle", DownloadedIdleVideos.Keys),
+            };
+        }
+        else
+        {
+            return new (string type, IEnumerable<string> names)[]
+            {
+            ("masking", MaskingVideos.Select(clip => clip.name)),
+            ("speech", SpeechVideos.Select(clip => clip.name)),
+            ("idle", IdleVideos.Select(clip => clip.name)),
+            };
+        }
+    }
+
     public void Start()
     {
         if (IsUsingDownloadedVideos)
@@ -48,8 +70,16 @@ public class VideoCatalogue : MonoBehaviour
 
     public bool Contains(string name)
     {
-        return GetClip(name) != null;
+        if (IsUsingDownloadedVideos)
+        {
+            return GetURL(name) != null;
+        }
+        else
+        {
+            return GetClip(name) != null;
+        }
     }
+
     public VideoClip GetClip(string name)
     {
         foreach (VideoClip[] clips in new VideoClip[][] { MaskingVideos, SpeechVideos, IdleVideos })
@@ -67,7 +97,7 @@ public class VideoCatalogue : MonoBehaviour
     {
         foreach (Dictionary<string, string> dictionary in new Dictionary<string, string>[] { DownloadedMaskingVideos, DownloadedSpeechVideos, DownloadedIdleVideos })
         {
-            foreach (KeyValuePair<string,string> entry in dictionary)
+            foreach (KeyValuePair<string, string> entry in dictionary)
             {
                 if (entry.Key == name)
                 {

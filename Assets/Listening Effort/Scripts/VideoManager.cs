@@ -8,11 +8,24 @@ using UnityEngine.Video;
 public class VideoManager : MonoBehaviour
 {
 	public string VideoPath;
-	public string IdleVideoPath;
+	[HideInInspector]
+	public string IdleVideoURL;
+	[HideInInspector]
+    public VideoClip IdleVideoClip;
 	public Material TargetMaterial;
 	public bool IsIdleVideoPlaying
 	{
-		get { return GetComponent<VideoPlayer>()?.url == IdleVideoPath; }
+		get {
+			VideoPlayer player = GetComponent<VideoPlayer>();
+			if (player.source == VideoSource.Url)
+			{
+				return player.url == IdleVideoURL;
+			}
+			else
+			{
+				return player.clip == IdleVideoClip;
+			}
+		}
 	}
 
 	private RenderTexture renderTexture;
@@ -86,18 +99,27 @@ public class VideoManager : MonoBehaviour
 
 	public bool StartIdleVideo()
 	{
-		if (string.IsNullOrEmpty(IdleVideoPath))
+        VideoPlayer player = GetComponent<VideoPlayer>();
+        if (IdleVideoClip != null)
+		{
+            player.clip = IdleVideoClip;
+            player.source = VideoSource.VideoClip;
+            player.isLooping = true;
+            player.Prepare();
+            return true;
+        }
+		else if (!string.IsNullOrEmpty(IdleVideoURL))
+		{
+            player.url = IdleVideoURL;
+            player.source = VideoSource.Url;
+            player.isLooping = true;
+            player.Prepare();
+            return true;
+        }
+		else
 		{
 			Debug.Log("Cannot start idle video as non has been set.", this);
 			return false;
-		}
-		else
-		{
-			VideoPlayer player = GetComponent<VideoPlayer>();
-			player.url = IdleVideoPath;
-			player.isLooping = true;
-			player.Prepare();
-			return true;
 		}
 	}
 
