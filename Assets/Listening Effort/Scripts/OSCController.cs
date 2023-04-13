@@ -245,7 +245,7 @@ public class OSCController : MonoBehaviour
 			{
 				videoPlayers[i].Stop();
 				//videoPlayers[i].url = (string)message.Data[1];
-				if (oscSender.VideoCatalogue.IsUsingDownloadedVideos)
+				if (oscSender.VideoCatalogue.IsUsingUserVideos)
 				{
 					videoPlayers[i].url = oscSender.VideoCatalogue.GetURL(videoName);
 					videoPlayers[i].source = VideoSource.Url;
@@ -282,7 +282,7 @@ public class OSCController : MonoBehaviour
 			{
 				var videoManager = videoPlayers[i].GetComponent<VideoManager>();
 				var catalogue = oscSender.VideoCatalogue;
-				if (catalogue.IsUsingDownloadedVideos)
+				if (catalogue.IsUsingUserVideos)
 				{
 					videoManager.IdleVideoURL = catalogue.GetURL((string)message.Data[1]);
 				}

@@ -12,6 +12,8 @@ public class LoadingScreen : MonoBehaviour
     public Text loadingText;
     public VideoChecker videoChecker;
     public Button startButton;
+    public Button demoButton;
+    public Button reloadVideosButton;
 
     public void Awake()
     {
@@ -28,18 +30,33 @@ public class LoadingScreen : MonoBehaviour
             .Replace("{IP_ADDRESS}", $"{ipAddresses}")
             .Replace("{VIDEO_DIRECTORIES}", videoChecker.videoDirectories.Aggregate((a,b) => $"{a}\n{b}"));
 
-        videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons(videosAreOK);
-        updateButtons(videoChecker.videosAreOK);
+        videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons();
+        videoChecker.isCheckingVideosChanged += (sender, isChecking) => updateButtons();
 
         startButton.onClick.AddListener(() =>
         {
+            VideoCatalogue.UseDemoVideos = false;
             SceneManager.LoadSceneAsync("MainScene");
         });
+
+        demoButton.onClick.AddListener(() =>
+        {
+            VideoCatalogue.UseDemoVideos = true;
+            SceneManager.LoadSceneAsync("MainScene");
+        });
+
+        reloadVideosButton.onClick.AddListener(() =>
+        {
+            StartCoroutine(videoChecker.CheckVideos());
+        });
+        updateButtons();
+
     }
 
-    private void updateButtons(bool videosAreOK)
+    private void updateButtons()
     {
-        startButton.interactable = videosAreOK;
+        startButton.interactable = videoChecker.videosAreOK;
+        reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
     }
 
 }

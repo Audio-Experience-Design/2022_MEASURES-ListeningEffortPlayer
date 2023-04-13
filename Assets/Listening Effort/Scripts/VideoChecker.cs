@@ -25,6 +25,18 @@ public class VideoChecker : MonoBehaviour
     }
     public event System.EventHandler<bool> videosAreOKChanged;
 
+    public bool _isCheckingVideos = false;
+    public bool isCheckingVideos
+    {
+        get => _isCheckingVideos;
+        private set
+        {
+            _isCheckingVideos = value;
+            isCheckingVideosChanged?.Invoke(this, value);
+        }
+    }
+    public event System.EventHandler<bool> isCheckingVideosChanged;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,8 +64,13 @@ public class VideoChecker : MonoBehaviour
         statusText.text = text;
     }
 
-    IEnumerator CheckVideos()
+    public IEnumerator CheckVideos()
     {
+        if (isCheckingVideos) {
+            Debug.LogWarning("Cannot call CheckVideos as it's already running.", this);
+            yield break; 
+        }
+        isCheckingVideos = true;
         setStatus("Checking videos");
         yield return null;
         // create an array to hold the number of videos of each type, initialize it with zeros
@@ -92,14 +109,17 @@ public class VideoChecker : MonoBehaviour
                 {
                     setStatus($"Video {videoPath} loaded successfully");
                     videoCounts[i]++;
+                    // add the video to VideoCatalogue
+                    VideoCatalogue.GetDownloadedVideoDictionary(videoType).Add(Path.GetFileNameWithoutExtension(videoPath), videoPath);
                     yield return null;
                 }
                 Destroy(player);
             }
         }
         videosAreOK = failedVideoPaths.Count == 0 && videoCounts.All(i => i > 0);
-        setStatus($"{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
+        setStatus($"{(videosAreOK? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
             videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a,b) => a + "\n" + b)
             );
+        isCheckingVideos = false;
     }
 }

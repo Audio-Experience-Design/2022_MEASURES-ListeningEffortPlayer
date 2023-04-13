@@ -9,26 +9,27 @@ using Debug = UnityEngine.Debug;
 
 public class VideoCatalogue : MonoBehaviour
 {
-    public VideoClip[] MaskingVideos;
-    public VideoClip[] SpeechVideos;
-    public VideoClip[] IdleVideos;
+    public VideoClip[] DemoMaskingVideos;
+    public VideoClip[] DemoSpeechVideos;
+    public VideoClip[] DemoIdleVideos;
 
     // If downloaded they are left here.
     // name -> path
-    public static Dictionary<string, string> DownloadedMaskingVideos = new Dictionary<string, string>();
-    public static Dictionary<string, string> DownloadedSpeechVideos = new Dictionary<string, string>();
-    public static Dictionary<string, string> DownloadedIdleVideos = new Dictionary<string, string>();
+    public static Dictionary<string, string> UserMaskingVideos = new Dictionary<string, string>();
+    public static Dictionary<string, string> UserSpeechVideos = new Dictionary<string, string>();
+    public static Dictionary<string, string> UserIdleVideos = new Dictionary<string, string>();
+    public static bool UseDemoVideos = true;
 
     public static Dictionary<string, string> GetDownloadedVideoDictionary(string type)
     {
         switch (type)
         {
             case "masking":
-                return DownloadedMaskingVideos;
+                return UserMaskingVideos;
             case "speech":
-                return DownloadedSpeechVideos;
+                return UserSpeechVideos;
             case "idle":
-                return DownloadedIdleVideos;
+                return UserIdleVideos;
             default:
                 Debug.LogError($"VideoCatalogue.GetDownloadedVideoDictionary: Unknown type {type}.");
                 return null;
@@ -37,40 +38,64 @@ public class VideoCatalogue : MonoBehaviour
 
     public (string type, IEnumerable<string> names)[] GetVideoNames()
     {
-        if (IsUsingDownloadedVideos)
+        if (IsUsingUserVideos)
         {
             return new (string type, IEnumerable<string> names)[]
             {
-                ("masking", DownloadedMaskingVideos.Keys),
-                ("speech", DownloadedSpeechVideos.Keys),
-                ("idle", DownloadedIdleVideos.Keys),
+                ("masking", UserMaskingVideos.Keys),
+                ("speech", UserSpeechVideos.Keys),
+                ("idle", UserIdleVideos.Keys),
             };
         }
         else
         {
             return new (string type, IEnumerable<string> names)[]
             {
-            ("masking", MaskingVideos.Select(clip => clip.name)),
-            ("speech", SpeechVideos.Select(clip => clip.name)),
-            ("idle", IdleVideos.Select(clip => clip.name)),
+            ("masking", DemoMaskingVideos.Select(clip => clip.name)),
+            ("speech", DemoSpeechVideos.Select(clip => clip.name)),
+            ("idle", DemoIdleVideos.Select(clip => clip.name)),
             };
         }
     }
 
     public void Start()
     {
-        if (IsUsingDownloadedVideos)
+        if (IsUsingUserVideos)
         {
-            Debug.Log($"VideoCatalogue started with {DownloadedMaskingVideos.Count} + {DownloadedSpeechVideos.Count} + {DownloadedIdleVideos.Count} downloaded videos.");
+            Debug.Log($"VideoCatalogue started with {UserMaskingVideos.Count} + {UserSpeechVideos.Count} + {UserIdleVideos.Count} downloaded videos.");
         }
     }
 
 
-    public bool IsUsingDownloadedVideos => DownloadedMaskingVideos.Count > 0 || DownloadedSpeechVideos.Count > 0 || DownloadedIdleVideos.Count > 0;
+    public bool IsUsingUserVideos => !UseDemoVideos;
+
+    private bool Invariant()
+    {
+        if (IsUsingUserVideos)
+        {
+            return UserMaskingVideos.Keys.All(name => GetURL(name) != null)
+                && UserSpeechVideos.Keys.All(name => GetURL(name) != null)
+                && UserIdleVideos.Keys.All(name => GetURL(name) != null)
+                // and each type must have at least one video
+                && UserMaskingVideos.Count > 0
+                && UserSpeechVideos.Count > 0
+                && UserIdleVideos.Count > 0;
+        }
+        else
+        {
+            return DemoMaskingVideos.All(clip => GetClip(clip.name) != null)
+                && DemoSpeechVideos.All(clip => GetClip(clip.name) != null)
+                && DemoIdleVideos.All(clip => GetClip(clip.name) != null)
+                // and each type must have at least one video
+                && DemoMaskingVideos.Length > 0
+                && DemoSpeechVideos.Length > 0
+                && DemoIdleVideos.Length > 0;
+        }
+    }
 
     public bool Contains(string name)
     {
-        if (IsUsingDownloadedVideos)
+        if (IsUsingUserVideos)
         {
             return GetURL(name) != null;
         }
@@ -82,7 +107,7 @@ public class VideoCatalogue : MonoBehaviour
 
     public VideoClip GetClip(string name)
     {
-        foreach (VideoClip[] clips in new VideoClip[][] { MaskingVideos, SpeechVideos, IdleVideos })
+        foreach (VideoClip[] clips in new VideoClip[][] { DemoMaskingVideos, DemoSpeechVideos, DemoIdleVideos })
         {
             VideoClip c = clips.FirstOrDefault(clip => clip.name == name);
             if (c != null)
@@ -95,7 +120,7 @@ public class VideoCatalogue : MonoBehaviour
 
     public string GetURL(string name)
     {
-        foreach (Dictionary<string, string> dictionary in new Dictionary<string, string>[] { DownloadedMaskingVideos, DownloadedSpeechVideos, DownloadedIdleVideos })
+        foreach (Dictionary<string, string> dictionary in new Dictionary<string, string>[] { UserMaskingVideos, UserSpeechVideos, UserIdleVideos })
         {
             foreach (KeyValuePair<string, string> entry in dictionary)
             {
