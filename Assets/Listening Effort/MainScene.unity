@@ -1500,7 +1500,7 @@ GameObject:
   - component: {fileID: 782628376}
   - component: {fileID: 782628380}
   m_Layer: 5
-  m_Name: LoadingScreen Canvas
+  m_Name: Canvas - Waiting for connection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1597,10 +1597,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 782628375}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 327a7a0231484914ea5fcf2196669139, type: 3}
+  m_Script: {fileID: 11500000, guid: ddc194fb9127d5748a75feff10b54f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingText: {fileID: 1013854322}
+  targetText: {fileID: 1013854322}
 --- !u!1 &791977491
 GameObject:
   m_ObjectHideFlags: 0
@@ -2233,21 +2233,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2ce1e98eeada27439bc9e4964af3181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaskingVideos:
-  - {fileID: 32900000, guid: ec15da24323884c468aa8bd723cd5b98, type: 3}
-  - {fileID: 32900000, guid: 34f4f1f4ffb0dad4cb87378f17c1f99a, type: 3}
-  - {fileID: 32900000, guid: 7f2078bcb6bf1984d8e2f3dededc8e42, type: 3}
-  SpeechVideos:
-  - {fileID: 32900000, guid: 1750736bb16c4634f8bfa0f26dfde9a5, type: 3}
-  - {fileID: 32900000, guid: ef728d7057836094e9893c106de4fd8f, type: 3}
-  - {fileID: 32900000, guid: 83c3e8bafe85fa94594ddd172933e506, type: 3}
-  - {fileID: 32900000, guid: a26c0b221258d034881229f42c3a3624, type: 3}
-  - {fileID: 32900000, guid: 64d56ecf3c9dced46842377b1e4929ca, type: 3}
-  - {fileID: 32900000, guid: 4ee332c3e5d0a834e91fc22eeb2bd54f, type: 3}
-  - {fileID: 32900000, guid: 5feccc8b48439ad4dbb144ac04c525aa, type: 3}
-  - {fileID: 32900000, guid: c2d899fafd6e389459bcd3c2b8c66c5d, type: 3}
-  IdleVideos:
-  - {fileID: 32900000, guid: 0f577a3f683e02043b0ef7af6bb395e0, type: 3}
+  DemoMaskingVideos: []
+  DemoSpeechVideos: []
+  DemoIdleVideos: []
 --- !u!1 &905427546
 GameObject:
   m_ObjectHideFlags: 0
