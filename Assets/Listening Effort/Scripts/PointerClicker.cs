@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ public class PointerClicker : MonoBehaviour
     Vector3 rayOrigin;
     Vector3 rayDirection;
 
-    OVRRaycaster ovrRaycaster;
+    public OVRRaycaster ovrRaycaster;
 
     // Start is called before the first frame update
     void Start()
@@ -36,13 +37,13 @@ public class PointerClicker : MonoBehaviour
         bool rightclicked = Input.GetKey(RightTriggerCode);
         if (isRightPicoControllerTriggered != _temp)
         {
-            Debug.Log($"rightClicked = {rightclicked}");
+            Debug.Log($"rightClicked == {rightclicked}");
             _temp = rightclicked;
         }
         bool leftClicked = Input.GetKey(LeftTriggerCode);
         if (isLeftPicoControllerTriggered != _temp2)
         {
-            Debug.Log($"leftClicked = {leftClicked}");
+            Debug.Log($"leftClicked == {leftClicked}");
             _temp2 = leftClicked;
         }
     }
@@ -59,7 +60,7 @@ public class PointerClicker : MonoBehaviour
             rayDirection = transform.forward;
             Physics.Raycast(transform.position, transform.forward, out RaycastHit hit);
 
-            Debug.Log($"Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
+            Debug.Log($"* Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
             if (hit.collider && hit.transform.gameObject)
             {
                 Debug.Log($"Hit {hit.transform.gameObject.name}.");
@@ -69,10 +70,9 @@ public class PointerClicker : MonoBehaviour
             List<UnityEngine.EventSystems.RaycastResult> results = new List<UnityEngine.EventSystems.RaycastResult>();
             ovrRaycaster.Raycast(null, results, new Ray(transform.position, transform.forward), false);
             Debug.Log($"OVR raycast results count: {results.Count}");
-            if (results.Count > 0)
-            {
-                Debug.Log($"First result: {results[0].gameObject.name}" );
-            }
+            var buttons = results.Where(result => result.gameObject.GetComponent<Button>() != null).ToList();
+            Debug.Log($"OVR raycast buttons count: {buttons.Count}");
+            buttons.ForEach(result => result.gameObject.GetComponent<Button>().onClick.Invoke());
 
 
         }
