@@ -6,27 +6,44 @@ using UnityEngine.UI;
 public class PointerClicker : MonoBehaviour
 {
     public bool isRightHandController = false;
-    private Transform pointer;
+    //private Transform pointer;
     // from previous frame, to prevent double triggerings
     bool wasTriggered = false;
 
-    bool isLeftPicoControllerTriggered => Input.GetKey(KeyCode.JoystickButton15);
-    bool isRightPicoControllerTriggered => Input.GetKey(KeyCode.JoystickButton14);
+    const KeyCode LeftTriggerCode = KeyCode.JoystickButton14;
+    const KeyCode RightTriggerCode = KeyCode.JoystickButton15;
+
+    bool isLeftPicoControllerTriggered => Input.GetKey(LeftTriggerCode);
+    bool isRightPicoControllerTriggered => Input.GetKey(RightTriggerCode);
+
+
+    // ray when trigger was pulled
+    Vector3 rayOrigin;
+    Vector3 rayDirection;
+
+    OVRRaycaster ovrRaycaster;
 
     // Start is called before the first frame update
     void Start()
     {
-        pointer = this.transform;
+        //pointer = this.transform;
     }
 
     bool _temp = false;
+    bool _temp2 = false;
     void Update()
     {
-        bool rightclicked = Input.GetKey(KeyCode.JoystickButton14);
-        if (rightclicked != _temp)
+        bool rightclicked = Input.GetKey(RightTriggerCode);
+        if (isRightPicoControllerTriggered != _temp)
         {
             Debug.Log($"rightClicked = {rightclicked}");
             _temp = rightclicked;
+        }
+        bool leftClicked = Input.GetKey(LeftTriggerCode);
+        if (isLeftPicoControllerTriggered != _temp2)
+        {
+            Debug.Log($"leftClicked = {leftClicked}");
+            _temp2 = leftClicked;
         }
     }
 
@@ -34,35 +51,48 @@ public class PointerClicker : MonoBehaviour
     {
         //#if !UNITY_EDITOR
 
-        GameObject objectToTrigger = null;
+        bool isTriggerPulled = (isRightHandController && isRightPicoControllerTriggered) || (!isRightHandController && isLeftPicoControllerTriggered);
 
-        Ray ray = new Ray(pointer.position, pointer.forward);
-        RaycastHit hit;
-        Physics.Raycast(ray.origin, ray.direction, out hit);
-
-        bool isTriggerPulled = (isRightHandController && isRightPicoControllerTriggered) || (!isRightHandController && isRightPicoControllerTriggered);
-
-        if (isTriggerPulled)
+        if (!wasTriggered && isTriggerPulled)
         {
-            Debug.Log($"Ray cast from origin {ray.origin} in direction {ray.direction} from {(isRightHandController? "right" : "left")} hand.");
-            if (hit.collider)
-                if (hit.transform.gameObject)
-                {
-                    objectToTrigger = hit.transform.gameObject;
-                }
-        }
+            rayOrigin = transform.position;
+            rayDirection = transform.forward;
+            Physics.Raycast(transform.position, transform.forward, out RaycastHit hit);
 
-        if (objectToTrigger != null && !wasTriggered)
-        {
-            objectToTrigger.GetComponent<Button>()?.onClick.Invoke();
-            wasTriggered = true;
-        }
-        else if (objectToTrigger == null)
-        {
-            wasTriggered = false;
+            Debug.Log($"Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
+            if (hit.collider && hit.transform.gameObject)
+            {
+                Debug.Log($"Hit {hit.transform.gameObject.name}.");
+                hit.transform.gameObject.GetComponent<Button>()?.onClick.Invoke();
+            }
+
+            List<UnityEngine.EventSystems.RaycastResult> results = new List<UnityEngine.EventSystems.RaycastResult>();
+            ovrRaycaster.Raycast(null, results, new Ray(transform.position, transform.forward), false);
+            Debug.Log($"OVR raycast results count: {results.Count}");
+            if (results.Count > 0)
+            {
+                Debug.Log($"First result: {results[0].gameObject.name}" );
+            }
+
+
         }
         //#endif
 
+        if (isTriggerPulled)
+        {
+            Debug.DrawRay(rayOrigin, rayDirection * 200_000, Color.yellow);
+        }
+
+        if (isTriggerPulled && !wasTriggered)
+        {
+            Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger pulled", this);
+        }
+        else if (!isTriggerPulled && wasTriggered)
+        {
+            Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger released", this);
+        }
+
+        wasTriggered = isTriggerPulled;
     }
 }
 
