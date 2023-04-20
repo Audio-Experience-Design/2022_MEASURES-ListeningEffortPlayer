@@ -6,7 +6,7 @@ using UnityOSC;
 public class OSCController : MonoBehaviour
 {
 	private OSCReceiver osc = new OSCReceiver();
-	public static readonly int listenPort = 7100;
+	public static readonly int listenPort = 7000;
 	public bool logReceivedMessages;
 	//public string videoDirectory;
 
@@ -165,6 +165,8 @@ public class OSCController : MonoBehaviour
 		Debug.Assert(videoPlayers.Length == 4);
 		Debug.Log($"Opening OSC server on port {listenPort}.");
 		osc.Open(listenPort);
+		// Print to log after 1 second
+		
 	}
 
     void OnDisable()
