@@ -483,7 +483,8 @@ namespace API_3DTI
         {
             AudioSettings.GetDSPBufferSize(out int dspBufferSize, out _);
 
-            if (path.Length == 0)
+            // absolute path indicates a file. Relative path indicates a resource and needs to be copied to file
+            if (path.Length == 0 || Path.IsPathRooted(path))
             {
                 Load3DTISpatializerBinary((int)role, path, AudioSettings.outputSampleRate, dspBufferSize);
             }

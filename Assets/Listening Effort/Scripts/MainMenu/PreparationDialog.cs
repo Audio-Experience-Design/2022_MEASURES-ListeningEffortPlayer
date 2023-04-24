@@ -20,15 +20,17 @@ public class PreparationDialog : MonoBehaviour
 
     public GameObject developerConsole;
 
-    public SpatializerResourceChecker customSpatializerBinaryChecker;
-
     private List<(Toggle toggle, string name)> reverbModels => new List<(Toggle toggle, string name)>
     {
         (reverbLargeToggle, "3DTI_BRIR_large"),
         (reverbMediumToggle, "3DTI_BRIR_medium"),
         (reverbSmallToggle, "3DTI_BRIR_small"),
-        (reverbCustomToggle, "Custom")
+        (reverbCustomToggle, SpatializerResourceChecker.customReverbModelName)
     };
+
+    public Toggle[] hrtfIRCToggles;
+    public Toggle[] hrtfLengthToggles;
+    public Toggle[] hrtfCustomToggles;
 
 
     public void Awake()
@@ -62,6 +64,12 @@ public class PreparationDialog : MonoBehaviour
         updateButtons();
 
 
+        developerConsoleToggle.isOn = developerConsole.activeSelf;
+        developerConsoleToggle.onValueChanged.AddListener(toggle =>
+        {
+            developerConsole.SetActive(toggle);
+        });
+
 
         // reverb toggles
         {
@@ -86,7 +94,7 @@ public class PreparationDialog : MonoBehaviour
             }
 
             // Find custom reverb
-            (string customReverbName, string customReverbPath) = customSpatializerBinaryChecker.findCustomReverb();
+            (string customReverbName, string customReverbPath) = SpatializerResourceChecker.findCustomReverb();
             Debug.Assert(customReverbName != null && customReverbPath != null);
             Debug.Assert((customReverbName == "") == (customReverbPath == ""));
             if (customReverbName == "")
@@ -109,11 +117,11 @@ public class PreparationDialog : MonoBehaviour
         }
 
 
-        developerConsoleToggle.isOn = developerConsole.activeSelf;
-        developerConsoleToggle.onValueChanged.AddListener(toggle =>
+        // HRTF toggles
         {
-            developerConsole.SetActive(toggle);
-        });
+
+        }
+
     }
 
     private void updateButtons()

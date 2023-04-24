@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class SpatializerResourceChecker : MonoBehaviour
+public static class SpatializerResourceChecker
 {
     public static string[] defaultReverbModelNames = new string[]
     {
@@ -13,7 +13,9 @@ public class SpatializerResourceChecker : MonoBehaviour
         "3DTI_BRIR_medium",
         "3DTI_BRIR_small",
     };
+    public static string customReverbModelName = "CUSTOM_REVERB_MODEL";
     public static string reverbModelDirectory => $"{Application.persistentDataPath}/Data/Reverb/BRIR";
+    public static string hrtfDirectory => $"{Application.persistentDataPath}/Data/HighQuality/HRTF";
 
     public static string sampleRateLabel {
         get { 
@@ -26,20 +28,9 @@ public class SpatializerResourceChecker : MonoBehaviour
         }
     }
     public static string customReverbSuffix => $"_{sampleRateLabel}Hz.3dti-brir";
+    public static string customHrtfSuffix => $"_{sampleRateLabel}Hz.3dti-hrtf";
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public (string name, string path) findCustomReverb()
+    public static (string name, string path) findCustomReverb()
     {
         string[] paths = System.IO.Directory.GetFiles(reverbModelDirectory);
         var defaultReverbPaths = defaultReverbModelNames.
