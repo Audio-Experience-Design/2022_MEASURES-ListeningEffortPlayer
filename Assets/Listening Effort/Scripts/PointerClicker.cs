@@ -56,16 +56,16 @@ public class PointerClicker : MonoBehaviour
 
         if (!wasTriggered && isTriggerPulled)
         {
-            rayOrigin = transform.position;
-            rayDirection = transform.forward;
-            Physics.Raycast(transform.position, transform.forward, out RaycastHit hit);
+            //rayOrigin = transform.position;
+            //rayDirection = transform.forward;
+            //Physics.Raycast(transform.position, transform.forward, out RaycastHit hit);
 
-            Debug.Log($"* Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
-            if (hit.collider && hit.transform.gameObject)
-            {
-                Debug.Log($"Hit {hit.transform.gameObject.name}.");
-                hit.transform.gameObject.GetComponent<Button>()?.onClick.Invoke();
-            }
+            //Debug.Log($"* Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
+            //if (hit.collider && hit.transform.gameObject)
+            //{
+            //    Debug.Log($"Hit {hit.transform.gameObject.name}.");
+            //    hit.transform.gameObject.GetComponent<Button>()?.onClick.Invoke();
+            //}
 
             List<UnityEngine.EventSystems.RaycastResult> results = new List<UnityEngine.EventSystems.RaycastResult>();
             ovrRaycaster.Raycast(null, results, new Ray(transform.position, transform.forward), false);
