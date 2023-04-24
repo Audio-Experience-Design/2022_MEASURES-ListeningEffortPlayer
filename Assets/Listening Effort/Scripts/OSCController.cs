@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityOSC;
@@ -14,6 +15,8 @@ public class OSCController : MonoBehaviour
 	private Transform[] videoPlayerPivotTransforms;
 	private Transform[] videoPlayerQuadTransforms;
 	[SerializeField] private ColorCalibrationSphere colorCalibrationSphere;
+	public AudioSource[] maskingAudioSources;
+	public AudioSource[] speechAudioSources;
 
 	public OSCSender oscSender;
 	public GameObject LoadingScreen;
@@ -115,11 +118,28 @@ public class OSCController : MonoBehaviour
 	private readonly MessageSpecification sendVideoNamesMessageSpecification = new MessageSpecification
 	{
 		address = "/send_video_names",
-
 	};
 
-	// This is used by OSCSender
-	public int GetIDForVideoPlayer(VideoPlayer player)
+	private readonly MessageSpecification speechAudioLevelMessageSpecification = new MessageSpecification
+	{
+		address = "/audio/level/speech",
+		arguments = new (System.Type, string)[]
+		{
+			(typeof(float), "Level of speech audio (0.0 - 1.0)"),
+		},
+	};
+
+    private readonly MessageSpecification maskingAudioLevelMessageSpecification = new MessageSpecification
+    {
+        address = "/audio/level/masking",
+        arguments = new (System.Type, string)[]
+        {
+            (typeof(float), "Level of masking audio (0.0 - 1.0)"),
+        },
+    };
+
+    // This is used by OSCSender
+    public int GetIDForVideoPlayer(VideoPlayer player)
 	{
 		//Debug.Assert(videoPlayers.Length == videoMessageSpecifications.Length);
 		for (int i = 0; i < videoPlayers.Length; i++)
@@ -157,6 +177,16 @@ public class OSCController : MonoBehaviour
 				Debug.Assert(videoPlayerQuadTransforms[i] != null);
 				Debug.Assert(videoPlayerPivotTransforms[i] != videoPlayerQuadTransforms[i]);
 			}
+			string cachedPosition = PlayerPrefs.GetString($"videoPosition[{i}]", "");
+			if (cachedPosition != "")
+			{
+				OSCMessage positionMessage = new OSCMessage(videoPositionMessageSpecification.address);
+				positionMessage.Append(i);
+				cachedPosition.Split(',').Skip(1).ToList().ForEach(x => positionMessage.Append(float.Parse(x)));
+				Debug.Assert(isMatch(positionMessage, videoPositionMessageSpecification));
+				Debug.Log($"Restoring position for video player {i}");
+				ProcessMessage(positionMessage);
+            }
 		}
 	}
 
@@ -344,6 +374,8 @@ public class OSCController : MonoBehaviour
 				videoPlayerQuadTransforms[i].localEulerAngles = new Vector3((float)message.Data[4], (float)message.Data[5], videoPlayerQuadTransforms[i].localEulerAngles.z);
 				videoPlayerQuadTransforms[i].localScale = new Vector3((float)message.Data[6], (float)message.Data[7], videoPlayerQuadTransforms[i].localScale.z);
 				Debug.Log($"Set position of video player {i}");
+				PlayerPrefs.SetString($"videoPosition[{i}]", string.Join(",", message.Data.Select(x => x.ToString())));
+				PlayerPrefs.Save();
 			}
 		}
 
@@ -377,6 +409,22 @@ public class OSCController : MonoBehaviour
         {
 			oscSender.SendVideoNames();
         }
+
+		else if (isMatch(message, maskingAudioLevelMessageSpecification))
+		{
+			foreach (AudioSource source in maskingAudioSources)
+			{
+				source.volume = Math.Clamp((float)message.Data[0], 0.0f, 1.0f);
+			}
+		}
+
+		else if (isMatch(message, speechAudioLevelMessageSpecification))
+		{
+			foreach (AudioSource source in speechAudioSources)
+			{
+				source.volume = Math.Clamp((float)message.Data[0], 0.00f, 1.0f);
+			}
+		}
 
 		else
 		{

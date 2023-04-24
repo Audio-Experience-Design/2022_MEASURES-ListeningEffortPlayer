@@ -431,6 +431,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f5a24a380916d14db9775daab4fe333, type: 3}
+--- !u!82 &165585585 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1077936151553975517, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 62584612}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &165716337
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,6 +913,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1077936151380930276, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
     type: 3}
   m_PrefabInstance: {fileID: 391633409}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &463930440 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 8287273603126790939, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1598546754504859959}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &627966069
 GameObject:
@@ -2234,9 +2246,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2ce1e98eeada27439bc9e4964af3181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DemoMaskingVideos: []
-  DemoSpeechVideos: []
-  DemoIdleVideos: []
+  DemoMaskingVideos:
+  - {fileID: 32900000, guid: ec15da24323884c468aa8bd723cd5b98, type: 3}
+  - {fileID: 32900000, guid: 34f4f1f4ffb0dad4cb87378f17c1f99a, type: 3}
+  - {fileID: 32900000, guid: 7f2078bcb6bf1984d8e2f3dededc8e42, type: 3}
+  DemoSpeechVideos:
+  - {fileID: 32900000, guid: 1750736bb16c4634f8bfa0f26dfde9a5, type: 3}
+  - {fileID: 32900000, guid: ef728d7057836094e9893c106de4fd8f, type: 3}
+  - {fileID: 32900000, guid: 83c3e8bafe85fa94594ddd172933e506, type: 3}
+  - {fileID: 32900000, guid: a26c0b221258d034881229f42c3a3624, type: 3}
+  DemoIdleVideos:
+  - {fileID: 32900000, guid: 0f577a3f683e02043b0ef7af6bb395e0, type: 3}
 --- !u!1 &905427546
 GameObject:
   m_ObjectHideFlags: 0
@@ -3303,6 +3323,12 @@ MonoBehaviour:
   m_TrackingType: 0
   m_UpdateType: 0
   m_UseRelativeTransform: 0
+--- !u!82 &1189762169 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 8287273603126790939, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1527822350}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1335158675
 GameObject:
   m_ObjectHideFlags: 0
@@ -3384,6 +3410,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb44e973b2e44c7ab4df9470e21402b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &1509881922 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1077936151553975517, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 373957181}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1527822350
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3551,6 +3583,15 @@ MonoBehaviour:
   - {fileID: 1598546754504859960}
   - {fileID: 1527822351}
   colorCalibrationSphere: {fileID: 1055803638}
+  maskingAudioSources:
+  - {fileID: 1985308838}
+  - {fileID: 1509881922}
+  - {fileID: 165585585}
+  - {fileID: 1600812348}
+  speechAudioSources:
+  - {fileID: 2123584743}
+  - {fileID: 463930440}
+  - {fileID: 1189762169}
   oscSender: {fileID: 0}
   LoadingScreen: {fileID: 782628375}
   cameraRigObject: {fileID: 1847974584}
@@ -3573,6 +3614,12 @@ MonoBehaviour:
   ClientIP: 127.0.0.1
   Port: 6789
   VideoCatalogue: {fileID: 833115702}
+--- !u!82 &1600812348 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1077936151553975517, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 391633409}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1832189893
 GameObject:
   m_ObjectHideFlags: 0
@@ -3896,6 +3943,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 105, z: 0}
+--- !u!82 &1985308838 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1077936151553975517, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1077936150732348467}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2002793601
 GameObject:
   m_ObjectHideFlags: 0
@@ -3942,6 +3995,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &2123584743 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 8287273603126790939, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 630814132}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2146942469
 GameObject:
   m_ObjectHideFlags: 0
