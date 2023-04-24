@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PointerClicker : MonoBehaviour
@@ -56,41 +57,45 @@ public class PointerClicker : MonoBehaviour
 
         if (!wasTriggered && isTriggerPulled)
         {
-            //rayOrigin = transform.position;
-            //rayDirection = transform.forward;
-            //Physics.Raycast(transform.position, transform.forward, out RaycastHit hit);
-
-            //Debug.Log($"* Ray cast from origin {rayOrigin} in direction {rayDirection} from {(isRightHandController ? "right" : "left")} hand.");
-            //if (hit.collider && hit.transform.gameObject)
-            //{
-            //    Debug.Log($"Hit {hit.transform.gameObject.name}.");
-            //    hit.transform.gameObject.GetComponent<Button>()?.onClick.Invoke();
-            //}
-
             List<UnityEngine.EventSystems.RaycastResult> results = new List<UnityEngine.EventSystems.RaycastResult>();
             ovrRaycaster.Raycast(null, results, new Ray(transform.position, transform.forward), false);
-            Debug.Log($"OVR raycast results count: {results.Count}");
+            Debug.Log($"OVR raycast results count: {results.Count}. {string.Join(", ", results.Select(r => r.gameObject.name))}");
+
             var buttons = results.Where(result => result.gameObject.GetComponent<Button>() != null).ToList();
             Debug.Log($"OVR raycast buttons count: {buttons.Count}");
             buttons.ForEach(result => result.gameObject.GetComponent<Button>().onClick.Invoke());
 
+            results.Where(result => result.gameObject.GetComponent<Dropdown>() != null).ToList().ForEach(result => result.gameObject.GetComponent<Dropdown>().Show());
 
+            //PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            //pointerEventData.button = PointerEventData.InputButton.Left;
+            var toggles = results
+                .Where(result => result.gameObject.GetComponent<Toggle>() != null)
+                .Select(result => result.gameObject.GetComponent<Toggle>())
+                .ToList();
+            Debug.Log($"OVR raycast toggle count: {toggles.Count}");
+
+
+            //.ForEach(toggle => toggle.OnSubmit(new BaseEventData(EventSystem.current)));
+            toggles.ForEach(toggle => toggle.isOn = !toggle.isOn);
+            //.ForEach(toggle => toggle.OnPointerClick(pointerEventData));
+            //.ForEach(toggle => toggle.);
         }
         //#endif
 
-        if (isTriggerPulled)
-        {
-            Debug.DrawRay(rayOrigin, rayDirection * 200_000, Color.yellow);
-        }
+        //if (isTriggerPulled)
+        //{
+        //    Debug.DrawRay(rayOrigin, rayDirection * 200_000, Color.yellow);
+        //}
 
-        if (isTriggerPulled && !wasTriggered)
-        {
-            Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger pulled", this);
-        }
-        else if (!isTriggerPulled && wasTriggered)
-        {
-            Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger released", this);
-        }
+        //if (isTriggerPulled && !wasTriggered)
+        //{
+        //    Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger pulled", this);
+        //}
+        //else if (!isTriggerPulled && wasTriggered)
+        //{
+        //    Debug.Log($"{(isRightHandController ? "Right" : "Left")} trigger released", this);
+        //}
 
         wasTriggered = isTriggerPulled;
     }

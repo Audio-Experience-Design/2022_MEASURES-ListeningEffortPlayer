@@ -2325,6 +2325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 960145990}
   - component: {fileID: 960145991}
+  - component: {fileID: 960145992}
   m_Layer: 0
   m_Name: 3DTI Toolkit
   m_TagString: Untagged
@@ -2399,6 +2400,18 @@ MonoBehaviour:
   - Data/Reverb/BRIR/3DTI_BRIR_large_44100Hz.3dti-brir.bytes
   - Data/Reverb/BRIR/3DTI_BRIR_large_48000Hz.3dti-brir.bytes
   - Data/Reverb/BRIR/3DTI_BRIR_large_96000Hz.3dti-brir.bytes
+--- !u!114 &960145992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960145989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 674f06d3261713041b7398193f28fdcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &996717271 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1077936151380930276, guid: 9ec944ba2c914254eb8b3f60d96df8cd,

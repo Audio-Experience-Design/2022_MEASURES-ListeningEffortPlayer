@@ -91,6 +91,7 @@ public class VideoChecker : MonoBehaviour
                 VideoPlayer player = gameObject.AddComponent<VideoPlayer>();
                 player.url = videoPath;
                 player.source = VideoSource.Url;
+                player.SetDirectAudioVolume(0, 0);
                 player.Prepare();
                 int timeLeft = 10;
                 while (!player.isPrepared && timeLeft > 0)
