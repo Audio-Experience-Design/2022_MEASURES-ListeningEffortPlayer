@@ -8029,7 +8029,7 @@ MonoBehaviour:
     Custom
     HRTF dir:
 
-    {HRTF_DIRECTORY}/<NAME>{CUSTOM_HRTF_SUFFIX}'
+    {HRTF_DIRECTORY}/<NAME>{HRTF_SUFFIX}'
 --- !u!222 &741017272
 CanvasRenderer:
   m_ObjectHideFlags: 0
