@@ -20,7 +20,7 @@ public class DisplayOSCIPAddress : MonoBehaviour
             .Where(ip => !(ip.ToString() == "127.0.0.1"))
             .Select(ip => ip.ToString())
             .Select(ipAddresses => $"{ipAddresses}:{OSCController.listenPort}")
-            .Aggregate((head, tail) => $"{head}\n{tail}");
+            .Aggregate((head, tail) => $"{head}, {tail}");
 
         targetText.text = targetText.text
             .Replace("{IP_ADDRESS}", $"{ipAddresses}");

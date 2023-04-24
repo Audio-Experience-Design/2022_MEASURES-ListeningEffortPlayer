@@ -28,9 +28,7 @@ public class PreparationDialog : MonoBehaviour
         (reverbCustomToggle, SpatializerResourceChecker.customReverbModelName)
     };
 
-    public Toggle[] hrtfIRCToggles;
-    public Toggle[] hrtfLengthToggles;
-    public Toggle[] hrtfCustomToggles;
+    public Toggle[] hrtfToggles;
 
 
     public void Awake()
@@ -69,6 +67,7 @@ public class PreparationDialog : MonoBehaviour
         {
             developerConsole.SetActive(toggle);
         });
+
 
 
         // reverb toggles
@@ -117,9 +116,42 @@ public class PreparationDialog : MonoBehaviour
         }
 
 
+
+
         // HRTF toggles
         {
+            (string name, string filename, string path)[] hrtfs = SpatializerResourceChecker.getHRTFs();
+            if (hrtfs.Length > hrtfToggles.Length)
+            {
+                Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
+            }
+            int N = Mathf.Min(hrtfs.Length, hrtfToggles.Length);
+            for (int i=0; i<N; i++)
+            {
+                hrtfToggles[i].enabled = true;
+                hrtfToggles[i].GetComponentInChildren<Text>().text = hrtfs[i].name;
+                string path = hrtfs[i].path;
+                hrtfToggles[i].onValueChanged.AddListener(isOn =>
+                {
+                    if (isOn)
+                    {
+                        PlayerPrefs.SetString("hrtf", path);
+                    }
+                });
+                if (PlayerPrefs.GetString("hrtf", "") == path)
+                {
+                    hrtfToggles[i].isOn = true;
+                }
+            }
+            for (int i=N; i<hrtfToggles.Length; i++)
+            {
+                hrtfToggles[i].gameObject.SetActive(false);
+            }
+        }
 
+        if (PlayerPrefs.GetString("hrtf","") == "")
+        {
+            hrtfToggles[0].isOn = true;
         }
 
     }

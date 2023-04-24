@@ -486,7 +486,11 @@ namespace API_3DTI
             // absolute path indicates a file. Relative path indicates a resource and needs to be copied to file
             if (path.Length == 0 || Path.IsPathRooted(path))
             {
-                Load3DTISpatializerBinary((int)role, path, AudioSettings.outputSampleRate, dspBufferSize);
+                if (!Load3DTISpatializerBinary((int)role, path, AudioSettings.outputSampleRate, dspBufferSize))
+                {
+                    Debug.LogError($"Failed to load Spatializer binary resource {path} for {role} at sample rate {AudioSettings.outputSampleRate}.");
+                    return false;
+                }
             }
             else if (!(SaveResourceAsFile(path, out string newPath) && Load3DTISpatializerBinary((int)role, newPath, AudioSettings.outputSampleRate, dspBufferSize)))
             {
