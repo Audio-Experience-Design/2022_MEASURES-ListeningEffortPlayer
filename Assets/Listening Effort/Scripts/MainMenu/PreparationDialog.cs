@@ -39,7 +39,7 @@ public class PreparationDialog : MonoBehaviour
             .Replace("{REVERB_DIRECTORY}", SpatializerResourceChecker.reverbModelDirectory)
             .Replace("{CUSTOM_REVERB_SUFFIX}", SpatializerResourceChecker.customReverbSuffix)
             .Replace("{HRTF_DIRECTORY}", SpatializerResourceChecker.hrtfDirectory)
-            .Replace("{HRTF_SUFFIX}", SpatializerResourceChecker.hrtfSuffix)
+            .Replace("{HRTF_SUFFIX}", $"({string.Join(" | ", SpatializerResourceChecker.hrtfSuffixes)})")
             ;
 
         videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons();

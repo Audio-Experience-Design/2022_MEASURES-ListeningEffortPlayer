@@ -20,7 +20,11 @@ public static class SpatializerResourceChecker
 
 
     public static string customReverbSuffix => $"_{sampleRateLabel}Hz.3dti-brir";
-    public static string hrtfSuffix => $"_{sampleRateLabel}Hz.3dti-hrtf";
+    public static string[] hrtfSuffixes => new string[]
+    {
+        $"_{sampleRateLabel}Hz.3dti-hrtf",
+        $"_{sampleRateLabel}Hz.sofa",
+        };
 
 
     public static string sampleRateLabel
@@ -61,14 +65,25 @@ public static class SpatializerResourceChecker
         //string hrtfResourceSuffix = hrtfSuffix + ".bytes";
         // LoadAll resource .name doesn't include the extra ".bytes" extension but Spatializer assumes it.
         string resourceDirectory = "Data/HighQuality/HRTF"; // this sits under a "resources" folder in assets
-        return Resources.LoadAll<TextAsset>(resourceDirectory)
-            .Where(x => x.name.EndsWith(hrtfSuffix))
-            .Select(x => (
-            Path.GetFileName(x.name).Substring("3DTI_HRTF_".Length, Path.GetFileName(x.name).Length - hrtfSuffix.Length),
-            Path.GetFileName(x.name) + ".bytes",
-            resourceDirectory + "/" + x.name + ".bytes"
-            ))
+        var textAssets = Resources.LoadAll<TextAsset>(resourceDirectory)
+            .Where(x => hrtfSuffixes.Any(suffix => x.name.EndsWith(suffix)))
             .ToArray();
+
+        var result = new List<(string name, string filename, string path)>();
+        foreach (TextAsset asset in textAssets)
+        {
+            foreach (string suffix in hrtfSuffixes)
+            {
+                if (asset.name.EndsWith (suffix))
+                {
+                    string filename = asset.name + ".bytes";
+                    string path = $"{resourceDirectory}/{asset.name}.bytes";
+                    string name = asset.name.Substring("3DTI_HRTF_".Length, asset.name.Length - suffix.Length);
+                    result.Add((name, filename, path));
+                }
+            }
+        }
+            return result.ToArray();
         // e.g. (3DTI_HRTF_IRC1032_128s, 3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes, Data/HighQuality/HRTF/3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes)
     }
 
@@ -81,13 +96,16 @@ public static class SpatializerResourceChecker
         {
             // Spatializer dumps its default HRTF into the folder so need to check against that.
             // when scanning against default hrtf filenames, we need to remove the extra .bytes extension that binary resources have.
-            if (path.EndsWith(hrtfSuffix) && defaultHRTFs.All(x => !path.EndsWith(Path.GetFileNameWithoutExtension(x.filename))))
+            foreach (string suffix in hrtfSuffixes)
             {
-                string filename = Path.GetFileName(path);
-                Debug.Assert(filename.EndsWith(hrtfSuffix));
-                string name = filename.Substring(0, filename.Length - hrtfSuffix.Length);
-                Debug.Log($"Found custom HRTF model {name} at {path}");
-                customHRTFs.Append((name, filename, path));
+                if (path.EndsWith(suffix) && defaultHRTFs.All(x => !path.EndsWith(Path.GetFileNameWithoutExtension(x.filename))))
+                {
+                    string filename = Path.GetFileName(path);
+                    Debug.Assert(filename.EndsWith(suffix));
+                    string name = filename.Substring(0, filename.Length - suffix.Length);
+                    Debug.Log($"Found custom HRTF model {name} at {path}");
+                    customHRTFs.Add((name, filename, path));
+                }
             }
         }
         return customHRTFs.Concat(defaultHRTFs).ToArray();
