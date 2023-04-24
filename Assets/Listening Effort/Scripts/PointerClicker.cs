@@ -31,21 +31,21 @@ public class PointerClicker : MonoBehaviour
         //pointer = this.transform;
     }
 
-    bool _temp = false;
-    bool _temp2 = false;
+    bool _wasRightTriggerPressed = false;
+    bool _wasLeftTriggerPressed = false;
     void Update()
     {
         bool rightclicked = Input.GetKey(RightTriggerCode);
-        if (isRightPicoControllerTriggered != _temp)
+        if (isRightPicoControllerTriggered != _wasRightTriggerPressed && isRightHandController)
         {
             Debug.Log($"rightClicked == {rightclicked}");
-            _temp = rightclicked;
+            _wasRightTriggerPressed = rightclicked;
         }
         bool leftClicked = Input.GetKey(LeftTriggerCode);
-        if (isLeftPicoControllerTriggered != _temp2)
+        if (isLeftPicoControllerTriggered != _wasLeftTriggerPressed && !isRightHandController)
         {
             Debug.Log($"leftClicked == {leftClicked}");
-            _temp2 = leftClicked;
+            _wasLeftTriggerPressed = leftClicked;
         }
     }
 

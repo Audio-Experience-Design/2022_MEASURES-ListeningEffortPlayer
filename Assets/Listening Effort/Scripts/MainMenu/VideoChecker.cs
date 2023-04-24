@@ -118,7 +118,7 @@ public class VideoChecker : MonoBehaviour
         }
         videosAreOK = failedVideoPaths.Count == 0 && videoCounts.All(i => i > 0);
         setStatus($"{(videosAreOK? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
-            videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a,b) => a + "\n" + b)
+            videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a,b) => a + " " + b)
             );
         isCheckingVideos = false;
     }
