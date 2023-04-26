@@ -68,9 +68,15 @@ public class PreparationDialog : MonoBehaviour
 
 
         developerConsoleToggle.isOn = developerConsole.activeSelf;
+        if (!PlayerPrefs.HasKey("developerConsole"))
+        {
+            PlayerPrefs.SetInt("developerConsole", developerConsole.activeSelf? 1 : 0);
+        }
         developerConsoleToggle.onValueChanged.AddListener(toggle =>
         {
             developerConsole.SetActive(toggle);
+            PlayerPrefs.SetInt("developerConsole", toggle ? 1 : 0);
+            PlayerPrefs.Save();
         });
 
 
@@ -105,7 +111,6 @@ public class PreparationDialog : MonoBehaviour
             Debug.Assert((customReverbName == "") == (customReverbPath == ""));
             if (customReverbName == "")
             {
-                Debug.Log("No custom reverb file found");
                 if (reverbCustomToggle.isOn)
                 {
                     reverbModels[0].toggle.isOn = true;
