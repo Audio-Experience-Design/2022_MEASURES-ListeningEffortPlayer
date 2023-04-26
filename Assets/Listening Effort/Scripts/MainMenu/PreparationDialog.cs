@@ -19,6 +19,7 @@ public class PreparationDialog : MonoBehaviour
     public Toggle reverbSmallToggle, reverbMediumToggle, reverbLargeToggle, reverbCustomToggle;
 
     public GameObject developerConsole;
+    public Text buildDateText;
 
     private List<(Toggle toggle, string name)> reverbModels => new List<(Toggle toggle, string name)>
     {
@@ -41,6 +42,7 @@ public class PreparationDialog : MonoBehaviour
             .Replace("{HRTF_DIRECTORY}", SpatializerResourceChecker.hrtfDirectory)
             .Replace("{HRTF_SUFFIX}", $"({string.Join(" | ", SpatializerResourceChecker.hrtfSuffixes)})")
             ;
+        buildDateText.text.Replace("{BUILD_DATE}", BuildInfo.BUILD_TIME);
 
         videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons();
         videoChecker.isCheckingVideosChanged += (sender, isChecking) => updateButtons();
@@ -123,6 +125,7 @@ public class PreparationDialog : MonoBehaviour
         // HRTF toggles
         {
             (string name, string filename, string path)[] hrtfs = SpatializerResourceChecker.getHRTFs();
+            Debug.Log($"Found {hrtfs.Length} HRTFs.");
             if (hrtfs.Length > hrtfToggles.Length)
             {
                 Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
