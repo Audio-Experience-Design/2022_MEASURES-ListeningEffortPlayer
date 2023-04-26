@@ -1,4 +1,5 @@
 using API_3DTI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ public class PreparationDialog : MonoBehaviour
     public Toggle[] hrtfToggles;
 
 
-    public void Awake()
+    public void Start()
     {
 
         loadingText.text = loadingText.text
@@ -42,7 +43,7 @@ public class PreparationDialog : MonoBehaviour
             .Replace("{HRTF_DIRECTORY}", SpatializerResourceChecker.hrtfDirectory)
             .Replace("{HRTF_SUFFIX}", $"({string.Join(" | ", SpatializerResourceChecker.hrtfSuffixes)})")
             ;
-        buildDateText.text.Replace("{BUILD_DATE}", BuildInfo.BUILD_TIME);
+        buildDateText.text = buildDateText.text.Replace("{BUILD_DATE}", BuildInfo.BUILD_TIME);
 
         videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons();
         videoChecker.isCheckingVideosChanged += (sender, isChecking) => updateButtons();
@@ -73,9 +74,10 @@ public class PreparationDialog : MonoBehaviour
         });
 
 
-
+        try
         // reverb toggles
         {
+            Debug.Log("Checking Reverb BRIRs");
             // confirm names match with those in CustomSpatializerBinaryChecker
             Debug.Assert(reverbModels.Take(3).Select(model => model.name).All(name => SpatializerResourceChecker.defaultReverbModelNames.Contains(name)));
 
@@ -97,20 +99,23 @@ public class PreparationDialog : MonoBehaviour
             }
 
             // Find custom reverb
+            Debug.Log("Searching for custom reverb file");
             (string customReverbName, string customReverbPath) = SpatializerResourceChecker.findCustomReverb();
             Debug.Assert(customReverbName != null && customReverbPath != null);
             Debug.Assert((customReverbName == "") == (customReverbPath == ""));
             if (customReverbName == "")
             {
+                Debug.Log("No custom reverb file found");
                 if (reverbCustomToggle.isOn)
                 {
                     reverbModels[0].toggle.isOn = true;
                 }
-                reverbCustomToggle.enabled = false;
+                reverbCustomToggle.gameObject.SetActive(false);
                 reverbCustomToggle.GetComponentInChildren<Text>().text = "None found";
             }
             else
             {
+                Debug.Log($"Found custom reverb file '{customReverbName}' at '{customReverbPath}'");
                 reverbCustomToggle.GetComponentInChildren<Text>().text = customReverbName;
                 reverbCustomToggle.enabled = true;
             }
@@ -118,12 +123,18 @@ public class PreparationDialog : MonoBehaviour
             PlayerPrefs.Save();
 
         }
-
+        catch (Exception e)
+        {
+            Debug.LogError($"Exception while setting up reverb toggles");
+            Debug.LogException(e);
+        }
 
 
 
         // HRTF toggles
+        try
         {
+            Debug.Log("Checking inbuilt and custom HRTFs");
             (string name, string filename, string path)[] hrtfs = SpatializerResourceChecker.getHRTFs();
             Debug.Log($"Found {hrtfs.Length} HRTFs.");
             if (hrtfs.Length > hrtfToggles.Length)
@@ -131,7 +142,7 @@ public class PreparationDialog : MonoBehaviour
                 Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
             }
             int N = Mathf.Min(hrtfs.Length, hrtfToggles.Length);
-            for (int i=0; i<N; i++)
+            for (int i = 0; i < N; i++)
             {
                 hrtfToggles[i].enabled = true;
                 hrtfToggles[i].GetComponentInChildren<Text>().text = hrtfs[i].name;
@@ -148,15 +159,19 @@ public class PreparationDialog : MonoBehaviour
                     hrtfToggles[i].isOn = true;
                 }
             }
-            for (int i=N; i<hrtfToggles.Length; i++)
+            for (int i = N; i < hrtfToggles.Length; i++)
             {
                 hrtfToggles[i].gameObject.SetActive(false);
             }
+            if (PlayerPrefs.GetString("hrtf", "") == "")
+            {
+                hrtfToggles[0].isOn = true;
+            }
         }
-
-        if (PlayerPrefs.GetString("hrtf","") == "")
+        catch (Exception e)
         {
-            hrtfToggles[0].isOn = true;
+            Debug.LogError($"Exception while setting up HRTF toggles");
+            Debug.LogException(e);
         }
 
     }
@@ -167,6 +182,6 @@ public class PreparationDialog : MonoBehaviour
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
     }
 
- 
+
 
 }

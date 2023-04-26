@@ -30,7 +30,7 @@ public class BuildDateProcessor : IPreprocessBuildWithReport
         sb.Append("public static class BuildInfo");
         sb.Append("{");
         sb.Append("public static string BUILD_TIME = \"");
-        sb.Append(DateTime.UtcNow.ToString());
+        sb.Append(DateTime.UtcNow.ToString("s", System.Globalization.CultureInfo.InvariantCulture));
         sb.Append("\";");
         sb.Append("}");
         using (System.IO.StreamWriter file =

@@ -42,6 +42,20 @@ public static class SpatializerResourceChecker
 
     public static (string name, string path) findCustomReverb()
     {
+        if (!Directory.Exists(reverbModelDirectory))
+        {
+            // create it - catch and print any errors
+            try
+            {
+                Directory.CreateDirectory(reverbModelDirectory);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to create reverb model directory {reverbModelDirectory}: {e.Message}");
+                return ("", "");
+            }
+        }
+
         string[] paths = System.IO.Directory.GetFiles(reverbModelDirectory);
         var defaultReverbPaths = defaultReverbModelNames.
             Select(modelName => $"{modelName}_{sampleRateLabel}Hz.3dti-brir");
@@ -56,7 +70,7 @@ public static class SpatializerResourceChecker
             }
         }
         Debug.Log("No custom reverb model found");
-        return ("","");
+        return ("", "");
     }
 
 
@@ -69,12 +83,14 @@ public static class SpatializerResourceChecker
             .Where(x => hrtfSuffixes.Any(suffix => x.name.EndsWith(suffix)))
             .ToArray();
 
+        Debug.Log($"Collating HRTF names and paths from {textAssets.Length} text assets");
+
         var result = new List<(string name, string filename, string path)>();
         foreach (TextAsset asset in textAssets)
         {
             foreach (string suffix in hrtfSuffixes)
             {
-                if (asset.name.EndsWith (suffix))
+                if (asset.name.EndsWith(suffix))
                 {
                     string filename = asset.name + ".bytes";
                     string path = $"{resourceDirectory}/{asset.name}.bytes";
@@ -83,17 +99,36 @@ public static class SpatializerResourceChecker
                 }
             }
         }
-            return result.ToArray();
+        return result.ToArray();
         // e.g. (3DTI_HRTF_IRC1032_128s, 3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes, Data/HighQuality/HRTF/3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes)
     }
 
     public static (string name, string filename, string path)[] getHRTFs()
     {
-        string[] paths = System.IO.Directory.GetFiles(hrtfDirectory);
+        Debug.Log($"Searching for built-in HRTFs");
         var defaultHRTFs = getDefaultHRTFNamesAndPaths().ToList();
+        Debug.Log($"Found {defaultHRTFs.Count} default HRTF models");
+
+        // create hrtfDirectory if it doesn't exist. on failure catch and print and errors
+        if (!Directory.Exists(hrtfDirectory))
+        {
+            try
+            {
+                Directory.CreateDirectory(hrtfDirectory);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to create HRTF directory {hrtfDirectory}: {e.Message}");
+                return defaultHRTFs.ToArray();
+            }
+        }
+
+
         var customHRTFs = new List<(string name, string filename, string path)>();
+        string[] paths = System.IO.Directory.GetFiles(hrtfDirectory);
         foreach (string path in paths)
         {
+            Debug.Log($"Searching for HRTFS in {path}");
             // Spatializer dumps its default HRTF into the folder so need to check against that.
             // when scanning against default hrtf filenames, we need to remove the extra .bytes extension that binary resources have.
             foreach (string suffix in hrtfSuffixes)
@@ -108,6 +143,7 @@ public static class SpatializerResourceChecker
                 }
             }
         }
+        Debug.Log($"Found {customHRTFs.Count} custom HRTF models");
         return customHRTFs.Concat(defaultHRTFs).ToArray();
     }
 }
