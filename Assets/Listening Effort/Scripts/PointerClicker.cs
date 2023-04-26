@@ -56,7 +56,7 @@ public class PointerClicker : MonoBehaviour
 
             var buttons = results
                 .Select(result => result.gameObject.GetComponent<Button>())
-                .Where(button => button?.isActiveAndEnabled ?? false).ToList();
+                .Where(button => (button?.isActiveAndEnabled & button?.interactable) ?? false).ToList();
             //Debug.Log($"OVR raycast buttons count: {buttons.Count}");
             buttons.ForEach(go => go.GetComponent<Button>().onClick.Invoke());
 
@@ -69,7 +69,7 @@ public class PointerClicker : MonoBehaviour
 
             var toggles = results
                 .Select(result => result.gameObject.GetComponent<Toggle>())
-                .Where(toggle => toggle?.isActiveAndEnabled ?? false)
+                .Where(toggle => (toggle?.isActiveAndEnabled & toggle?.interactable) ?? false)
                 .ToList();
             //Debug.Log($"OVR raycast toggle count: {toggles.Count}");
             toggles.ForEach(toggle => toggle.isOn = !toggle.isOn);
