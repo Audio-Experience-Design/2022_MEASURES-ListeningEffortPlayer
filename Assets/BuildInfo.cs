@@ -1,1 +1,1 @@
-public static class BuildInfo{public static string BUILD_TIME = "2023-04-26T17:30:50";}
+public static class BuildInfo{public static string BUILD_TIME = "BUILD_TIME_WILL_GO_HERE";}

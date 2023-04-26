@@ -63,3 +63,6 @@ Assets/Videos/
 UserSettings/AndroidLogcatSettings.asset
 UserSettings/Layouts/default-2021.dwlt
 UserSettings/EditorUserSettings.asset
+
+# Preprocessor overrides this file with the build time. It's tracked to kep the placeholder here but future reivisions should be ignored.
+Assets/BuildInfo.cs
