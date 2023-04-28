@@ -17,7 +17,7 @@ public class AutomatedUserTrialUIController : MonoBehaviour
         //var startRecordingButton = GetComponent<UIDocument>().rootVisualElement.Q<Button>("startRecordingButton");
         //var stopRecordingButton = GetComponent<UIDocument>().rootVisualElement.Q<Button>("stopRecordingButton");
 
-        startRecordingButton.onClick.AddListener(() => audioRecorder.StartRecording(fileName, 30));
+        startRecordingButton.onClick.AddListener(() => audioRecorder.StartRecording(fileName, 5));
         stopRecordingButton.onClick.AddListener(audioRecorder.StopRecording);
         audioRecorder.onRecordingFinished += (sender, filename) => statusText.text = $"{DateTime.Now.ToString()}: Finished recording to {fileName}";
     }

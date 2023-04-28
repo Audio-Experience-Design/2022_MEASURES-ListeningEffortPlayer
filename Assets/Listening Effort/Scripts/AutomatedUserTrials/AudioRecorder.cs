@@ -6,25 +6,36 @@ using System.Collections;
 using System.Net;
 using System;
 
+[RequireComponent(typeof(AudioSource))]
 public class AudioRecorder : MonoBehaviour
 {
-    private AudioClip recordedClip;
+    //private AudioClip recordedClip;
+    private AudioSource audioSource;
     public string subfolder = "Recordings";
-    private string microphone;
+    //private string microphone;
     private int frequency;
+    private bool hasMicrophone = false;
+
+    private string saveDirectory => Path.Combine(Application.persistentDataPath, subfolder);
+    private double recordingStartTime = -1f;
+    private bool isRecording => recordingStartTime > 0.0f;
+    private string recordingFilename;
+    private Coroutine waitForRecordingCoroutine;
 
     public event EventHandler<string> onRecordingFinished;
 
 
     public void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         Debug.Log($"Microphone devices: {Microphone.devices.Length}");
         foreach (string device in Microphone.devices)
             Debug.Log($"Device: {device}");
         if (Microphone.devices.Length > 0)
         {
-            microphone = Microphone.devices[0];
-            Microphone.GetDeviceCaps(microphone, out int minFreq, out int maxFreq);
+            //microphone = Microphone.devices[0];
+            hasMicrophone = true;
+            Microphone.GetDeviceCaps(null, out int minFreq, out int maxFreq);
             Debug.Log($"Using microphone: {Microphone.devices[0]}. Min freq {minFreq}, Max freq {maxFreq}");
             frequency = (maxFreq == 0 && minFreq == 0) ? 44100
                 : maxFreq >= 48000 ? 48000
@@ -37,63 +48,68 @@ public class AudioRecorder : MonoBehaviour
 
     public void StartRecording(string filename, int lengthSec)
     {
-        if (microphone == null)
+        Debug.Assert(filename != null && filename != "");
+        if (!hasMicrophone)
         {
             Debug.LogError($"Can't Start Recording as no microphone was found.");
         }
+        if (!Directory.Exists(saveDirectory))
+            Directory.CreateDirectory(saveDirectory);
 
         StopRecording();
-
-        string path = Path.Combine(Application.persistentDataPath, subfolder);
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
-        recordedClip = Microphone.Start(microphone, true, lengthSec, frequency);
-        if (recordedClip == null)
-        {
-            Debug.LogError($"Failed to open default microphone for recording");
-        }
-        else
-        {
-            StartCoroutine(WaitForRecording(filename, path));
-            Debug.Log($"Started recording {lengthSec} seconds of audio...");
-        }
+        recordingFilename = filename;
+        audioSource.clip = Microphone.Start(null, true, lengthSec, frequency);
+        Debug.Log($"Started recording {lengthSec} seconds of audio...");
+        recordingStartTime = AudioSettings.dspTime;
+        waitForRecordingCoroutine = StartCoroutine(WaitForRecording(lengthSec));
     }
 
-    private IEnumerator WaitForRecording(string filename, string path)
+    private IEnumerator WaitForRecording(double lengthSec)
     {
-        while (Microphone.IsRecording(microphone))
+        while (isRecording && AudioSettings.dspTime - recordingStartTime < lengthSec)
             yield return null;
-
-        int length = Microphone.GetPosition(microphone);
-        Microphone.End(microphone);
-        if (length == 0)
+        if (isRecording)
         {
-            Debug.LogWarning($"No audio was able to be recorded");
-        }
-        else
-        {
-            AudioClip trimmedClip = AudioClip.Create(recordedClip.name, length, recordedClip.channels, recordedClip.frequency, false);
-            float[] samples = new float[length * recordedClip.channels];
-            recordedClip.GetData(samples, 0);
-            trimmedClip.SetData(samples, 0);
-            SaveAudio(trimmedClip, filename, path);
-            onRecordingFinished?.Invoke(this, Path.Combine(path, filename));
+           Debug.Log($"Recording ending by timeout after {lengthSec}");
+            CloseRecording();
         }
     }
 
+    private void CloseRecording()
+    {
+        Microphone.End(null);
+        double length = Math.Max(AudioSettings.dspTime - recordingStartTime, (double) audioSource.clip.length);
+        Debug.Log($"{length} seconds recorded");
+        {
+            int lengthSamples = (int)(length * audioSource.clip.frequency);
+            AudioClip trimmedClip = AudioClip.Create(audioSource.clip.name, lengthSamples, audioSource.clip.channels, audioSource.clip.frequency, false);
+            float[] samples = new float[lengthSamples * audioSource.clip.channels];
+            audioSource.clip.GetData(samples, 0);
+            trimmedClip.SetData(samples, 0);
+            string savePath = Path.Combine(saveDirectory, recordingFilename);
+            SaveAudio(trimmedClip, savePath);
+            onRecordingFinished?.Invoke(this, savePath);
+        }
+    }
+
+    /// Warning: The saved file will still be of the requested length, but the remainder will be silence.
     public void StopRecording()
     {
-        if (Microphone.IsRecording(microphone))
-            Microphone.End(microphone);
+        Debug.Assert(isRecording == (waitForRecordingCoroutine != null));
+        if (isRecording)
+        {
+            Debug.Log($"Recording ending by StopRecording call.");
+            StopCoroutine(waitForRecordingCoroutine);
+            CloseRecording();
+        }
     }
 
-    private void SaveAudio(AudioClip clip, string filename, string path)
+    private void SaveAudio(AudioClip clip, string path)
     {
-        FileStream fileStream = File.Create(Path.Combine(path, filename));
+        FileStream fileStream = File.Create(path);
         byte[] audioBytes = WavUtility.FromAudioClip(clip);
         fileStream.Write(audioBytes, 0, audioBytes.Length);
         fileStream.Close();
-        Debug.Log($"Audio saved to {Path.Combine(path, filename)}");
+        Debug.Log($"Audio saved to {path}");
     }
 }
