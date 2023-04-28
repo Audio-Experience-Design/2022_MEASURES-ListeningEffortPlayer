@@ -67,6 +67,7 @@ public class PreparationDialog : MonoBehaviour
         updateButtons();
 
 
+        developerConsole.SetActive(PlayerPrefs.GetInt("developerConsole", 0) != 0);
         developerConsoleToggle.isOn = developerConsole.activeSelf;
         if (!PlayerPrefs.HasKey("developerConsole"))
         {

@@ -23,6 +23,8 @@ public class OSCSender : MonoBehaviour
 	private OSCController oscController;
 	private List<VideoPlayer> videoPlayersWithCallbacksRegistered = new List<VideoPlayer>();
 
+	private int numSendErrors = 0;
+
 	void Awake()
 	{
 		oscController = GetComponent<OSCController>();
@@ -186,8 +188,26 @@ public class OSCSender : MonoBehaviour
 		{
 			m.Append(argument);
 		}
-		oscClient.Send(m);
-		if (LogSentOscMessages)
+		// Send but catch an exception and if we're logging then print it to log
+		try
+		{
+            oscClient.Send(m);
+        }
+		catch (System.Exception e)
+		{
+			numSendErrors++;
+			if (LogSentOscMessages || numSendErrors < 5)
+			{
+				Debug.LogWarning(e);
+			}
+			else if (!LogSentOscMessages && numSendErrors == 5)
+			{
+				Debug.LogWarning($"No further OSC send errors will be logged.");
+			}
+		}
+
+
+        if (LogSentOscMessages)
 		{
 			Debug.Log($"Sent OSC to {currentClientIP}:{oscClient.Port}: {m.ToString()}");
 		}
