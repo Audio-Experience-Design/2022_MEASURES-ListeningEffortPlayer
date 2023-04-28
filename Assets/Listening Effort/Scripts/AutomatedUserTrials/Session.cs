@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine.UIElements;
 using YamlDotNet.RepresentationModel;
 
@@ -8,11 +9,11 @@ public class Session
 {
     public float SpeakerAmplitude { get; private set; }
     public string MaskingVideo { get; private set; }
-    public List<(float Position, float Amplitude)> Maskers { get; private set; }
+    public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
     public List<List<string>> Challenges { get; private set; }
 
-    public static Session LoadFromYaml(string yamlText)
+    public static Session LoadFromYaml(string yamlText, VideoCatalogue videoCatalogue)
     {
         try
         {
@@ -26,7 +27,7 @@ public class Session
             {
                 SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speakerAmplitude")].ToString()),
                 MaskingVideo = sessionNode.Children[new YamlScalarNode("masking_video")].ToString(),
-                Maskers = new List<(float Position, float Amplitude)>(),
+                Maskers = new List<(float Rotation, float Amplitude)>(),
                 IdleVideos = new List<string>(),
                 Challenges = new List<List<string>>()
             };
@@ -34,7 +35,7 @@ public class Session
             var maskersNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("maskers")];
             foreach (YamlMappingNode maskerNode in maskersNode)
             {
-                (float Position, float Amplitude) masker = (
+                (float Rotation, float Amplitude) masker = (
                     Convert.ToSingle(maskerNode.Children[new YamlScalarNode("position")].ToString()),
                     Convert.ToSingle(maskerNode.Children[new YamlScalarNode("amplitude")].ToString())
                 );
@@ -79,6 +80,16 @@ public class Session
             if (session.Challenges.Count == 0)
             {
                 throw new Exception("There must be at least one challenge.");
+            }
+
+            var videosMissingFromCatalogue = session.Challenges
+                .SelectMany(subList => subList)
+                .Concat(session.IdleVideos)
+                .Append(session.MaskingVideo)
+                .Where(video => !videoCatalogue.Contains(video));
+            if (videosMissingFromCatalogue.Count() > 0)
+            {
+                throw new Exception($"The following videos are missing from the catalogue: {string.Join(", ", videosMissingFromCatalogue)}");
             }
 
             return session;

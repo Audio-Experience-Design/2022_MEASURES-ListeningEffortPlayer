@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -133,4 +134,28 @@ public class VideoCatalogue : MonoBehaviour
         return null;
     }
 
+    public void LoadVideoIntoPlayer(string name, VideoPlayer player)
+    {
+        if (IsUsingUserVideos)
+        {
+            string url = GetURL(name);
+            if (url == null)
+            {
+                throw new Exception($"VideoCatalogue.LoadVideoIntoPlayer: No video with name {name}.");
+            }
+            player.source = VideoSource.Url;
+            player.url = url;
+        }
+        else
+        {
+            VideoClip clip = GetClip(name);
+            if (clip == null)
+            {
+                throw new Exception($"VideoCatalogue.LoadVideoIntoPlayer: No video with name {name}.");
+            }
+            player.source = VideoSource.VideoClip;
+            player.clip = clip;
+        }
+        player.Prepare();
+    }
 }

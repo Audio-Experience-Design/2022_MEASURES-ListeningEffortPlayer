@@ -2,13 +2,13 @@ session:
   speakerAmplitude: 1.0
   masking_video: "Condition_1.mp4"
   maskers:
-    - position: -135.0
+    - rotation: -135.0
       amplitude: 1.0
-    - position: -45.0
+    - rotation: -45.0
       amplitude: 1.0
-    - position: 45.0
+    - rotation: 45.0
       amplitude: 1.0
-    - position: 135.0
+    - rotation: 135.0
       amplitude: 1.0
   idle_videos:
     - "T1_Idling.mp4"
