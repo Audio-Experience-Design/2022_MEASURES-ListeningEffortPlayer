@@ -22,7 +22,7 @@ public class AudioRecorder : MonoBehaviour
     private string recordingFilename;
     private Coroutine waitForRecordingCoroutine;
 
-    public event EventHandler<string> onRecordingFinished;
+    public event EventHandler<string> recordingFinished;
 
 
     public void Start()
@@ -88,7 +88,7 @@ public class AudioRecorder : MonoBehaviour
             trimmedClip.SetData(samples, 0);
             string savePath = Path.Combine(saveDirectory, recordingFilename);
             SaveAudio(trimmedClip, savePath);
-            onRecordingFinished?.Invoke(this, savePath);
+            recordingFinished?.Invoke(this, savePath);
         }
     }
 

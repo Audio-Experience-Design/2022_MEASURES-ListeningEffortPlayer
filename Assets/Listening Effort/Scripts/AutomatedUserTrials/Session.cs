@@ -7,7 +7,9 @@ using YamlDotNet.RepresentationModel;
 
 public class Session
 {
+    public string Name { get; private set; }
     public float SpeakerAmplitude { get; private set; }
+    public int MaximumRecordingDuration { get; private set; }
     public string MaskingVideo { get; private set; }
     public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
@@ -25,12 +27,18 @@ public class Session
 
             Session session = new Session
             {
+                Name = sessionNode.Children[new YamlScalarNode("name")].ToString(),
                 SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speakerAmplitude")].ToString()),
+                MaximumRecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("maximumRecordingDuration")].ToString()),
                 MaskingVideo = sessionNode.Children[new YamlScalarNode("masking_video")].ToString(),
                 Maskers = new List<(float Rotation, float Amplitude)>(),
                 IdleVideos = new List<string>(),
                 Challenges = new List<List<string>>()
             };
+            if (session.Name == "")
+            {
+                session.Name = "(untitled)";
+            }
 
             var maskersNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("maskers")];
             foreach (YamlMappingNode maskerNode in maskersNode)
@@ -92,6 +100,8 @@ public class Session
                 throw new Exception($"The following videos are missing from the catalogue: {string.Join(", ", videosMissingFromCatalogue)}");
             }
 
+            Debug.Assert(Invariant());
+
             return session;
         }
         catch (Exception ex)
@@ -100,7 +110,7 @@ public class Session
         }
     }
 
-    public bool IsValid()
+    public bool Invariant()
     {
         if (SpeakerAmplitude <= 0 || string.IsNullOrEmpty(MaskingVideo) || Maskers == null || IdleVideos == null || Challenges == null)
         {

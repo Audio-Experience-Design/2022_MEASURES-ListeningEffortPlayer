@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.Timeline;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Video;
@@ -35,6 +37,7 @@ public class VideoManager : MonoBehaviour
     public VideoPlayer player;
     public AudioSource audioSource => player.GetComponentInChildren<AudioSource>();
 
+    public event EventHandler playbackFinished;
 
     void Awake()
     {
@@ -87,12 +90,14 @@ public class VideoManager : MonoBehaviour
             if (!player.isLooping)
             {
                 player.Stop();
+                playbackFinished?.Invoke(this, new EventArgs());
                 bool isIdleVideoPlaying = StartIdleVideo();
                 if (!isIdleVideoPlaying && meshRenderer != null)
                 {
                     meshRenderer.enabled = false;
                 }
             }
+            
         };
 
         if (player.url != "")
