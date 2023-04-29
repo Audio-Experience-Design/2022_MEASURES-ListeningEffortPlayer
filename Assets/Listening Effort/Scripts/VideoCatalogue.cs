@@ -110,7 +110,7 @@ public class VideoCatalogue : MonoBehaviour
     {
         foreach (VideoClip[] clips in new VideoClip[][] { DemoMaskingVideos, DemoSpeechVideos, DemoIdleVideos })
         {
-            VideoClip c = clips.FirstOrDefault(clip => clip.name == name);
+            VideoClip c = clips.FirstOrDefault(clip => clip.name == name || $"{clip.name}.mp4" == name);
             if (c != null)
             {
                 return c;

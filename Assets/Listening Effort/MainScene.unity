@@ -1007,6 +1007,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279107960}
   m_CullTransparentMesh: 1
+--- !u!1 &346900583 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1077936151380930277, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1077936150732348467}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &373957181
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1086,6 +1092,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1077936151380930276, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
     type: 3}
   m_PrefabInstance: {fileID: 373957181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &382850587 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1077936151380930277, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 391633409}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &391633409
 PrefabInstance:
@@ -1444,6 +1456,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1da0b0b99a3576e4bab6e13bd40b6586, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoCatalogue: {fileID: 833115702}
+  skyboxVideoPlayer: {fileID: 165716338}
+  videoManagers:
+  - {fileID: 1674470798}
+  - {fileID: 1598546754504859962}
+  - {fileID: 1527822353}
+  babblePrefabs:
+  - {fileID: 346900583}
+  - {fileID: 786166360}
+  - {fileID: 919157241}
+  - {fileID: 382850587}
+  statusText: {fileID: 0}
+  startButton: {fileID: 0}
+  recordResponseButton: {fileID: 0}
+  continueButton: {fileID: 0}
 --- !u!1 &627966069
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2281,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
+--- !u!1 &786166360 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1077936151380930277, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 373957181}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &786235060
 GameObject:
   m_ObjectHideFlags: 0
@@ -3255,6 +3288,12 @@ MonoBehaviour:
     OcumenLicense: 
     PopupLicenseValidationErrors: 0
     LicenseAsset: {fileID: 0}
+--- !u!1 &919157241 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1077936151380930277, guid: 9ec944ba2c914254eb8b3f60d96df8cd,
+    type: 3}
+  m_PrefabInstance: {fileID: 62584612}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &960145989
 GameObject:
   m_ObjectHideFlags: 0
@@ -4936,6 +4975,18 @@ VideoPlayer:
     type: 3}
   m_PrefabInstance: {fileID: 1527822350}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1527822353 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1527822350}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c551a51d9274f61b361f58c3e7571c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1545996637
 GameObject:
   m_ObjectHideFlags: 0
@@ -5228,6 +5279,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1657721150}
   m_CullTransparentMesh: 1
+--- !u!114 &1674470798 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 630814132}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c551a51d9274f61b361f58c3e7571c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1801491688
 GameObject:
   m_ObjectHideFlags: 0
@@ -6295,3 +6358,15 @@ VideoPlayer:
     type: 3}
   m_PrefabInstance: {fileID: 1598546754504859959}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1598546754504859962 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1598546754056605565, guid: 6c978cd6c4019c54ba1c44950616850d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1598546754504859959}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83c551a51d9274f61b361f58c3e7571c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
