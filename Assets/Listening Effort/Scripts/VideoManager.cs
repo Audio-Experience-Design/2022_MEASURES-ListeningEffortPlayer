@@ -132,6 +132,15 @@ public class VideoManager : MonoBehaviour
         Debug.Assert(audioSource.spatialize == true);
     }
 
+    public void StopVideo()
+    {
+        player.Stop();
+        if (meshRenderer != null)
+        {
+            meshRenderer.enabled = false;
+        }
+    }
+
     private void OnDestroy()
     {
         if (renderTexture != null)
