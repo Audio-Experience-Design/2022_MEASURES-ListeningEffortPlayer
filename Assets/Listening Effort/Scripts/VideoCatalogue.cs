@@ -8,6 +8,14 @@ using UnityEngine;
 using UnityEngine.Video;
 using Debug = UnityEngine.Debug;
 
+//public enum VideoType
+//{
+//    Masking,
+//    Speech,
+//    Idle,
+//    Invalid,
+//}
+
 public class VideoCatalogue : MonoBehaviour
 {
     public VideoClip[] DemoMaskingVideos;
@@ -58,6 +66,48 @@ public class VideoCatalogue : MonoBehaviour
             };
         }
     }
+
+    //public VideoType getType(string videoName)
+    //{
+    //    if (IsUsingUserVideos)
+    //    {
+    //        if (UserMaskingVideos.ContainsKey(name))
+    //        {
+    //            return VideoType.Masking;
+    //        }
+    //        else if (UserSpeechVideos.ContainsKey(name))
+    //        {
+    //            return VideoType.Speech;
+    //        }
+    //        else if (UserIdleVideos.ContainsKey(name))
+    //        {
+    //            return VideoType.Idle;
+    //        }
+    //        else
+    //        {
+    //            throw new Exception($"Unrecognised video name {name}");
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (DemoMaskingVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
+    //        {
+    //            return VideoType.Masking;
+    //        }
+    //        else if (DemoSpeechVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
+    //        {
+    //            return VideoType.Speech;
+    //        }
+    //        else if (DemoIdleVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
+    //        {
+    //            return VideoType.Idle;
+    //        }
+    //        else
+    //        {
+    //            throw new Exception($"Unrecognised video name {name}");
+    //        }
+    //    }
+    //}
 
     public void Start()
     {

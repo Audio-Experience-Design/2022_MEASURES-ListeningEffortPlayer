@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pico.Platform;
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Video;
@@ -296,17 +297,15 @@ public class OSCController : MonoBehaviour
 			{
 				var videoManager = videoPlayers[i].GetComponent<VideoManager>();
 				var catalogue = oscSender.VideoCatalogue;
-				if (catalogue.IsUsingUserVideos)
+				string idleVideoName = (string)message.Data[1];
+                if (catalogue.Contains(idleVideoName))
 				{
-					videoManager.IdleVideoURL = catalogue.GetURL((string)message.Data[1]);
-				}
+                    videoManager.idleVideoName = idleVideoName;
+					videoManager.StartIdleVideo();
+                }
 				else
 				{
-					videoManager.IdleVideoClip = catalogue.GetClip((string)message.Data[1]);
-                }
-                if (!videoPlayers[i].isPlaying)
-				{
-					videoManager.StartIdleVideo();
+					Debug.LogError($"{message.Address} message received with unrecognised video name: {idleVideoName}");
 				}
 			}
 		}

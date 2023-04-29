@@ -32,7 +32,7 @@ public class SessionController : MonoBehaviour
     {
         Debug.Log($"Starting automated trial session");
         
-        // TODO: Set volume of video players
+        videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
 
         videoCatalogue.SetPlayerSource(skyboxVideoPlayer, session.MaskingVideo);
         skyboxVideoPlayer.Play();
