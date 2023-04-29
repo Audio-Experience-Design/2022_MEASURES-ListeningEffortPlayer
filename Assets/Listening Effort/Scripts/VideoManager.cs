@@ -4,10 +4,11 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Video;
+using UnityOSC;
 
 public class VideoManager : MonoBehaviour
 {
-	public string VideoPath;
+	//public string VideoPath;
 	[HideInInspector]
 	public string IdleVideoURL;
 	[HideInInspector]
@@ -32,15 +33,23 @@ public class VideoManager : MonoBehaviour
 
 	private MeshRenderer meshRenderer;
 
+	private VideoCatalogue videoCatalogue;
+	private VideoPlayer player;
+
 	void Awake()
 	{
 		meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-		VideoPlayer player = GetComponent<VideoPlayer>();
-		if (VideoPath != "")
+		videoCatalogue = FindAnyObjectByType<VideoCatalogue>();
+		if (videoCatalogue == null)
 		{
-			player.url = VideoPath;
+			throw new System.Exception("Failed to find VideoCatalogue instances");
 		}
+
+		player = GetComponent<VideoPlayer>();
+		//if (VideoPath != "")
+		//{
+		//	player.url = VideoPath;
+		//}
 
 		player.prepareCompleted += (source) =>
 		{
@@ -99,7 +108,6 @@ public class VideoManager : MonoBehaviour
 
 	public bool StartIdleVideo()
 	{
-        VideoPlayer player = GetComponent<VideoPlayer>();
         if (IdleVideoClip != null)
 		{
             player.clip = IdleVideoClip;
@@ -123,6 +131,22 @@ public class VideoManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	///  
+	/// </summary>
+	/// <param name="name">Refers to a name in the VideoCatalogue</param>
+	public void PlayVideo(string videoName)
+	{
+        player.Stop();
+		videoCatalogue.SetPlayerSource(player, videoName);
+        player.SetTargetAudioSource(0, player.GetComponentInChildren<AudioSource>());
+        player.isLooping = false;
+        player.Prepare();
+        // player will play automatically due to onPrepared callback
+        Debug.Assert(player.GetComponentInChildren<AudioSource>() == player.GetTargetAudioSource(0));
+        Debug.Assert(player.GetComponentInChildren<AudioSource>().spatialize == true);
+    }
+
 	private void OnDestroy()
 	{
 		if (renderTexture != null)
@@ -132,15 +156,5 @@ public class VideoManager : MonoBehaviour
 		}
 	}
 
-	// Start is called before the first frame update
-	void Start()
-	{
-
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
+	
 }

@@ -36,7 +36,7 @@ public class Session
             foreach (YamlMappingNode maskerNode in maskersNode)
             {
                 (float Rotation, float Amplitude) masker = (
-                    Convert.ToSingle(maskerNode.Children[new YamlScalarNode("position")].ToString()),
+                    Convert.ToSingle(maskerNode.Children[new YamlScalarNode("rotation")].ToString()),
                     Convert.ToSingle(maskerNode.Children[new YamlScalarNode("amplitude")].ToString())
                 );
                 if (masker.Amplitude < 0.0f || 1.0f < masker.Amplitude)

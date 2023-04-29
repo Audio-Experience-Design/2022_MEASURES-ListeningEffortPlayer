@@ -34,7 +34,8 @@ public class SessionController : MonoBehaviour
         
         // TODO: Set volume of video players
 
-        videoCatalogue.LoadVideoIntoPlayer(session.MaskingVideo, skyboxVideoPlayer);
+        videoCatalogue.SetPlayerSource(skyboxVideoPlayer, session.MaskingVideo);
+        skyboxVideoPlayer.Play();
         
         if (session.Maskers.Count() > babblePrefabs.Count())
         {

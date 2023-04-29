@@ -134,7 +134,7 @@ public class VideoCatalogue : MonoBehaviour
         return null;
     }
 
-    public void LoadVideoIntoPlayer(string name, VideoPlayer player)
+    public void SetPlayerSource(VideoPlayer player, string name)
     {
         if (IsUsingUserVideos)
         {
@@ -156,6 +156,5 @@ public class VideoCatalogue : MonoBehaviour
             player.source = VideoSource.VideoClip;
             player.clip = clip;
         }
-        player.Prepare();
     }
 }

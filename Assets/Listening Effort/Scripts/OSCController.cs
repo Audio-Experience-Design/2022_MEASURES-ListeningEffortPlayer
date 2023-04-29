@@ -275,26 +275,8 @@ public class OSCController : MonoBehaviour
             }
 			else
 			{
-				videoPlayers[i].Stop();
-				//videoPlayers[i].url = (string)message.Data[1];
-				if (oscSender.VideoCatalogue.IsUsingUserVideos)
-				{
-					videoPlayers[i].url = oscSender.VideoCatalogue.GetURL(videoName);
-					videoPlayers[i].source = VideoSource.Url;
-				}
-				else
-				{
-                    videoPlayers[i].clip = oscSender.VideoCatalogue.GetClip(videoName);
-					videoPlayers[i].source = VideoSource.VideoClip;
-                }
-                videoPlayers[i].SetTargetAudioSource(0, videoPlayers[i].GetComponentInChildren<AudioSource>());
-                videoPlayers[i].isLooping = false;
-				videoPlayers[i].Prepare();
-				//videoPlayers[i].Play();
-				// videoPlayers[i] will play automatically due to VideoController
+				videoPlayers[i].GetComponent<VideoManager>().PlayVideo(videoName);
 				Debug.Log($"{message.Address} set video player {i} to {(string)message.Data[1]}");
-                Debug.Assert(videoPlayers[i].GetComponentInChildren<AudioSource>() == videoPlayers[i].GetTargetAudioSource(0));
-				Debug.Assert(videoPlayers[i].GetComponentInChildren<AudioSource>().spatialize == true);
             }
         }
 
