@@ -1,16 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
+using UnityEditor.Purchasing;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VFX;
 using UnityEngine.Video;
+using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
 
 public class SessionController : MonoBehaviour
 {
-    Session session;
+    public Session session { get; private set; }
 
     public VideoCatalogue videoCatalogue;
     public AudioRecorder audioRecorder;
@@ -19,26 +24,42 @@ public class SessionController : MonoBehaviour
     public VideoManager[] videoManagers;
     public GameObject[] babblePrefabs;
 
-    public Text statusText;
-    public Button startButton;
-    public Button recordResponseButton;
-    public Button continueButton;
-
     public event EventHandler<State> stateChanged;
-    /// current number (0 indexed), total number
-    public event EventHandler<(int current, int total)> challengeNumberChanged;
+    /// current number (0 indexed), current label (1 indexed), total number
+    public event EventHandler<(int current, string currentLabel, int total)> challengeNumberChanged;
 
+    struct SessionEventLogEntry
+    {
+        public string Timestamp { get; set; }
+        public string SessionTime { get; set; }
+        public string EventName { get; set; }
+        public string ChallengeNumber { get; set; }
+        public string LeftVideo { get; set; }
+        public string MiddleVideo { get; set; }
+        public string RightVideo { get; set; }
+        public string UserResponseAudioFile { get; set; }
+        //public float headPositionEulerX { get; set; }
+        //public float headPositionEulerY { get; set; }
+        //public float headPositionEulerZ { get; set; }
+        //public float leftPupilPositionX { get; set; }
+        //public float leftPupilPositionY { get; set; }
+        //public float rightPupilPositionX { get; set; }
+        //public float rightPupilPositionY { get; set; } 
+        //public float leftPupilDiameterMm { get; set; }
+        //public float rightPupilDiameterMm { get; set; }
+
+    }
     public enum State
     {
-        NotYetLoaded,
-        WaitingToStart,
+        LoadingSession,
+        WaitingForUserToStartChallenge,
+        UserReadyToStartChallenge,
         PlayingVideo,
         RecordingUserResponse,
-        WaitingForUserToContinue,
-        UserRequestedToContinue,
+        AudioRecordingComplete,
         Completed,
     }
-    private State state = State.NotYetLoaded;
+    public State state { get; private set; } = State.LoadingSession;
     private int numVideosPlaying = 0;
 
     private void Start()
@@ -49,7 +70,7 @@ public class SessionController : MonoBehaviour
         Debug.Assert(videoManagers.Count() == 3);
         Debug.Log($"Loaded SampleAutomatedSession.yaml");
 
-        for (int i=0; i<3; i++)
+        for (int i = 0; i < 3; i++)
         {
             videoManagers[i].playbackFinished += (_, _) =>
             {
@@ -57,11 +78,11 @@ public class SessionController : MonoBehaviour
                 Debug.Assert(0 <= numVideosPlaying || numVideosPlaying < 3);
             };
         }
-        audioRecorder.recordingFinished => (_,_) =>
+        audioRecorder.recordingFinished += (_, _) =>
         {
             Debug.Assert(state == State.RecordingUserResponse);
-            advanceState(State.WaitingForUserToContinue);
-        }
+            advanceStateTo(State.AudioRecordingComplete);
+        };
     }
 
     private void setState(State state)
@@ -71,36 +92,65 @@ public class SessionController : MonoBehaviour
         stateChanged?.Invoke(this, state);
     }
 
-    public void advanceState(State expectedState)
+    public void onUserReadyToContinue()
+    {
+        Debug.Assert(state == State.WaitingForUserToStartChallenge);
+        advanceStateTo(State.UserReadyToStartChallenge);
+    }
+
+    public void onUserReadyToStopRecording()
+    {
+        Debug.Assert(state == State.RecordingUserResponse);
+        Debug.Assert(audioRecorder.isRecording);
+        audioRecorder.StopRecording();
+        
+    }
+
+    private void advanceStateTo(State expectedNewState)
     {
         switch (state)
         {
-            case State.NotYetLoaded:
-                throw new Exception($"advanceState called before SessionController loaded");
-            case State.WaitingToStart:
+            case State.LoadingSession:
+                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenge || expectedNewState == State.Completed);
+                state = expectedNewState; break;
+            case State.WaitingForUserToStartChallenge:
+                state = State.UserReadyToStartChallenge; break;
+            case State.UserReadyToStartChallenge:
                 state = State.PlayingVideo; break;
             case State.PlayingVideo:
                 state = State.RecordingUserResponse; break;
             case State.RecordingUserResponse:
-                state = State.WaitingForUserToContinue; break;
-            case State.UserRequestedToContinue:
-                state = State.WaitingForUserToContinue;
-                break;
+                state = State.AudioRecordingComplete; break;
+            case State.AudioRecordingComplete:
+                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenge || expectedNewState == State.Completed);
+                state = expectedNewState; break;
             case State.Completed:
                 throw new Exception($"Cannot advance state as session has completed.");
         }
-        if (state != expectedState)
+        if (state != expectedNewState)
         {
-            throw new Exception($"Unexpected state change. Expected state {expectedState}. Actual state {state}.");
+            Debug.LogWarning($"Unexpected state change. Expected state {expectedNewState}. Actual state {state}.");
         }
     }
+
+
 
     public IEnumerator StartSession()
     {
         Debug.Log($"Starting automated trial session: {session.Name}");
+        setState(State.LoadingSession);
 
-        string timestamp = localDateTime.ToString("yyyy-MM-dd_HH-mm-ss");
-        audioRecorder.subfolder = $"{timestamp} {session.Name}";
+        DateTime sessionStartTimeUTC = DateTime.UtcNow;
+        string localTimestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        string subjectLabel = PlayerPrefs.GetString("subjectLabel", "");
+        string sessionLabel = $"{localTimestamp}_{session.Name}{(subjectLabel != "" ? "_" : "")}{subjectLabel}";
+        audioRecorder.subfolder = sessionLabel;
+        string sessionFolder = Path.Join(Application.persistentDataPath, sessionLabel);
+        Directory.CreateDirectory(sessionFolder);
+        File.WriteAllText(Path.Join(sessionFolder, "session.yaml"), localTimestamp);
+
+        using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}.csv"), true, Encoding.UTF8);
+
 
         // Speaker Amplitude
         videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
@@ -130,19 +180,42 @@ public class SessionController : MonoBehaviour
             videoManagers[i].idleVideoName = session.IdleVideos[i];
         }
 
-        setState(State.WaitingToStart);
-
-        while (state == State.WaitingToStart)
+        LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
         {
-            yield return null;
-        }
+            Timestamp = LogUtilities.localTimestamp(),
+            SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+            EventName = "Trial started",
+        });
+
 
         for (int i = 0; i < session.Maskers.Count(); i++)
         {
+            advanceStateTo(State.WaitingForUserToStartChallenge);
+
+            while (state == State.WaitingForUserToStartChallenge)
+            {
+                yield return null;
+            }
+
+            Debug.Assert(state == State.UserReadyToStartChallenge);
+
             string challengeLabel = (i + 1).ToString();
-            Debug.Assert(state == State.PlayingVideo);
+            challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Maskers.Count()));
             Debug.Assert(numVideosPlaying == 0);
-            for (int k=0; k<3; k++)
+
+            advanceStateTo(State.PlayingVideo);
+
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Playing videos",
+                ChallengeNumber = challengeLabel,
+                LeftVideo = session.Challenges[i][0],
+                MiddleVideo = session.Challenges[i][1],
+                RightVideo = session.Challenges[i][2],
+            });
+            for (int k = 0; k < 3; k++)
             {
                 numVideosPlaying++;
                 videoManagers[k].PlayVideo(session.Challenges[i][k]);
@@ -151,17 +224,50 @@ public class SessionController : MonoBehaviour
             {
                 yield return null;
             }
-            audioRecorder.StartRecording($"{timestamp}_{i}.wav", session.MaximumRecordingDuration);
-            setState(State.RecordingUserResponse);
+
+            advanceStateTo(State.RecordingUserResponse);
+
+            string userResponseAudioFile = $"{sessionLabel}_{i:000}.wav";
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Recording response",
+                ChallengeNumber = challengeLabel,
+                LeftVideo = session.Challenges[i][0],
+                MiddleVideo = session.Challenges[i][1],
+                RightVideo = session.Challenges[i][2],
+            });
+            audioRecorder.StartRecording(userResponseAudioFile, session.MaximumRecordingDuration);
             while (state == State.RecordingUserResponse)
             {
                 yield return null;
             }
 
-            // CONTINUE FROM HERE: LOG THE DATA, CARRY ON. THEN HOOK UP THE UI
+            Debug.Assert(state == State.AudioRecordingComplete);
+
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Response received",
+                ChallengeNumber = challengeLabel,
+                LeftVideo = session.Challenges[i][0],
+                MiddleVideo = session.Challenges[i][1],
+                RightVideo = session.Challenges[i][2],
+                UserResponseAudioFile = userResponseAudioFile,
+            });
         }
 
+        advanceStateTo(State.Completed);
 
-
+        LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+        {
+            Timestamp = LogUtilities.localTimestamp(),
+            SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+            EventName = "Trial completed",
+        });
     }
+
+
 }

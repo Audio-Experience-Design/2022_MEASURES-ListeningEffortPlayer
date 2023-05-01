@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 using YamlDotNet.RepresentationModel;
 
@@ -14,6 +15,7 @@ public class Session
     public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
     public List<List<string>> Challenges { get; private set; }
+    public string yaml { get; private set; }
 
     public static Session LoadFromYaml(string yamlText, VideoCatalogue videoCatalogue)
     {
@@ -100,7 +102,9 @@ public class Session
                 throw new Exception($"The following videos are missing from the catalogue: {string.Join(", ", videosMissingFromCatalogue)}");
             }
 
-            Debug.Assert(Invariant());
+            Debug.Assert(session.Invariant());
+
+            session.yaml = yamlText;
 
             return session;
         }

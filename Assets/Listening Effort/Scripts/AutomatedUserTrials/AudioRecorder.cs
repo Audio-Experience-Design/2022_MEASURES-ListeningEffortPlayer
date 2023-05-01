@@ -18,7 +18,7 @@ public class AudioRecorder : MonoBehaviour
 
     private string saveDirectory => Path.Combine(Application.persistentDataPath, subfolder);
     private double recordingStartTime = -1f;
-    private bool isRecording => recordingStartTime > 0.0f;
+    public bool isRecording => recordingStartTime > 0.0f;
     private string recordingFilename;
     private Coroutine waitForRecordingCoroutine;
 
@@ -90,6 +90,7 @@ public class AudioRecorder : MonoBehaviour
             SaveAudio(trimmedClip, savePath);
             recordingFinished?.Invoke(this, savePath);
         }
+        waitForRecordingCoroutine = null;
     }
 
     /// Warning: The saved file will still be of the requested length, but the remainder will be silence.
