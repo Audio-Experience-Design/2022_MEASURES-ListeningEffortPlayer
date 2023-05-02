@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using UnityEditor.Timeline;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Video;
-using UnityOSC;
 
 public class VideoManager : MonoBehaviour
 {

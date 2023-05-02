@@ -10,6 +10,8 @@ using UnityEngine.UI;
 
 public class PreparationDialog : MonoBehaviour
 {
+    Spatializer spatializer;
+
     public Text loadingText;
     public VideoChecker videoChecker;
     public Button startButton;
@@ -31,10 +33,13 @@ public class PreparationDialog : MonoBehaviour
     };
 
     public Toggle[] hrtfToggles;
+    public Dropdown hrtfDropdown;
 
 
     public void Start()
     {
+        spatializer = FindObjectOfType<Spatializer>();
+        Debug.Assert(spatializer != null);
 
         loadingText.text = loadingText.text
             .Replace("{VIDEO_DIRECTORIES}", videoChecker.videoDirectories.Aggregate((a, b) => $"{a}\n{b}"))
@@ -62,7 +67,7 @@ public class PreparationDialog : MonoBehaviour
 
         reloadVideosButton.onClick.AddListener(() =>
         {
-            StartCoroutine(videoChecker.CheckVideos());
+            videoChecker.StartCheckingVideos();
         });
         updateButtons();
 
@@ -71,7 +76,7 @@ public class PreparationDialog : MonoBehaviour
         developerConsoleToggle.isOn = developerConsole.activeSelf;
         if (!PlayerPrefs.HasKey("developerConsole"))
         {
-            PlayerPrefs.SetInt("developerConsole", developerConsole.activeSelf? 1 : 0);
+            PlayerPrefs.SetInt("developerConsole", developerConsole.activeSelf ? 1 : 0);
         }
         developerConsoleToggle.onValueChanged.AddListener(toggle =>
         {
@@ -143,36 +148,53 @@ public class PreparationDialog : MonoBehaviour
             Debug.Log("Checking inbuilt and custom HRTFs");
             (string name, string filename, string path)[] hrtfs = SpatializerResourceChecker.getHRTFs();
             Debug.Log($"Found {hrtfs.Length} HRTFs.");
-            if (hrtfs.Length > hrtfToggles.Length)
+            hrtfDropdown.ClearOptions();
+            hrtfDropdown.AddOptions(hrtfs.Select(hrtf => hrtf.name).ToList());
+            string prevHRTF = PlayerPrefs.GetString("hrtf", "");
+            int indexOfPrevHRTF = Array.FindIndex(hrtfs, hrtf => hrtf.name == prevHRTF);
+            if (indexOfPrevHRTF >= 0)
             {
-                Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
+                hrtfDropdown.SetValueWithoutNotify(indexOfPrevHRTF);
             }
-            int N = Mathf.Min(hrtfs.Length, hrtfToggles.Length);
-            for (int i = 0; i < N; i++)
+            hrtfDropdown.onValueChanged.AddListener(index =>
             {
-                hrtfToggles[i].enabled = true;
-                hrtfToggles[i].GetComponentInChildren<Text>().text = hrtfs[i].name;
-                string path = hrtfs[i].path;
-                hrtfToggles[i].onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                    {
-                        PlayerPrefs.SetString("hrtf", path);
-                    }
-                });
-                if (PlayerPrefs.GetString("hrtf", "") == path)
-                {
-                    hrtfToggles[i].isOn = true;
-                }
-            }
-            for (int i = N; i < hrtfToggles.Length; i++)
-            {
-                hrtfToggles[i].gameObject.SetActive(false);
-            }
-            if (PlayerPrefs.GetString("hrtf", "") == "")
-            {
-                hrtfToggles[0].isOn = true;
-            }
+                PlayerPrefs.SetString("hrtf", hrtfs[index].name);
+                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
+                Debug.Log($"Setting HRTF to {hrtfs[index].filename}. (Current sample rate: {sampleRate}) ");
+                spatializer.SetBinaryResourcePath(BinaryResourceRole.HighQualityHRTF, sampleRate, hrtfs[index].path);
+            });
+
+
+            //if (hrtfs.Length > hrtfToggles.Length)
+            //{
+            //    Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
+            //}
+            //int N = Mathf.Min(hrtfs.Length, hrtfToggles.Length);
+            //for (int i = 0; i < N; i++)
+            //{
+            //    hrtfToggles[i].enabled = true;
+            //    hrtfToggles[i].GetComponentInChildren<Text>().text = hrtfs[i].name;
+            //    string path = hrtfs[i].path;
+            //    hrtfToggles[i].onValueChanged.AddListener(isOn =>
+            //    {
+            //        if (isOn)
+            //        {
+            //            PlayerPrefs.SetString("hrtf", path);
+            //        }
+            //    });
+            //    if (PlayerPrefs.GetString("hrtf", "") == path)
+            //    {
+            //        hrtfToggles[i].isOn = true;
+            //    }
+            //}
+            //for (int i = N; i < hrtfToggles.Length; i++)
+            //{
+            //    hrtfToggles[i].gameObject.SetActive(false);
+            //}
+            //if (PlayerPrefs.GetString("hrtf", "") == "")
+            //{
+            //    hrtfToggles[0].isOn = true;
+            //}
         }
         catch (Exception e)
         {

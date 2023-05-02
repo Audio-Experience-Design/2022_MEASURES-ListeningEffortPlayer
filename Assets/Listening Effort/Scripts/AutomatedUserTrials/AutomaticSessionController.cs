@@ -1,17 +1,10 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
-using UnityEditor.Purchasing;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.VFX;
 using UnityEngine.Video;
-using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
 
 public class AutomaticSessionController : MonoBehaviour
 {

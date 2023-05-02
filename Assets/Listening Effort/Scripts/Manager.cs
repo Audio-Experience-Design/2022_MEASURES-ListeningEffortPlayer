@@ -9,11 +9,12 @@ public class Manager : MonoBehaviour
     public AutomaticSessionController automaticSessionController;
     public enum State
     {
-        MainMenu,
-        WaitingForOSCConnection,
-        RunningOSC,
-        RunningAutomatedSession,
-        Error,
+        MainMenu, // initial state
+        TestingVideos, // set by event from VideoChecker
+        WaitingForOSCConnection, // set here on user request
+        RunningOSC, // set here based on OscController state
+        RunningAutomatedSession, // set here on user request
+        Error, // set here if something goes wrong
     }
 
     private State state_ = State.MainMenu;
@@ -30,46 +31,29 @@ public class Manager : MonoBehaviour
 
     public string errorMessage { get; private set; } = "";
 
-    // Start is called before the first frame update
+    private VideoChecker videoChecker;
+
     void Start()
     {
         // should only be one Manager
         Debug.Assert(FindObjectOfType<Manager>() == this);
 
-        // Later down the line the LoadVideo scene should be merged into this scene, in which case it will be shown with MainMenu.
-        // For now, we're using PlayerPrefs to pass through the settings
-        bool isAutomaticMode = PlayerPrefs.GetInt("automaticMode", 0) != 0;
-        if (isAutomaticMode)
+        videoChecker = FindObjectOfType<VideoChecker>();
+        Debug.Assert(videoChecker != null);
+
+        videoChecker.isCheckingVideosChanged += (sender, isCheckingVideos) =>
         {
-            state = State.RunningAutomatedSession;
-            string yamlFileNoExtension = PlayerPrefs.GetString("automaticModeSessionYAMLWithoutExtension", "");
-            if (yamlFileNoExtension == "")
+            if (isCheckingVideos)
             {
-                errorMessage = "Internal error reading session YAML filename";
-                state = State.Error;
-            }
-            try
-            {
-                automaticSessionController.StartSession(yamlFileNoExtension);
-            }
-            catch (Exception e)
-            {
-                errorMessage = $"Error loading session YAML file\n{e}";
-                state = State.Error;
-            }
-        }
-        else
-        {
-            oscController.inOSCSessionMode = true;
-            if (oscController.isClientConnected)
-            {
-                state = State.RunningOSC;
+                Debug.Assert(state == State.MainMenu);
+                state = State.TestingVideos;
             }
             else
             {
-                state = State.WaitingForOSCConnection;
+                Debug.Assert(state == State.TestingVideos);
+                state = State.MainMenu;
             }
-        }
+        };
 
         oscController.onClientConnected += (sender, client) =>
         {
@@ -80,9 +64,40 @@ public class Manager : MonoBehaviour
         };
     }
 
-    // Update is called once per frame
-    void Update()
+    public void startAutomaticSession(string yamlFileNoExtension)
     {
+        Debug.Assert(state == State.MainMenu);
 
+        state = State.RunningAutomatedSession;
+        if (yamlFileNoExtension == "")
+        {
+            errorMessage = "Internal error reading session YAML filename";
+            state = State.Error;
+        }
+        try
+        {
+            automaticSessionController.StartSession(yamlFileNoExtension);
+        }
+        catch (Exception e)
+        {
+            errorMessage = $"Error loading session YAML file\n{e}";
+            state = State.Error;
+        }
     }
+
+    public void startOSCSession()
+    {
+        Debug.Assert(state == State.MainMenu);
+
+        oscController.inOSCSessionMode = true;
+        if (oscController.isClientConnected)
+        {
+            state = State.RunningOSC;
+        }
+        else
+        {
+            state = State.WaitingForOSCConnection;
+        }
+    }
+
 }

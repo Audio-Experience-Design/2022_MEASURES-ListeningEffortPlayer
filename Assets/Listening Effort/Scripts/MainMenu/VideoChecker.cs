@@ -48,13 +48,6 @@ public class VideoChecker : MonoBehaviour
         }
         );
 
-        StartCoroutine(CheckVideos());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void setStatus(string text)
@@ -63,7 +56,12 @@ public class VideoChecker : MonoBehaviour
         statusText.text = text;
     }
 
-    public IEnumerator CheckVideos()
+    public void StartCheckingVideos()
+    {
+        StartCoroutine(CheckVideos());
+    }
+
+    private IEnumerator CheckVideos()
     {
         if (isCheckingVideos) {
             Debug.LogWarning("Cannot call CheckVideos as it's already running.", this);
