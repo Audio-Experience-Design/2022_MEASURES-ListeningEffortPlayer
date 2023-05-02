@@ -1036,7 +1036,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &500193847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1776,7 +1776,6 @@ GameObject:
   - component: {fileID: 782628378}
   - component: {fileID: 782628377}
   - component: {fileID: 782628376}
-  - component: {fileID: 782628380}
   - component: {fileID: 782628381}
   - component: {fileID: 782628382}
   m_Layer: 0
@@ -1869,19 +1868,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 800, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &782628380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 782628375}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddc194fb9127d5748a75feff10b54f2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetText: {fileID: 1013854322}
 --- !u!114 &782628381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3514,6 +3500,7 @@ GameObject:
   - component: {fileID: 1013854319}
   - component: {fileID: 1013854321}
   - component: {fileID: 1013854322}
+  - component: {fileID: 1013854323}
   m_Layer: 5
   m_Name: Text - Waiting for OSC connection
   m_TagString: Untagged
@@ -3586,6 +3573,19 @@ MonoBehaviour:
 
 
     {IP_ADDRESS}'
+--- !u!114 &1013854323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013854318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc194fb9127d5748a75feff10b54f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetText: {fileID: 1013854322}
 --- !u!1 &1055803637
 GameObject:
   m_ObjectHideFlags: 0
@@ -4158,6 +4158,7 @@ GameObject:
   - component: {fileID: 1545996638}
   - component: {fileID: 1545996639}
   - component: {fileID: 1545996641}
+  - component: {fileID: 1545996642}
   m_Layer: 0
   m_Name: OSC
   m_TagString: Untagged
@@ -4208,7 +4209,7 @@ MonoBehaviour:
   - {fileID: 2123584743}
   - {fileID: 463930440}
   - {fileID: 1189762169}
-  oscSender: {fileID: 0}
+  oscSender: {fileID: 1545996641}
   LoadingScreen: {fileID: 782628375}
   cameraRigObject: {fileID: 1847974584}
   cameraObject: {fileID: 1081776650}
@@ -4230,6 +4231,21 @@ MonoBehaviour:
   ClientIP: 127.0.0.1
   Port: 6789
   VideoCatalogue: {fileID: 833115702}
+--- !u!114 &1545996642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1545996637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 856b4422504e2cb46ab6a1a8f26ec43e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  oscUIPanel: {fileID: 223974226}
+  oscUIText: {fileID: 1013854322}
+  oscController: {fileID: 1545996639}
 --- !u!82 &1600812348 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 1077936151553975517, guid: 9ec944ba2c914254eb8b3f60d96df8cd,

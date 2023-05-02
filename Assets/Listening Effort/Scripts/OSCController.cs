@@ -20,12 +20,14 @@ public class OSCController : MonoBehaviour
 	public AudioSource[] speechAudioSources;
 
 	public OSCSender oscSender;
-	public GameObject LoadingScreen;
 
 	/// Container for the cameraObject that we can rotate manually
 	public GameObject cameraRigObject;
 	/// What the VR system rotates for the headset's point of view
 	public GameObject cameraObject;
+
+	public event EventHandler<(string ip, int port)> onClientConnected;
+	public bool isClientConnected { get; private set; } = false;
 
 	class MessageSpecification
 	{
@@ -361,9 +363,10 @@ public class OSCController : MonoBehaviour
 			{
 				GetComponent<OSCSender>().ClientIP = ip;
 				GetComponent<OSCSender>().Port = port;
+				onClientConnected?.Invoke(this, (ip, port));
+				isClientConnected = true;
 			}
 			oscSender.SendVideoPositions(videoPlayerPivotTransforms, videoPlayerQuadTransforms);
-			LoadingScreen.SetActive(false);
 		}
 
 		else if (isMatch(message, videoPositionMessageSpecification))
