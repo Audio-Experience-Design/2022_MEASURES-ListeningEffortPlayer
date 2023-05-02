@@ -6,13 +6,27 @@ using UnityEngine.UI;
 
 public class AutomatedUserTrialUIController : MonoBehaviour
 {
+    public GameObject uiObject;
+    private Manager manager;
     public Button button;
     private Text buttonLabel;
     public Text statusText;
     public Text challengeLabelText;
-    public SessionController sessionController;
+    public AutomaticSessionController sessionController;
 
-    void Start()
+    void Awake()
+    {
+        // run even when gameobject is inactive
+
+        manager = FindObjectOfType<Manager>();
+        manager.onStateChanged += (sender, state) =>
+        {
+            uiObject.SetActive(state == Manager.State.RunningAutomatedSession);
+        };
+        uiObject.SetActive(manager.state == Manager.State.RunningAutomatedSession);
+    }
+
+    private void Start()
     {
         buttonLabel = button.GetComponentInChildren<Text>();
         sessionController.challengeNumberChanged += (sender, args) => challengeLabelText.text = $"{args.currentLabel} of {args.total}";
@@ -26,33 +40,33 @@ public class AutomatedUserTrialUIController : MonoBehaviour
 
             switch (state)
             {
-                case SessionController.State.LoadingSession:
+                case AutomaticSessionController.State.LoadingSession:
                     statusText.text = $"Loading session '{sessionController.session?.Name ?? "(null)"}'.";
                     button.gameObject.SetActive(false);
                     break;
-                case SessionController.State.WaitingForUserToStartChallenge:
+                case AutomaticSessionController.State.WaitingForUserToStartChallenge:
                     statusText.text = $"";
                     buttonLabel.text = $"Start challenge";
                     button.gameObject.SetActive(true);
                     button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
                     break;
-                case SessionController.State.UserReadyToStartChallenge:
+                case AutomaticSessionController.State.UserReadyToStartChallenge:
                     button.gameObject.SetActive(false);
                     break;
-                case SessionController.State.PlayingVideo:
+                case AutomaticSessionController.State.PlayingVideo:
                     statusText.text = $"Listen...";
                     break;
-                case SessionController.State.RecordingUserResponse:
+                case AutomaticSessionController.State.RecordingUserResponse:
                     statusText.text = $"Recording your response...";
                     buttonLabel.text = $"Done";
                     button.gameObject.SetActive(true);
                     button.onClick.AddListener(() => sessionController.onUserReadyToStopRecording());
                     break;
-                case SessionController.State.AudioRecordingComplete:
+                case AutomaticSessionController.State.AudioRecordingComplete:
                     statusText.text = $"Audio recording complete.";
                     button.gameObject.SetActive(false);
                     break;
-                case SessionController.State.Completed:
+                case AutomaticSessionController.State.Completed:
                     statusText.text = $"Session completed.";
                     button.gameObject.SetActive(false);
                     break;

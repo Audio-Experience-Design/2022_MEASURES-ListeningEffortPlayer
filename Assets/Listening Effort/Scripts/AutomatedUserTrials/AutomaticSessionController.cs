@@ -13,7 +13,7 @@ using UnityEngine.VFX;
 using UnityEngine.Video;
 using UnityEngine.XR.Interaction.Toolkit.Utilities.Tweenables.Primitives;
 
-public class SessionController : MonoBehaviour
+public class AutomaticSessionController : MonoBehaviour
 {
     public Session session { get; private set; }
 
@@ -62,13 +62,13 @@ public class SessionController : MonoBehaviour
     public State state { get; private set; } = State.LoadingSession;
     private int numVideosPlaying = 0;
 
-    private void Start()
+    public void StartSession(string yamlFilenameWithoutExtension)
     {
-        string yamlText = Resources.Load<TextAsset>("SampleAutomatedSession").text;
+        string yamlText = Resources.Load<TextAsset>(yamlFilenameWithoutExtension).text;
         session = Session.LoadFromYaml(yamlText, videoCatalogue);
         Debug.Assert(session.IdleVideos.Count() == 3);
         Debug.Assert(videoManagers.Count() == 3);
-        Debug.Log($"Loaded SampleAutomatedSession.yaml");
+        Debug.Log($"Loaded {yamlFilenameWithoutExtension}.yaml");
 
         for (int i = 0; i < 3; i++)
         {
@@ -135,7 +135,7 @@ public class SessionController : MonoBehaviour
 
 
 
-    public IEnumerator StartSession()
+    private IEnumerator SessionCoroutine()
     {
         Debug.Log($"Starting automated trial session: {session.Name}");
         setState(State.LoadingSession);
