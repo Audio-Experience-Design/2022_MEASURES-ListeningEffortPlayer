@@ -70,7 +70,7 @@ public class AudioRecorder : MonoBehaviour
             yield return null;
         if (isRecording)
         {
-           Debug.Log($"Recording ending by timeout after {lengthSec}");
+            Debug.Log($"Recording ending by timeout after {lengthSec}");
             CloseRecording();
         }
     }
@@ -78,18 +78,18 @@ public class AudioRecorder : MonoBehaviour
     private void CloseRecording()
     {
         Microphone.End(null);
-        double length = Math.Max(AudioSettings.dspTime - recordingStartTime, (double) audioSource.clip.length);
-        Debug.Log($"{length} seconds recorded");
-        {
-            int lengthSamples = (int)(length * audioSource.clip.frequency);
-            AudioClip trimmedClip = AudioClip.Create(audioSource.clip.name, lengthSamples, audioSource.clip.channels, audioSource.clip.frequency, false);
-            float[] samples = new float[lengthSamples * audioSource.clip.channels];
-            audioSource.clip.GetData(samples, 0);
-            trimmedClip.SetData(samples, 0);
-            string savePath = Path.Combine(saveDirectory, recordingFilename);
-            SaveAudio(trimmedClip, savePath);
-            recordingFinished?.Invoke(this, savePath);
-        }
+        double length = Math.Max(AudioSettings.dspTime - recordingStartTime, (double)audioSource.clip.length);
+
+        int lengthSamples = (int)(length * audioSource.clip.frequency);
+        AudioClip trimmedClip = AudioClip.Create(audioSource.clip.name, lengthSamples, audioSource.clip.channels, audioSource.clip.frequency, false);
+        float[] samples = new float[lengthSamples * audioSource.clip.channels];
+        audioSource.clip.GetData(samples, 0);
+        trimmedClip.SetData(samples, 0);
+        string savePath = Path.Combine(saveDirectory, recordingFilename);
+        SaveAudio(trimmedClip, savePath);
+        Debug.Log($"{length} seconds recorded and saved to {savePath}");
+        recordingFinished?.Invoke(this, savePath);
+
         recordingStartTime = -2.0f;
         waitForRecordingCoroutine = null;
     }
