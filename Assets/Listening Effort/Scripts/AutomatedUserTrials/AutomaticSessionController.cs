@@ -55,13 +55,14 @@ public class AutomaticSessionController : MonoBehaviour
     public State state { get; private set; } = State.LoadingSession;
     private int numVideosPlaying = 0;
 
-    public void StartSession(string yamlFilenameWithoutExtension)
+    // yamlFile should be an absolute path including extension
+    public void StartSession(string yamlFile)
     {
-        string yamlText = Resources.Load<TextAsset>(yamlFilenameWithoutExtension).text;
+        string yamlText = File.ReadAllText(yamlFile);
         session = Session.LoadFromYaml(yamlText, videoCatalogue);
         Debug.Assert(session.IdleVideos.Count() == 3);
         Debug.Assert(videoManagers.Count() == 3);
-        Debug.Log($"Loaded {yamlFilenameWithoutExtension}.yaml");
+        Debug.Log($"Loaded {yamlFile}.yaml");
 
         for (int i = 0; i < 3; i++)
         {
@@ -96,7 +97,7 @@ public class AutomaticSessionController : MonoBehaviour
         Debug.Assert(state == State.RecordingUserResponse);
         Debug.Assert(audioRecorder.isRecording);
         audioRecorder.StopRecording();
-        
+
     }
 
     private void advanceStateTo(State expectedNewState)

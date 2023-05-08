@@ -8,23 +8,35 @@ using UnityEngine.Assertions;
 
 public static class SpatializerResourceChecker
 {
-    public static string[] defaultReverbModelNames = new string[]
+    public struct BinaryResource
+    {
+        public string name => Path.GetFileNameWithoutExtension(path);
+        public string filename => Path.GetFileName(path);
+        public string path;
+    }
+
+
+    //public static string customReverbModelName = "CUSTOM_REVERB_MODEL";
+    public static string reverbModelDirectory => $"{Application.persistentDataPath}/Data/Reverb/BRIR";
+    public static string hrtfDirectory => $"{Application.persistentDataPath}/Data/HighQuality/HRTF";
+
+
+    public static string[] reverbSuffixes => new string[]
+    {
+        $"_{sampleRateLabel}Hz.3dti-brir",
+        $"_{sampleRateLabel}Hz.sofa",
+    };
+    public static string[] hrtfSuffixes => new string[]
+    {
+        $"_{sampleRateLabel}Hz.3dti-hrtf",
+        $"_{sampleRateLabel}Hz.sofa",
+    };
+    private static string[] defaultReverbModelNames = new string[]
     {
         "3DTI_BRIR_large",
         "3DTI_BRIR_medium",
         "3DTI_BRIR_small",
     };
-    public static string customReverbModelName = "CUSTOM_REVERB_MODEL";
-    public static string reverbModelDirectory => $"{Application.persistentDataPath}/Data/Reverb/BRIR";
-    public static string hrtfDirectory => $"{Application.persistentDataPath}/Data/HighQuality/HRTF";
-
-
-    public static string customReverbSuffix => $"_{sampleRateLabel}Hz.3dti-brir";
-    public static string[] hrtfSuffixes => new string[]
-    {
-        $"_{sampleRateLabel}Hz.3dti-hrtf",
-        $"_{sampleRateLabel}Hz.sofa",
-        };
 
 
     public static string sampleRateLabel
@@ -40,8 +52,10 @@ public static class SpatializerResourceChecker
         }
     }
 
-    public static (string name, string path) findCustomReverb()
+    public static BinaryResource[] getCustomReverbs()
     {
+        var customReverbModels = new List<BinaryResource>();
+
         if (!Directory.Exists(reverbModelDirectory))
         {
             // create it - catch and print any errors
@@ -52,40 +66,56 @@ public static class SpatializerResourceChecker
             catch (System.Exception e)
             {
                 Debug.LogError($"Failed to create reverb model directory {reverbModelDirectory}: {e.Message}");
-                return ("", "");
+                return customReverbModels.ToArray();
             }
         }
 
-        string[] paths = System.IO.Directory.GetFiles(reverbModelDirectory);
         var defaultReverbPaths = defaultReverbModelNames.
             Select(modelName => $"{modelName}_{sampleRateLabel}Hz.3dti-brir");
-        foreach (string path in paths)
+        foreach (string path in System.IO.Directory.GetFiles(reverbModelDirectory))
         {
-            // Spatializer dumps its default reverb model into the folder so need to check against that.
-            if (path.EndsWith(customReverbSuffix) && defaultReverbPaths.All(p => !path.EndsWith(p)))
+            bool isReverb = reverbSuffixes.Any(suffix => path.EndsWith(suffix));
+            bool isDefaultReverb = defaultReverbPaths.Any(p => path.EndsWith(p));
+            if (isReverb && !isDefaultReverb)
             {
                 string name = System.IO.Path.GetFileNameWithoutExtension(path);
-                Debug.Log($"Found custom reverb model {name} at {path}");
-                return (name, path);
+                string filename = Path.GetFileName(path);
+                Debug.Log($"Found custom reverb model {Path.GetFileNameWithoutExtension(path)} at {path}");
+                customReverbModels.Add(new BinaryResource { path = path });
             }
         }
-        Debug.Log("No custom reverb model found");
-        return ("", "");
+        if (customReverbModels.Count == 0)
+        {
+            Debug.Log("No custom reverb model found");
+        }
+        return customReverbModels.ToArray();
+    }
+
+    public static BinaryResource[] getReverbs()
+    {
+
+        string defaultReverbDirectory = "Data/Reverb/BRIR/";
+        string defaultReverbSuffix = $"_{sampleRateLabel}Hz.3dti-brir";
+        var defaultReverbs = defaultReverbModelNames.Select(name => new BinaryResource
+        {
+            path = Path.Join(defaultReverbDirectory, name + defaultReverbSuffix),
+        });
+        return getCustomReverbs().Concat(defaultReverbs).ToArray();
     }
 
 
-    public static (string name, string filename, string path)[] getDefaultHRTFNamesAndPaths()
+    public static BinaryResource[] getDefaultHRTFs()
     {
         //string hrtfResourceSuffix = hrtfSuffix + ".bytes";
         // LoadAll resource .name doesn't include the extra ".bytes" extension but Spatializer assumes it.
-        string resourceDirectory = "Data/HighQuality/HRTF"; // this sits under a "resources" folder in assets
-        var textAssets = Resources.LoadAll<TextAsset>(resourceDirectory)
+        string defaultHRTFDirectory = "Data/HighQuality/HRTF"; // this sits under a "resources" folder in assets
+        var textAssets = Resources.LoadAll<TextAsset>(defaultHRTFDirectory)
             .Where(x => hrtfSuffixes.Any(suffix => x.name.EndsWith(suffix)))
             .ToArray();
 
         Debug.Log($"Collating HRTF names and paths from {textAssets.Length} text assets");
 
-        var result = new List<(string name, string filename, string path)>();
+        var result = new List<BinaryResource>();
         foreach (TextAsset asset in textAssets)
         {
             foreach (string suffix in hrtfSuffixes)
@@ -93,9 +123,9 @@ public static class SpatializerResourceChecker
                 if (asset.name.EndsWith(suffix))
                 {
                     string filename = asset.name + ".bytes";
-                    string path = $"{resourceDirectory}/{asset.name}.bytes";
+                    string path = $"{defaultHRTFDirectory}/{asset.name}.bytes";
                     string name = asset.name.Substring("3DTI_HRTF_".Length, asset.name.Length - suffix.Length);
-                    result.Add((name, filename, path));
+                    result.Add(new BinaryResource { path = path });
                 }
             }
         }
@@ -103,10 +133,10 @@ public static class SpatializerResourceChecker
         // e.g. (3DTI_HRTF_IRC1032_128s, 3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes, Data/HighQuality/HRTF/3DTI_HRTF_IRC1032_128s_44100Hz.3dti-hrtf.bytes)
     }
 
-    public static (string name, string filename, string path)[] getHRTFs()
+    public static BinaryResource[] getHRTFs()
     {
         Debug.Log($"Searching for built-in HRTFs");
-        var defaultHRTFs = getDefaultHRTFNamesAndPaths().ToList();
+        var defaultHRTFs = getDefaultHRTFs().ToList();
         Debug.Log($"Found {defaultHRTFs.Count} default HRTF models");
 
         // create hrtfDirectory if it doesn't exist. on failure catch and print and errors
@@ -124,7 +154,7 @@ public static class SpatializerResourceChecker
         }
 
 
-        var customHRTFs = new List<(string name, string filename, string path)>();
+        var customHRTFs = new List<BinaryResource>();
         string[] paths = System.IO.Directory.GetFiles(hrtfDirectory);
         foreach (string path in paths)
         {
@@ -139,7 +169,7 @@ public static class SpatializerResourceChecker
                     Debug.Assert(filename.EndsWith(suffix));
                     string name = filename.Substring(0, filename.Length - suffix.Length);
                     Debug.Log($"Found custom HRTF model {name} at {path}");
-                    customHRTFs.Add((name, filename, path));
+                    customHRTFs.Add(new BinaryResource { path = path });
                 }
             }
         }

@@ -64,19 +64,25 @@ public class Manager : MonoBehaviour
         };
     }
 
-    public void startAutomaticSession(string yamlFileNoExtension)
+    // yamlFile should be an absolute path including extension.
+    public void startAutomaticSession(string yamlFile)
     {
         Debug.Assert(state == State.MainMenu);
 
         state = State.RunningAutomatedSession;
-        if (yamlFileNoExtension == "")
+        if (yamlFile == "")
         {
             errorMessage = "Internal error reading session YAML filename";
             state = State.Error;
         }
         try
         {
-            automaticSessionController.StartSession(yamlFileNoExtension);
+            if (yamlFile.EndsWith("demo.yaml"))
+            {
+                Debug.Log($"Setting to use demo videos as script filename is 'demo.yaml'");
+                VideoCatalogue.UseDemoVideos = true;
+            }
+            automaticSessionController.StartSession(yamlFile);
         }
         catch (Exception e)
         {

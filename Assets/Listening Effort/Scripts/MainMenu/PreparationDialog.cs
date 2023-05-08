@@ -2,8 +2,9 @@ using API_3DTI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
+using System.Net;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,65 +12,72 @@ using UnityEngine.UI;
 public class PreparationDialog : MonoBehaviour
 {
     Spatializer spatializer;
+    ScriptFileManager scriptedSessionFileManager;
+    Manager manager;
 
-    public Text loadingText;
+    public Text[] textsForSubstitution;
     public VideoChecker videoChecker;
-    public Button startButton;
+    public Button startOSCButton;
     public Button demoButton;
     public Button reloadVideosButton;
+    public Button startScriptedSessionButton;
     public Toggle developerConsoleToggle;
 
-    public Toggle reverbSmallToggle, reverbMediumToggle, reverbLargeToggle, reverbCustomToggle;
-
     public GameObject developerConsole;
-    public Text buildDateText;
 
-    private List<(Toggle toggle, string name)> reverbModels => new List<(Toggle toggle, string name)>
-    {
-        (reverbLargeToggle, "3DTI_BRIR_large"),
-        (reverbMediumToggle, "3DTI_BRIR_medium"),
-        (reverbSmallToggle, "3DTI_BRIR_small"),
-        (reverbCustomToggle, SpatializerResourceChecker.customReverbModelName)
-    };
-
-    public Toggle[] hrtfToggles;
     public Dropdown hrtfDropdown;
+    public Dropdown reverbDropdown;
+    public Dropdown scriptedSessionDropdown;
 
+    private string GetOSCAddresses()
+    {
+        return Dns.GetHostEntry(Dns.GetHostName())
+            .AddressList
+            .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .Where(ip => !(ip.ToString() == "127.0.0.1"))
+            .Select(ip => ip.ToString())
+            .Select(ipAddresses => $"{ipAddresses}:{OSCController.listenPort}")
+            .Aggregate((head, tail) => $"{head}, {tail}");
+        
+    }
 
     public void Start()
     {
         spatializer = FindObjectOfType<Spatializer>();
         Debug.Assert(spatializer != null);
+        scriptedSessionFileManager = FindObjectOfType<ScriptFileManager>();
+        Debug.Assert(scriptedSessionFileManager != null);
 
-        loadingText.text = loadingText.text
+        Array.ForEach(textsForSubstitution, text => text.text = text.text
             .Replace("{VIDEO_DIRECTORIES}", videoChecker.videoDirectories.Aggregate((a, b) => $"{a}\n{b}"))
             .Replace("{REVERB_DIRECTORY}", SpatializerResourceChecker.reverbModelDirectory)
-            .Replace("{CUSTOM_REVERB_SUFFIX}", SpatializerResourceChecker.customReverbSuffix)
+            .Replace("{REVERB_SUFFIXES}", string.Join(" | ", SpatializerResourceChecker.reverbSuffixes))
             .Replace("{HRTF_DIRECTORY}", SpatializerResourceChecker.hrtfDirectory)
-            .Replace("{HRTF_SUFFIX}", $"({string.Join(" | ", SpatializerResourceChecker.hrtfSuffixes)})")
-            ;
-        buildDateText.text = buildDateText.text.Replace("{BUILD_DATE}", BuildInfo.BUILD_TIME);
+            .Replace("{HRTF_SUFFIXES}", string.Join(" | ", SpatializerResourceChecker.hrtfSuffixes))
+            .Replace("{SCRIPT_DIRECTORY}", scriptedSessionFileManager.scriptsDirectory)
+            .Replace("{BUILD_DATE}", BuildInfo.BUILD_TIME)
+            .Replace("{IP_ADDRESS}", GetOSCAddresses())
+            );
 
         videoChecker.videosAreOKChanged += (sender, videosAreOK) => updateButtons();
         videoChecker.isCheckingVideosChanged += (sender, isChecking) => updateButtons();
 
-        startButton.onClick.AddListener(() =>
+        startOSCButton.onClick.AddListener(() =>
         {
             VideoCatalogue.UseDemoVideos = false;
-            SceneManager.LoadSceneAsync("MainScene");
+            manager.startOSCSession();
         });
 
         demoButton.onClick.AddListener(() =>
         {
             VideoCatalogue.UseDemoVideos = true;
-            SceneManager.LoadSceneAsync("MainScene");
+            manager.startOSCSession();
         });
 
         reloadVideosButton.onClick.AddListener(() =>
         {
             videoChecker.StartCheckingVideos();
         });
-        updateButtons();
 
 
         developerConsole.SetActive(PlayerPrefs.GetInt("developerConsole", 0) != 0);
@@ -86,127 +94,116 @@ public class PreparationDialog : MonoBehaviour
         });
 
 
+        // REVERB
         try
-        // reverb toggles
         {
             Debug.Log("Checking Reverb BRIRs");
-            // confirm names match with those in CustomSpatializerBinaryChecker
-            Debug.Assert(reverbModels.Take(3).Select(model => model.name).All(name => SpatializerResourceChecker.defaultReverbModelNames.Contains(name)));
 
-            // set up callbacks
-            string reverbModel = PlayerPrefs.GetString("reverbModel");
-            if (!reverbModels.Any(model => model.name == reverbModel))
+            reverbDropdown.ClearOptions();
+            var reverbs = SpatializerResourceChecker.getReverbs();
+            Debug.Assert(reverbs.Length > 0);
+            reverbDropdown.AddOptions(reverbs.Select((reverb, i) => reverb.name).ToList());
+
+            string savedReverbModelPath = PlayerPrefs.GetString("reverbModel", "");
+
+            if (!reverbs.Any(reverb => reverb.path == savedReverbModelPath))
             {
-                Debug.LogWarning($"Previous reverb model '{PlayerPrefs.GetString("")}' not found.");
-                PlayerPrefs.SetString("reverbModel", reverbModels[0].name);
-            }
-            foreach ((Toggle toggle, string name) in reverbModels)
-            {
-                if (PlayerPrefs.GetString("reverbModel") == name)
-                {
-                    toggle.SetIsOnWithoutNotify(true);
-                }
-                toggle.GetComponentInChildren<Text>().text = name;
-                toggle.onValueChanged.AddListener(isOn => PlayerPrefs.SetString("reverbModel", name));
+                Debug.LogWarning($"Previous reverb model not found: '{savedReverbModelPath}'.");
+                PlayerPrefs.SetString("reverbModel", reverbs[0].path);
             }
 
-            // Find custom reverb
-            Debug.Log("Searching for custom reverb file");
-            (string customReverbName, string customReverbPath) = SpatializerResourceChecker.findCustomReverb();
-            Debug.Assert(customReverbName != null && customReverbPath != null);
-            Debug.Assert((customReverbName == "") == (customReverbPath == ""));
-            if (customReverbName == "")
+            reverbDropdown.SetValueWithoutNotify(Array.FindIndex(reverbs, reverb => reverb.path == PlayerPrefs.GetString("reverbModel")));
+            
+            reverbDropdown.onValueChanged.AddListener(index =>
             {
-                if (reverbCustomToggle.isOn)
-                {
-                    reverbModels[0].toggle.isOn = true;
-                }
-                reverbCustomToggle.gameObject.SetActive(false);
-                reverbCustomToggle.GetComponentInChildren<Text>().text = "None found";
-            }
-            else
-            {
-                Debug.Log($"Found custom reverb file '{customReverbName}' at '{customReverbPath}'");
-                reverbCustomToggle.GetComponentInChildren<Text>().text = customReverbName;
-                reverbCustomToggle.enabled = true;
-            }
+                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
+                Debug.Log($"Setting Reverb BRIR to {reverbs[index].filename}. (Current sample rate: {sampleRate})");
+                spatializer.SetBinaryResourcePath(BinaryResourceRole.ReverbBRIR, sampleRate, reverbs[index].path);
 
-            PlayerPrefs.Save();
-
+                PlayerPrefs.SetString("reverbModel", reverbs[index].path);
+                PlayerPrefs.Save();
+            });
         }
         catch (Exception e)
         {
-            Debug.LogError($"Exception while setting up reverb toggles");
+            Debug.LogError($"Exception while setting up reverb UI");
             Debug.LogException(e);
         }
 
 
 
-        // HRTF toggles
+        // HRTF
         try
         {
             Debug.Log("Checking inbuilt and custom HRTFs");
-            (string name, string filename, string path)[] hrtfs = SpatializerResourceChecker.getHRTFs();
+            var hrtfs = SpatializerResourceChecker.getHRTFs();
             Debug.Log($"Found {hrtfs.Length} HRTFs.");
             hrtfDropdown.ClearOptions();
             hrtfDropdown.AddOptions(hrtfs.Select(hrtf => hrtf.name).ToList());
-            string prevHRTF = PlayerPrefs.GetString("hrtf", "");
-            int indexOfPrevHRTF = Array.FindIndex(hrtfs, hrtf => hrtf.name == prevHRTF);
-            if (indexOfPrevHRTF >= 0)
+            
+            string savedHRTF = PlayerPrefs.GetString("hrtf", "");
+            
+            if (!hrtfs.Any(hrtf => hrtf.path == savedHRTF))
             {
-                hrtfDropdown.SetValueWithoutNotify(indexOfPrevHRTF);
+                Debug.LogWarning($"Previous HRTF model '{savedHRTF}' not found.");
+                PlayerPrefs.SetString("hrtf", hrtfs[0].path);
             }
+
+            hrtfDropdown.SetValueWithoutNotify(Array.FindIndex(hrtfs, hrtf => hrtf.path == savedHRTF));
+
             hrtfDropdown.onValueChanged.AddListener(index =>
             {
-                PlayerPrefs.SetString("hrtf", hrtfs[index].name);
                 spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
-                Debug.Log($"Setting HRTF to {hrtfs[index].filename}. (Current sample rate: {sampleRate}) ");
+                Debug.Log($"Setting HRTF to {hrtfs[index].filename}. (Current sample rate: {sampleRate})");
                 spatializer.SetBinaryResourcePath(BinaryResourceRole.HighQualityHRTF, sampleRate, hrtfs[index].path);
+
+                PlayerPrefs.SetString("hrtf", hrtfs[index].path);
+                PlayerPrefs.Save();
             });
-
-
-            //if (hrtfs.Length > hrtfToggles.Length)
-            //{
-            //    Debug.LogWarning($"More HRTFs have been found than there is space to display them.");
-            //}
-            //int N = Mathf.Min(hrtfs.Length, hrtfToggles.Length);
-            //for (int i = 0; i < N; i++)
-            //{
-            //    hrtfToggles[i].enabled = true;
-            //    hrtfToggles[i].GetComponentInChildren<Text>().text = hrtfs[i].name;
-            //    string path = hrtfs[i].path;
-            //    hrtfToggles[i].onValueChanged.AddListener(isOn =>
-            //    {
-            //        if (isOn)
-            //        {
-            //            PlayerPrefs.SetString("hrtf", path);
-            //        }
-            //    });
-            //    if (PlayerPrefs.GetString("hrtf", "") == path)
-            //    {
-            //        hrtfToggles[i].isOn = true;
-            //    }
-            //}
-            //for (int i = N; i < hrtfToggles.Length; i++)
-            //{
-            //    hrtfToggles[i].gameObject.SetActive(false);
-            //}
-            //if (PlayerPrefs.GetString("hrtf", "") == "")
-            //{
-            //    hrtfToggles[0].isOn = true;
-            //}
         }
         catch (Exception e)
         {
-            Debug.LogError($"Exception while setting up HRTF toggles");
+            Debug.LogError($"Exception while setting up HRTF UI");
             Debug.LogException(e);
         }
+
+        // SCRIPTS
+        try
+        {
+            string[] scripts = scriptedSessionFileManager.scripts;
+            scriptedSessionDropdown.ClearOptions();
+            scriptedSessionDropdown.AddOptions(scripts.Select(s => Path.GetFileName(s)).ToList());
+
+            string savedScript = PlayerPrefs.GetString("scriptedSession", "");
+            if (scripts.Contains(savedScript))
+            {
+                scriptedSessionDropdown.SetValueWithoutNotify(Array.IndexOf(scripts, savedScript));
+            }
+
+            scriptedSessionDropdown.onValueChanged.AddListener(index =>
+            {
+                PlayerPrefs.SetString("scriptedSession", scripts[index]);
+            });
+
+            startScriptedSessionButton.interactable = scripts.Length > 0;
+            startScriptedSessionButton.onClick.AddListener(() =>
+            {
+                Debug.Assert(0 <= scriptedSessionDropdown.value && scriptedSessionDropdown.value < scripts.Length);
+                manager.startAutomaticSession(scripts[scriptedSessionDropdown.value]); ;
+            });
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Exception while setting up Script selection UI: {e}");
+        }
+
+        updateButtons();
 
     }
 
     private void updateButtons()
     {
-        startButton.interactable = videoChecker.videosAreOK;
+        startOSCButton.interactable = videoChecker.videosAreOK;
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
     }
 
