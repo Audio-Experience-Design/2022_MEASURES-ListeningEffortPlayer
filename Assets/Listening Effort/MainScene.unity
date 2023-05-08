@@ -1140,7 +1140,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 165716337}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: ec15da24323884c468aa8bd723cd5b98, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -2718,8 +2718,9 @@ GameObject:
   - component: {fileID: 500193847}
   - component: {fileID: 500193849}
   - component: {fileID: 500193848}
+  - component: {fileID: 500193850}
   m_Layer: 0
-  m_Name: Panel- Automatic mode
+  m_Name: Panel- Scripted session mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2786,6 +2787,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 500193846}
   m_CullTransparentMesh: 1
+--- !u!114 &500193850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500193846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e18074ccb1ada2543b17c54c46aa7981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &510185184 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7839371840908475602, guid: e25ce8b31e441ea4f89ca1f536b1d257,
@@ -2852,7 +2865,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 28
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -2863,7 +2876,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Demo content
+  m_Text: Demo content (OSC session)
 --- !u!222 &547784301
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2883,7 +2896,7 @@ GameObject:
   - component: {fileID: 556563288}
   - component: {fileID: 556563290}
   m_Layer: 0
-  m_Name: Automatic Session Controller
+  m_Name: Scripted Session Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5509,7 +5522,6 @@ GameObject:
   - component: {fileID: 1013854319}
   - component: {fileID: 1013854321}
   - component: {fileID: 1013854322}
-  - component: {fileID: 1013854323}
   m_Layer: 5
   m_Name: Text - Waiting for OSC connection
   m_TagString: Untagged
@@ -5582,19 +5594,6 @@ MonoBehaviour:
 
 
     {IP_ADDRESS}'
---- !u!114 &1013854323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1013854318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddc194fb9127d5748a75feff10b54f2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetText: {fileID: 1013854322}
 --- !u!1 &1055803637
 GameObject:
   m_ObjectHideFlags: 0
@@ -6893,7 +6892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976e775134fcd6e44bdd1f949dab2c08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  demoScript: {fileID: 0}
+  demoScript: {fileID: 4900000, guid: 21b5c1174eb062145938f349d0f8c5ae, type: 3}
 --- !u!1001 &1527822350
 PrefabInstance:
   m_ObjectHideFlags: 0

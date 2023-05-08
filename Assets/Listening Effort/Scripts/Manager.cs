@@ -6,7 +6,7 @@ using UnityEngine;
 public class Manager : MonoBehaviour
 {
     public OSCController oscController;
-    public AutomaticSessionController automaticSessionController;
+    public ScriptedSessionController automaticSessionController;
     public enum State
     {
         MainMenu, // initial state

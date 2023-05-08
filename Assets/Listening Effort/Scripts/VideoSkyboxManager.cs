@@ -11,9 +11,13 @@ public class VideoSkyboxManager : MonoBehaviour
     public Material TargetMaterial;
 
     private RenderTexture renderTexture;
+    private VideoCatalogue videoCatalogue;
 
     void Awake()
     {
+        videoCatalogue = FindObjectOfType<VideoCatalogue>();
+        Debug.Assert(videoCatalogue != null);
+
         VideoPlayer player = GetComponent<VideoPlayer>();
         player.url = VideoPath;// Path.Combine(Application.persistentDataPath, $"{VideoName}.mp4");
 
@@ -26,6 +30,19 @@ public class VideoSkyboxManager : MonoBehaviour
             player.Play();
         };
 
+        player.Prepare();
+    }
+
+    /// <summary>
+    ///  
+    /// </summary>
+    /// <param name="name">Refers to a name in the VideoCatalogue</param>
+    public void PlayVideo(string videoName)
+    {
+        VideoPlayer player = GetComponent<VideoPlayer>();
+        player.Stop();
+        videoCatalogue.SetPlayerSource(player, videoName);
+        player.isLooping = true;
         player.Prepare();
     }
 

@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Video;
 
-public class AutomaticSessionController : MonoBehaviour
+public class ScriptedSessionController : MonoBehaviour
 {
     public Session session { get; private set; }
 
@@ -44,6 +44,7 @@ public class AutomaticSessionController : MonoBehaviour
     }
     public enum State
     {
+        Inactive,
         LoadingSession,
         WaitingForUserToStartChallenge,
         UserReadyToStartChallenge,
@@ -52,24 +53,29 @@ public class AutomaticSessionController : MonoBehaviour
         AudioRecordingComplete,
         Completed,
     }
-    public State state { get; private set; } = State.LoadingSession;
+    private State _state = State.Inactive;
+    public State state
+    {
+        get => _state; private set
+        {
+            Debug.Log($"State changed from {this._state} to {value}");
+            _state = value;
+            stateChanged?.Invoke(this, _state);
+        }
+    }
     private int numVideosPlaying = 0;
 
-    // yamlFile should be an absolute path including extension
-    public void StartSession(string yamlFile)
+    void Start()
     {
-        string yamlText = File.ReadAllText(yamlFile);
-        session = Session.LoadFromYaml(yamlText, videoCatalogue);
-        Debug.Assert(session.IdleVideos.Count() == 3);
-        Debug.Assert(videoManagers.Count() == 3);
-        Debug.Log($"Loaded {yamlFile}.yaml");
-
         for (int i = 0; i < 3; i++)
         {
             videoManagers[i].playbackFinished += (_, _) =>
             {
-                numVideosPlaying--;
-                Debug.Assert(0 <= numVideosPlaying || numVideosPlaying < 3);
+                if (state != State.Inactive)
+                {
+                    numVideosPlaying--;
+                    Debug.Assert(0 <= numVideosPlaying || numVideosPlaying < 3);
+                };
             };
         }
         audioRecorder.recordingFinished += (_, _) =>
@@ -79,12 +85,17 @@ public class AutomaticSessionController : MonoBehaviour
         };
     }
 
-    private void setState(State state)
+    // yamlPath should be an absolute path including extension
+    public void StartSession(string yamlPath)
     {
-        this.state = state;
-        Debug.Log($"State changed from {this.state} to {state}");
-        stateChanged?.Invoke(this, state);
+        session = Session.LoadFromYamlPath(yamlPath, videoCatalogue);
+        Debug.Assert(session.IdleVideos.Count() == 3);
+        Debug.Assert(videoManagers.Count() == 3);
+        Debug.Log($"Loaded {yamlPath}.yaml");
+
+        StartCoroutine(SessionCoroutine());
     }
+
 
     public void onUserReadyToContinue()
     {
@@ -132,7 +143,7 @@ public class AutomaticSessionController : MonoBehaviour
     private IEnumerator SessionCoroutine()
     {
         Debug.Log($"Starting automated trial session: {session.Name}");
-        setState(State.LoadingSession);
+        state = State.LoadingSession;
 
         DateTime sessionStartTimeUTC = DateTime.UtcNow;
         string localTimestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
@@ -160,7 +171,8 @@ public class AutomaticSessionController : MonoBehaviour
         }
         for (int i = 0; i < session.Maskers.Count(); i++)
         {
-            babblePrefabs[i].GetComponent<AudioSource>().volume = session.Maskers[i].Amplitude;
+            Debug.Assert(babblePrefabs[i].GetComponentsInChildren<AudioSource>().Count() == 1);
+            babblePrefabs[i].GetComponentInChildren<AudioSource>().volume = session.Maskers[i].Amplitude;
             babblePrefabs[i].transform.localRotation = Quaternion.Euler(0, session.Maskers[i].Rotation, 0);
         }
         for (int i = session.Maskers.Count(); i < babblePrefabs.Count(); i++)

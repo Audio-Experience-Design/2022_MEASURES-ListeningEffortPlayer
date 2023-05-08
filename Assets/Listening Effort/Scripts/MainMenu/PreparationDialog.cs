@@ -47,6 +47,10 @@ public class PreparationDialog : MonoBehaviour
         Debug.Assert(spatializer != null);
         scriptedSessionFileManager = FindObjectOfType<ScriptFileManager>();
         Debug.Assert(scriptedSessionFileManager != null);
+        manager = FindObjectOfType<Manager>();
+        Debug.Assert(manager != null);
+
+        manager.onStateChanged += (sender, state) => gameObject.SetActive(state == Manager.State.MainMenu || state == Manager.State.TestingVideos);
 
         Array.ForEach(textsForSubstitution, text => text.text = text.text
             .Replace("{VIDEO_DIRECTORIES}", videoChecker.videoDirectories.Aggregate((a, b) => $"{a}\n{b}"))

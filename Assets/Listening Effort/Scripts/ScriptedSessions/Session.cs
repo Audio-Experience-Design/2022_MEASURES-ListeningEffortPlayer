@@ -17,7 +17,13 @@ public class Session
     public List<List<string>> Challenges { get; private set; }
     public string yaml { get; private set; }
 
-    public static Session LoadFromYaml(string yamlText, VideoCatalogue videoCatalogue)
+    public static Session LoadFromYamlPath(string yamlPath, VideoCatalogue videoCatalogue)
+    {
+        string yamlText = File.ReadAllText(yamlPath);
+        return LoadFromYamlString(yamlText, videoCatalogue);
+    }
+
+    public static Session LoadFromYamlString(string yamlText, VideoCatalogue videoCatalogue)
     {
         try
         {
@@ -110,7 +116,8 @@ public class Session
         }
         catch (Exception ex)
         {
-            throw new Exception($"Error loading YAML: {ex.Message}");
+            Debug.LogError("Exception while loading YAML. Will rethrow");
+            throw ex;
         }
     }
 

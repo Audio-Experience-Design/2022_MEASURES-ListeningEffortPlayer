@@ -33,11 +33,11 @@ public class ScriptFileManager : MonoBehaviour
                     {
                         try
                         {
-                            Session session = Session.LoadFromYaml(path, videoCatalogue);
+                            Session session = Session.LoadFromYamlPath(path, videoCatalogue);
                         }
                         catch (Exception e)
                         {
-                            Debug.LogWarning($"Error reading session at {path}\n{e}", this);
+                            Debug.LogError($"Error reading session at {path}\n{e}", this);
                         }
                         validatedScripts.Add(path);
                     }

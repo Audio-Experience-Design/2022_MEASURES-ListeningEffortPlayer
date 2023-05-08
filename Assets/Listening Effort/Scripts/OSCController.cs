@@ -300,7 +300,14 @@ public class OSCController : MonoBehaviour
             }
             else
             {
-                videoPlayers[i].GetComponent<VideoManager>().PlayVideo(videoName);
+                if (i == 0)
+                {
+                    videoPlayers[i].GetComponent<VideoSkyboxManager>().PlayVideo(videoName);
+                }
+                else
+                {
+                    videoPlayers[i].GetComponent<VideoManager>().PlayVideo(videoName);
+                }
                 Debug.Log($"{message.Address} set video player {i} to {(string)message.Data[1]}");
             }
         }

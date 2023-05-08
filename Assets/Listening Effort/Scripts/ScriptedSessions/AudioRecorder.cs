@@ -90,6 +90,7 @@ public class AudioRecorder : MonoBehaviour
             SaveAudio(trimmedClip, savePath);
             recordingFinished?.Invoke(this, savePath);
         }
+        recordingStartTime = -2.0f;
         waitForRecordingCoroutine = null;
     }
 

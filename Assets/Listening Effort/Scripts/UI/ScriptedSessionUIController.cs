@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AutomatedUserTrialUIController : MonoBehaviour
+public class ScriptedSessionUIController : MonoBehaviour
 {
     public GameObject uiObject;
     private Manager manager;
@@ -12,7 +12,7 @@ public class AutomatedUserTrialUIController : MonoBehaviour
     private Text buttonLabel;
     public Text statusText;
     public Text challengeLabelText;
-    public AutomaticSessionController sessionController;
+    public ScriptedSessionController sessionController;
 
     void Awake()
     {
@@ -40,33 +40,33 @@ public class AutomatedUserTrialUIController : MonoBehaviour
 
             switch (state)
             {
-                case AutomaticSessionController.State.LoadingSession:
+                case ScriptedSessionController.State.LoadingSession:
                     statusText.text = $"Loading session '{sessionController.session?.Name ?? "(null)"}'.";
                     button.gameObject.SetActive(false);
                     break;
-                case AutomaticSessionController.State.WaitingForUserToStartChallenge:
+                case ScriptedSessionController.State.WaitingForUserToStartChallenge:
                     statusText.text = $"";
                     buttonLabel.text = $"Start challenge";
                     button.gameObject.SetActive(true);
                     button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
                     break;
-                case AutomaticSessionController.State.UserReadyToStartChallenge:
+                case ScriptedSessionController.State.UserReadyToStartChallenge:
                     button.gameObject.SetActive(false);
                     break;
-                case AutomaticSessionController.State.PlayingVideo:
+                case ScriptedSessionController.State.PlayingVideo:
                     statusText.text = $"Listen...";
                     break;
-                case AutomaticSessionController.State.RecordingUserResponse:
+                case ScriptedSessionController.State.RecordingUserResponse:
                     statusText.text = $"Recording your response...";
                     buttonLabel.text = $"Done";
                     button.gameObject.SetActive(true);
                     button.onClick.AddListener(() => sessionController.onUserReadyToStopRecording());
                     break;
-                case AutomaticSessionController.State.AudioRecordingComplete:
+                case ScriptedSessionController.State.AudioRecordingComplete:
                     statusText.text = $"Audio recording complete.";
                     button.gameObject.SetActive(false);
                     break;
-                case AutomaticSessionController.State.Completed:
+                case ScriptedSessionController.State.Completed:
                     statusText.text = $"Session completed.";
                     button.gameObject.SetActive(false);
                     break;
