@@ -12,6 +12,8 @@ public class ScriptedSessionController : MonoBehaviour
 
     public VideoCatalogue videoCatalogue;
     public AudioRecorder audioRecorder;
+    public Pupilometry pupilometry;
+    public Transform headTransform;
 
     public VideoPlayer skyboxVideoPlayer;
     public VideoManager[] videoManagers;
@@ -31,15 +33,23 @@ public class ScriptedSessionController : MonoBehaviour
         public string MiddleVideo { get; set; }
         public string RightVideo { get; set; }
         public string UserResponseAudioFile { get; set; }
-        //public float headPositionEulerX { get; set; }
-        //public float headPositionEulerY { get; set; }
-        //public float headPositionEulerZ { get; set; }
-        //public float leftPupilPositionX { get; set; }
-        //public float leftPupilPositionY { get; set; }
-        //public float rightPupilPositionX { get; set; }
-        //public float rightPupilPositionY { get; set; } 
-        //public float leftPupilDiameterMm { get; set; }
-        //public float rightPupilDiameterMm { get; set; }
+
+        //public float HeadPositionEulerX { get; set; }
+        //public float HeadPositionEulerY { get; set; }
+        //public float HeadPositionEulerZ { get; set; }
+        public float LeftPupilDiameterMm { get; set; }
+        public float RightPupilDiameterMm { get; set; }
+        public bool IsLeftPupilDiameterValid { get; set; }
+        public bool IsRightPupilDiameterValid { get; set; }
+        public float LeftPupilPositionX { get; set; }
+
+        public float LeftPupilPositionY { get; set; }
+        public float RightPupilPositionX { get; set; }
+        public float RightPupilPositionY { get; set; }
+        public bool IsLeftPupilPositionValid { get; set; }
+        public bool IsRightPupilPositionValid { get; set; }
+        public bool IsLeftEyeBlinking { get; set; }
+        public bool IsRightEyeBlinking { get; set; }
 
     }
     public enum State
@@ -64,6 +74,7 @@ public class ScriptedSessionController : MonoBehaviour
         }
     }
     private int numVideosPlaying = 0;
+    private StreamWriter sessionEventLogWriter;
 
     void Start()
     {
@@ -83,6 +94,8 @@ public class ScriptedSessionController : MonoBehaviour
             Debug.Assert(state == State.RecordingUserResponse);
             advanceStateTo(State.AudioRecordingComplete);
         };
+
+ 
     }
 
     // yamlPath should be an absolute path including extension
@@ -157,6 +170,8 @@ public class ScriptedSessionController : MonoBehaviour
         using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}.csv"), true, Encoding.UTF8);
 
 
+
+
         // Speaker Amplitude
         videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
 
@@ -192,6 +207,29 @@ public class ScriptedSessionController : MonoBehaviour
             SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
             EventName = "Trial started",
         });
+
+        EventHandler<Pupilometry.Data> pupilometryCallback = (object sender, Pupilometry.Data data) =>
+        {
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Pupilometry",
+                LeftPupilDiameterMm = data.leftPupilDiameterMm,
+                RightPupilDiameterMm = data.rightPupilDiameterMm,
+                IsLeftPupilDiameterValid = data.isLeftPupilDiameterValid,
+                IsRightPupilDiameterValid = data.isRightPupilDiameterValid,
+                LeftPupilPositionX = data.leftPupilPosition.x,
+                LeftPupilPositionY = data.leftPupilPosition.y,
+                RightPupilPositionX = data.rightPupilPosition.x,
+                RightPupilPositionY = data.rightPupilPosition.y,
+                IsLeftPupilPositionValid = data.isLeftPupilPositionValid,
+                IsRightPupilPositionValid = data.isRightPupilPositionValid,
+                IsLeftEyeBlinking = data.isLeftEyeBlinking,
+                IsRightEyeBlinking = data.isRightEyeBlinking,
+            });
+        };
+        pupilometry.DataChanged += pupilometryCallback;
 
 
         for (int i = 0; i < session.Maskers.Count(); i++)
@@ -267,12 +305,16 @@ public class ScriptedSessionController : MonoBehaviour
 
         advanceStateTo(State.Completed);
 
+        pupilometry.DataChanged -= pupilometryCallback;
+
         LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
         {
             Timestamp = LogUtilities.localTimestamp(),
             SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
             EventName = "Trial completed",
         });
+
+        sessionEventLogWriter.Close();
     }
 
 

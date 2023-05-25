@@ -30,12 +30,12 @@ public class Pupilometry : MonoBehaviour
     }
     [SerializeField]
     public bool logChanges = false;
-    private static bool sLogChanges = false;
+    //private static bool sLogChanges = false;
 
     private long lastTimestamp = -4;
 
     //private static bool isCallbackAdded;
-    public static event EventHandler<Data> DataChanged;
+    public event EventHandler<Data> DataChanged;
 
 
     // Start is called before the first frame update
@@ -49,8 +49,6 @@ public class Pupilometry : MonoBehaviour
 
     void FixedUpdate()
     {
-        sLogChanges = logChanges;
-
         // with licence we can activate advanced features for tobii:
 
         var data = TobiiXR.Advanced.LatestData;

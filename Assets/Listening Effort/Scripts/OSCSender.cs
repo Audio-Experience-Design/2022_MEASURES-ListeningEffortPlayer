@@ -40,7 +40,7 @@ public class OSCSender : MonoBehaviour
 
 	void OnEnable()
 	{
-		Pupilometry.DataChanged += OnPupilometryDataChanged;
+		pupilometry.DataChanged += OnPupilometryDataChanged;
 
 		Debug.Assert(videoPlayersWithCallbacksRegistered.Count == 0);
 		OSCController controller = GetComponent<OSCController>();
@@ -58,7 +58,7 @@ public class OSCSender : MonoBehaviour
 
 	void OnDisable()
 	{
-		Pupilometry.DataChanged -= OnPupilometryDataChanged;
+		pupilometry.DataChanged -= OnPupilometryDataChanged;
 
 		foreach (VideoPlayer player in videoPlayersWithCallbacksRegistered)
 		{
