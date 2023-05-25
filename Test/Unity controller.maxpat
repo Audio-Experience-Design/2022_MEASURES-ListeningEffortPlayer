@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 5,
-			"revision" : 1,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 545.0, 153.0, 1689.0, 1177.0 ],
+		"rect" : [ 382.0, 132.0, 1689.0, 1177.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,56 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-128",
+					"linecount" : 3,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1262.5, 795.0, 53.0, 48.0 ],
+					"presentation_linecount" : 3,
+					"text" : "is right eye blinking"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-135",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1200.0, 795.0, 60.0, 34.0 ],
+					"presentation_linecount" : 2,
+					"text" : "is left eye blinking"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-139",
+					"maxclass" : "led",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 1262.5, 765.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-141",
+					"maxclass" : "led",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 1200.0, 765.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-7",
 					"maxclass" : "message",
@@ -232,7 +282,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 1,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -390,7 +440,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 1,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -548,7 +598,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 1,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1087,7 +1137,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1312.0, 899.0, 60.0, 22.0 ],
+					"patching_rect" : [ 1403.0, 902.0, 60.0, 22.0 ],
 					"text" : "s to_unity"
 				}
 
@@ -1099,7 +1149,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1312.0, 866.5, 138.0, 22.0 ],
+					"patching_rect" : [ 1403.0, 869.5, 138.0, 22.0 ],
 					"text" : "prepend /set_orientation"
 				}
 
@@ -1111,7 +1161,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1341.0, 724.0, 91.0, 34.0 ],
+					"patching_rect" : [ 1432.0, 727.0, 91.0, 34.0 ],
 					"text" : "Set current orientation"
 				}
 
@@ -1124,7 +1174,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1312.0, 724.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1403.0, 727.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -1135,7 +1185,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1456.0, 724.0, 238.0, 62.0 ],
+					"patching_rect" : [ 1547.0, 727.0, 238.0, 62.0 ],
 					"text" : "2. Now point your head to where you want forward to be in the real world and press the button to make this point towards the target forward direction"
 				}
 
@@ -1146,7 +1196,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1341.0, 631.0, 91.0, 20.0 ],
+					"patching_rect" : [ 1432.0, 634.0, 91.0, 20.0 ],
 					"text" : "Record forward"
 				}
 
@@ -1160,7 +1210,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1312.0, 838.5, 190.0, 19.0 ]
+					"patching_rect" : [ 1403.0, 841.5, 190.0, 19.0 ]
 				}
 
 			}
@@ -1172,7 +1222,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1312.0, 631.0, 24.0, 24.0 ]
+					"patching_rect" : [ 1403.0, 634.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -1183,7 +1233,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 1180.5, 631.0, 116.0, 22.0 ],
+					"patching_rect" : [ 1268.5, 634.0, 116.0, 22.0 ],
 					"text" : "route /head_rotation"
 				}
 
@@ -1195,7 +1245,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 1312.0, 680.0, 38.0, 22.0 ],
+					"patching_rect" : [ 1403.0, 683.0, 38.0, 22.0 ],
 					"text" : "zl.reg"
 				}
 
@@ -1207,7 +1257,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1456.0, 631.0, 240.0, 34.0 ],
+					"patching_rect" : [ 1547.0, 634.0, 240.0, 34.0 ],
 					"text" : "1. Look at the centre screen then press the button to record the target forward direction"
 				}
 
@@ -1782,24 +1832,24 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-46",
-					"linecount" : 2,
+					"linecount" : 3,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 720.0, 795.0, 52.0, 34.0 ],
-					"text" : "right validity"
+					"patching_rect" : [ 720.0, 795.0, 58.0, 48.0 ],
+					"text" : "right diameter validity"
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"id" : "obj-43",
-					"linecount" : 2,
+					"linecount" : 3,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 657.5, 795.0, 45.0, 34.0 ],
-					"text" : "left validity"
+					"patching_rect" : [ 657.5, 795.0, 56.5, 48.0 ],
+					"text" : "left diameter validity"
 				}
 
 			}
@@ -1906,10 +1956,10 @@
 					"id" : "obj-6",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 11,
-					"outlettype" : [ "int", "float", "float", "int", "int", "float", "float", "float", "float", "int", "int" ],
-					"patching_rect" : [ 539.5, 695.0, 124.0, 22.0 ],
-					"text" : "unpack i f f i i f f f f i i"
+					"numoutlets" : 13,
+					"outlettype" : [ "int", "float", "float", "int", "int", "float", "float", "float", "float", "int", "int", "int", "int" ],
+					"patching_rect" : [ 539.5, 695.0, 145.0, 22.0 ],
+					"text" : "unpack i f f i i f f f f i i i i"
 				}
 
 			}
@@ -1947,7 +1997,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 1,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2200,7 +2250,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 200.0, 765.0, 214.0, 22.0 ],
-					"text" : "-0. 105. -0."
+					"text" : "343.142853 29.973022 0.955205"
 				}
 
 			}
@@ -3121,6 +3171,20 @@
 				"patchline" : 				{
 					"destination" : [ "obj-123", 0 ],
 					"source" : [ "obj-6", 9 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-139", 0 ],
+					"source" : [ "obj-6", 12 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-141", 0 ],
+					"source" : [ "obj-6", 11 ]
 				}
 
 			}

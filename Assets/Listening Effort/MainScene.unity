@@ -5091,10 +5091,10 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 4294967295
     HowLongToKeepCandidatesInSeconds: 1
-    AdvancedEnabled: 0
+    AdvancedEnabled: 1
     OcumenLicense: 
     PopupLicenseValidationErrors: 0
-    LicenseAsset: {fileID: 0}
+    LicenseAsset: {fileID: 4900000, guid: 2a378c74277829a42a28f0f3456ce35c, type: 3}
 --- !u!1 &916547699
 GameObject:
   m_ObjectHideFlags: 0

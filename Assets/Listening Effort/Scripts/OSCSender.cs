@@ -127,6 +127,8 @@ public class OSCSender : MonoBehaviour
 			data.rightPupilPosition.y,
 			data.isLeftPupilPositionValid? 1 : 0,
 			data.isRightPupilPositionValid? 1 : 0,
+			data.isLeftEyeBlinking? 1 : 0,
+			data.isRightEyeBlinking? 1 : 0,
 		});
 	}
 

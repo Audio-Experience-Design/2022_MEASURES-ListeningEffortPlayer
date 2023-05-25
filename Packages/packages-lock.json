@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.tobii.ocumen": {
+      "version": "file:W:/files/Clients/38 Imperial College/3 Listening effort/software assets/2021-12-08 - Tobii Ocumen SDK/Packages/Ocumen",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.tobii.xr.sdk": "3.1.0"
+      }
+    },
+    "com.tobii.xr.sdk": {
+      "version": "file:W:/files/Clients/38 Imperial College/3 Listening effort/software assets/2021-12-08 - Tobii Ocumen SDK/Packages/XR SDK",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
