@@ -2915,6 +2915,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8843221}
+  - {fileID: 1261464054}
   m_Father: {fileID: 2124402874}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2932,6 +2933,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoCatalogue: {fileID: 833115702}
   audioRecorder: {fileID: 8843222}
+  pupilometry: {fileID: 0}
+  headTransform: {fileID: 0}
   skyboxVideoPlayer: {fileID: 165716338}
   videoManagers:
   - {fileID: 1674470798}
@@ -5047,7 +5050,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5930176edc336684e965aa6f81fe0854, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logChanges: 0
 --- !u!4 &905427548
 Transform:
   m_ObjectHideFlags: 0
@@ -6194,6 +6196,37 @@ AudioSource:
     type: 3}
   m_PrefabInstance: {fileID: 1527822350}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1261464053
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1261464054}
+  m_Layer: 0
+  m_Name: BodyRecorder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1261464054
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261464053}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 556563288}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1283042470
 GameObject:
   m_ObjectHideFlags: 0

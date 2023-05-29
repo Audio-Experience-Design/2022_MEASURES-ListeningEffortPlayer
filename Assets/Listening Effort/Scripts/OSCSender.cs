@@ -6,220 +6,308 @@ using UnityEngine.Video;
 using UnityOSC;
 using IPAddress = System.Net.IPAddress;
 
+using PupilometryData = Tobii.XR.TobiiXR_AdvancedEyeTrackingData;
+
 public class OSCSender : MonoBehaviour
 {
-	public Transform UserHeadPosition;
-	public Pupilometry pupilometry;
-	public bool LogSentOscMessages;
-	public string ClientIP = "127.0.0.1";
-	public int Port = 6789;
-	public VideoCatalogue VideoCatalogue;
+    public Transform UserHeadPosition;
+    public Pupilometry pupilometry;
+    public bool LogSentOscMessages;
+    public string ClientIP = "127.0.0.1";
+    public int Port = 6789;
+    public VideoCatalogue VideoCatalogue;
 
-	// ClientIP that was used to set up the OSC Client, cached so we can detect change
-	private string currentClientIP;
+    // ClientIP that was used to set up the OSC Client, cached so we can detect change
+    private string currentClientIP;
 
-	private OSCClient oscClient;
+    private OSCClient oscClient;
 
-	private OSCController oscController;
-	private List<VideoPlayer> videoPlayersWithCallbacksRegistered = new List<VideoPlayer>();
+    private OSCController oscController;
+    private List<VideoPlayer> videoPlayersWithCallbacksRegistered = new List<VideoPlayer>();
 
-	private int numSendErrors = 0;
+    private int numSendErrors = 0;
 
-	void Awake()
-	{
-		oscController = GetComponent<OSCController>();
-	}
+    void Awake()
+    {
+        oscController = GetComponent<OSCController>();
+    }
 
-	// Start is called before the first frame update
-	void Start()
-	{
-		oscClient = new OSCClient(IPAddress.Parse(ClientIP), Port);
-		currentClientIP = ClientIP;
+    // Start is called before the first frame update
+    void Start()
+    {
+        oscClient = new OSCClient(IPAddress.Parse(ClientIP), Port);
+        currentClientIP = ClientIP;
 
-	}
+    }
 
-	void OnEnable()
-	{
-		pupilometry.DataChanged += OnPupilometryDataChanged;
+    void OnEnable()
+    {
+        pupilometry.DataChanged += OnPupilometryDataChanged;
 
-		Debug.Assert(videoPlayersWithCallbacksRegistered.Count == 0);
-		OSCController controller = GetComponent<OSCController>();
-		for (int i = 0; i < controller.videoPlayers.Length; i++)
-		{
-			controller.videoPlayers[i].prepareCompleted += OnVideoPlayerPrepared;
+        Debug.Assert(videoPlayersWithCallbacksRegistered.Count == 0);
+        OSCController controller = GetComponent<OSCController>();
+        for (int i = 0; i < controller.videoPlayers.Length; i++)
+        {
+            controller.videoPlayers[i].prepareCompleted += OnVideoPlayerPrepared;
 
-			controller.videoPlayers[i].sendFrameReadyEvents = true;
-			controller.videoPlayers[i].frameReady += OnVideoPlayerFrameReady;
+            controller.videoPlayers[i].sendFrameReadyEvents = true;
+            controller.videoPlayers[i].frameReady += OnVideoPlayerFrameReady;
 
-			videoPlayersWithCallbacksRegistered.Add(controller.videoPlayers[i]);
+            videoPlayersWithCallbacksRegistered.Add(controller.videoPlayers[i]);
 
-		}
-	}
+        }
+    }
 
-	void OnDisable()
-	{
-		pupilometry.DataChanged -= OnPupilometryDataChanged;
+    void OnDisable()
+    {
+        pupilometry.DataChanged -= OnPupilometryDataChanged;
 
-		foreach (VideoPlayer player in videoPlayersWithCallbacksRegistered)
-		{
-			player.prepareCompleted -= OnVideoPlayerPrepared;
-			player.frameReady -= OnVideoPlayerFrameReady;
-		}
-		videoPlayersWithCallbacksRegistered.Clear();
-	}
+        foreach (VideoPlayer player in videoPlayersWithCallbacksRegistered)
+        {
+            player.prepareCompleted -= OnVideoPlayerPrepared;
+            player.frameReady -= OnVideoPlayerFrameReady;
+        }
+        videoPlayersWithCallbacksRegistered.Clear();
+    }
 
-	private void OnVideoPlayerPrepared(VideoPlayer player)
-	{
-		bool isIdle = player.GetComponent<VideoManager>()?.IsIdleVideoPlaying == true;
-		if (!isIdle)
-		{
-			int id = oscController.GetIDForVideoPlayer(player);
-			Send($"/video/prepared", new ArrayList { id, player.url });
-		}
-	}
+    private void OnVideoPlayerPrepared(VideoPlayer player)
+    {
+        bool isIdle = player.GetComponent<VideoManager>()?.IsIdleVideoPlaying == true;
+        if (!isIdle)
+        {
+            int id = oscController.GetIDForVideoPlayer(player);
+            Send($"/video/prepared", new ArrayList { id, player.url });
+        }
+    }
 
-	private void OnVideoPlayerFrameReady(VideoPlayer player, long frameIndex)
-	{
-		bool isIdle = player.GetComponent<VideoManager>()?.IsIdleVideoPlaying == true;
-		if (!isIdle && frameIndex == 0)
-		{
-			int id = oscController.GetIDForVideoPlayer(player);
-			Send($"/video/first_frame", new ArrayList { id, player.url });
-		}
-	}
-
-
-	private void UpdateClientAddress()
-	{
-		IPAddress ipAddress;
-		if (IPAddress.TryParse(ClientIP, out ipAddress) && 0 <= Port && Port <= 65535)
-		{
-			if (oscClient != null)
-			{
-				oscClient.Close();
-			}
-			oscClient = new OSCClient(ipAddress, Port);
-			// Formatting might have changed
-			ClientIP = oscClient.ClientIPAddress.ToString();
-			Debug.Log($"OSC Client address set to {ClientIP}:{Port}.");
-			SendVideoNames();
-		}
-		else
-		{
-			Debug.LogWarning($"Unable to set OSC client address to invalid IP/port: {ClientIP}:{Port}. OSC is still being sent to {oscClient.ClientIPAddress}:{oscClient.Port}.");
-		}
-		currentClientIP = ClientIP;
-	}
+    private void OnVideoPlayerFrameReady(VideoPlayer player, long frameIndex)
+    {
+        bool isIdle = player.GetComponent<VideoManager>()?.IsIdleVideoPlaying == true;
+        if (!isIdle && frameIndex == 0)
+        {
+            int id = oscController.GetIDForVideoPlayer(player);
+            Send($"/video/first_frame", new ArrayList { id, player.url });
+        }
+    }
 
 
-	private void OnPupilometryDataChanged(object sender, Pupilometry.Data data)
-	{
-		Send("/pupilometry", new ArrayList
-		{
-			data.hasUser? 1 : 0,
-			data.leftPupilDiameterMm,
-			data.rightPupilDiameterMm,
-			data.isLeftPupilDiameterValid? 1 : 0,
-			data.isRightPupilDiameterValid? 1 : 0,
-			data.leftPupilPosition.x,
-			data.leftPupilPosition.y,
-			data.rightPupilPosition.x,
-			data.rightPupilPosition.y,
-			data.isLeftPupilPositionValid? 1 : 0,
-			data.isRightPupilPositionValid? 1 : 0,
-			data.isLeftEyeBlinking? 1 : 0,
-			data.isRightEyeBlinking? 1 : 0,
-		});
-	}
+    private void UpdateClientAddress()
+    {
+        IPAddress ipAddress;
+        if (IPAddress.TryParse(ClientIP, out ipAddress) && 0 <= Port && Port <= 65535)
+        {
+            if (oscClient != null)
+            {
+                oscClient.Close();
+            }
+            oscClient = new OSCClient(ipAddress, Port);
+            // Formatting might have changed
+            ClientIP = oscClient.ClientIPAddress.ToString();
+            Debug.Log($"OSC Client address set to {ClientIP}:{Port}.");
+            SendVideoNames();
+            SendPupilometryHeaders();
+        }
+        else
+        {
+            Debug.LogWarning($"Unable to set OSC client address to invalid IP/port: {ClientIP}:{Port}. OSC is still being sent to {oscClient.ClientIPAddress}:{oscClient.Port}.");
+        }
+        currentClientIP = ClientIP;
+    }
 
 
-	// Update is called once per frame
-	void Update()
-	{
-		if (ClientIP != currentClientIP || Port != oscClient.Port)
-		{
-			UpdateClientAddress();
-		}
+    private void OnPupilometryDataChanged(object sender, PupilometryData data)
+    {
+        Send("/pupilometry", new ArrayList
+        {
+		//	data.hasUser? 1 : 0,
+		//	data.leftPupilDiameterMm,
+		//	data.rightPupilDiameterMm,
+		//	data.isLeftPupilDiameterValid? 1 : 0,
+		//	data.isRightPupilDiameterValid? 1 : 0,
+		//	data.leftPupilPosition.x,
+		//	data.leftPupilPosition.y,
+		//	data.rightPupilPosition.x,
+		//	data.rightPupilPosition.y,
+		//	data.isLeftPupilPositionValid? 1 : 0,
+		//	data.isRightPupilPositionValid? 1 : 0,
+		//	data.isLeftEyeBlinking? 1 : 0,
+		//	data.isRightEyeBlinking? 1 : 0,
+		//}
 
-		if (UserHeadPosition.hasChanged)
-		{
-			Send("/head_rotation", new ArrayList{
-				UserHeadPosition.rotation.eulerAngles.x,
-				UserHeadPosition.rotation.eulerAngles.y,
-				UserHeadPosition.rotation.eulerAngles.z,
-			});
-			UserHeadPosition.hasChanged = false;
-		}
-	}
+			data.SystemTimestamp,
+            data.DeviceTimestamp,
+            data.Left.IsBlinking,
+            data.Right.IsBlinking,
+            data.Left.PupilDiameterValid,
+            data.Left.PupilDiameter,
+            data.Right.PupilDiameterValid,
+            data.Right.PupilDiameter,
+            data.Left.PositionGuideValid,
+            data.Left.PositionGuide.x,
+            data.Left.PositionGuide.y,
+            data.Right.PositionGuideValid,
+            data.Right.PositionGuide.x,
+            data.Right.PositionGuide.y,
+            data.Left.GazeRay.IsValid,
+            data.Left.GazeRay.Origin.x,
+            data.Left.GazeRay.Origin.y,
+            data.Left.GazeRay.Origin.z,
+            data.Left.GazeRay.Direction.x,
+            data.Left.GazeRay.Direction.y,
+            data.Left.GazeRay.Direction.z,
+            data.Right.GazeRay.IsValid,
+            data.Right.GazeRay.Origin.x,
+            data.Right.GazeRay.Origin.y,
+            data.Right.GazeRay.Origin.z,
+            data.Left.GazeRay.Direction.x,
+            data.Left.GazeRay.Direction.y,
+            data.Left.GazeRay.Direction.z,
+            data.ConvergenceDistanceIsValid,
+            data.ConvergenceDistance,
+            data.GazeRay.IsValid,
+            data.GazeRay.Origin.x,
+            data.GazeRay.Origin.y,
+            data.GazeRay.Origin.z,
+            data.GazeRay.Direction.x,
+            data.GazeRay.Direction.y,
+            data.GazeRay.Direction.z,
+            }
+        );
+    }
 
-	public void SendVideoPositions(Transform[] pivotTransforms, Transform[] quadTransforms)
-	{
-		Debug.Assert(pivotTransforms.Length == quadTransforms.Length);
-		for (int i=0; i<pivotTransforms.Length; i++)
-		{
-			if (pivotTransforms[i] != null && quadTransforms[i] != null)
-			{
-				//(typeof(float), "Azimuth (degrees)"),
-				//(typeof(float), "Inclination (degrees)"),
-				//(typeof(float), "Twist (degrees)"),
-				//(typeof(float), "Rotation around X axis(degrees)"),
-				//(typeof(float), "Rotation around Y axis (degrees)"),
-				//(typeof(float), "Width (scale)"),
-				//(typeof(float), "Height (scale)"),
+    private void SendPupilometryHeaders()
+    {
+        Send("/pupilometryLabels", new ArrayList
+        {
+            "SystemTimestamp",
+            "DeviceTimestamp",
+            "Left.IsBlinking",
+            "Right.IsBlinking",
+            "Left.PupilDiameterValid",
+            "Left.PupilDiameter",
+            "Right.PupilDiameterValid",
+            "Right.PupilDiameter",
+            "Left.PositionGuideValid",
+            "Left.PositionGuide.x",
+            "Left.PositionGuide.y",
+            "Right.PositionGuideValid",
+            "Right.PositionGuide.x",
+            "Right.PositionGuide.y",
+            "Left.GazeRay.IsValid",
+            "Left.GazeRay.Origin.x",
+            "Left.GazeRay.Origin.y",
+            "Left.GazeRay.Origin.z",
+            "Left.GazeRay.Direction.x",
+            "Left.GazeRay.Direction.y",
+            "Left.GazeRay.Direction.z",
+            "Right.GazeRay.IsValid",
+            "Right.GazeRay.Origin.x",
+            "Right.GazeRay.Origin.y",
+            "Right.GazeRay.Origin.z",
+            "Left.GazeRay.Direction.x",
+            "Left.GazeRay.Direction.y",
+            "Left.GazeRay.Direction.z",
+            "ConvergenceDistanceIsValid",
+            "ConvergenceDistance",
+            "GazeRay.IsValid",
+            "GazeRay.Origin.x",
+            "GazeRay.Origin.y",
+            "GazeRay.Origin.z",
+            "GazeRay.Direction.x",
+            "GazeRay.Direction.y",
+            "GazeRay.Direction.z",
+            }
+        );
+    }
 
-				Send("/video/position", new ArrayList
-				{
-					i,
-					pivotTransforms[i].localEulerAngles.x,
-					pivotTransforms[i].localEulerAngles.y,
-					pivotTransforms[i].localEulerAngles.z,
-					quadTransforms[i].localEulerAngles.x,
-					quadTransforms[i].localEulerAngles.y,
-					quadTransforms[i].localScale.x,
-					quadTransforms[i].localScale.y,
-				});
-			}
-		}
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (ClientIP != currentClientIP || Port != oscClient.Port)
+        {
+            UpdateClientAddress();
+        }
+
+        if (UserHeadPosition.hasChanged)
+        {
+            Send("/head_rotation", new ArrayList{
+                UserHeadPosition.rotation.eulerAngles.x,
+                UserHeadPosition.rotation.eulerAngles.y,
+                UserHeadPosition.rotation.eulerAngles.z,
+            });
+            UserHeadPosition.hasChanged = false;
+        }
+    }
+
+    public void SendVideoPositions(Transform[] pivotTransforms, Transform[] quadTransforms)
+    {
+        Debug.Assert(pivotTransforms.Length == quadTransforms.Length);
+        for (int i = 0; i < pivotTransforms.Length; i++)
+        {
+            if (pivotTransforms[i] != null && quadTransforms[i] != null)
+            {
+                //(typeof(float), "Azimuth (degrees)"),
+                //(typeof(float), "Inclination (degrees)"),
+                //(typeof(float), "Twist (degrees)"),
+                //(typeof(float), "Rotation around X axis(degrees)"),
+                //(typeof(float), "Rotation around Y axis (degrees)"),
+                //(typeof(float), "Width (scale)"),
+                //(typeof(float), "Height (scale)"),
+
+                Send("/video/position", new ArrayList
+                {
+                    i,
+                    pivotTransforms[i].localEulerAngles.x,
+                    pivotTransforms[i].localEulerAngles.y,
+                    pivotTransforms[i].localEulerAngles.z,
+                    quadTransforms[i].localEulerAngles.x,
+                    quadTransforms[i].localEulerAngles.y,
+                    quadTransforms[i].localScale.x,
+                    quadTransforms[i].localScale.y,
+                });
+            }
+        }
+    }
 
 
-	void Send<Collection>(string address, Collection arguments) where Collection: IEnumerable
-	{
-		OSCMessage m = new OSCMessage(address);
-		foreach (object argument in arguments)
-		{
-			m.Append(argument);
-		}
-		// Send but catch an exception and if we're logging then print it to log
-		try
-		{
+    void Send<Collection>(string address, Collection arguments) where Collection : IEnumerable
+    {
+        OSCMessage m = new OSCMessage(address);
+        foreach (object argument in arguments)
+        {
+            m.Append(argument);
+        }
+        // Send but catch an exception and if we're logging then print it to log
+        try
+        {
             oscClient.Send(m);
         }
-		catch (System.Exception e)
-		{
-			numSendErrors++;
-			if (LogSentOscMessages || numSendErrors < 5)
-			{
-				Debug.LogWarning(e);
-			}
-			else if (!LogSentOscMessages && numSendErrors == 5)
-			{
-				Debug.LogWarning($"No further OSC send errors will be logged.");
-			}
-		}
+        catch (System.Exception e)
+        {
+            numSendErrors++;
+            if (LogSentOscMessages || numSendErrors < 5)
+            {
+                Debug.LogWarning(e);
+            }
+            else if (!LogSentOscMessages && numSendErrors == 5)
+            {
+                Debug.LogWarning($"No further OSC send errors will be logged.");
+            }
+        }
 
 
         if (LogSentOscMessages)
-		{
-			Debug.Log($"Sent OSC to {currentClientIP}:{oscClient.Port}: {m.ToString()}");
-		}
-	}
+        {
+            Debug.Log($"Sent OSC to {currentClientIP}:{oscClient.Port}: {m.ToString()}");
+        }
+    }
 
     public void SendVideoNames()
     {
-		foreach (var (type, names) in VideoCatalogue.GetVideoNames())
+        foreach (var (type, names) in VideoCatalogue.GetVideoNames())
         {
-			Send($"/video/names/{type}", names);
+            Send($"/video/names/{type}", names);
         }
     }
 

@@ -6,6 +6,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Video;
 
+using PupilometryData = Tobii.XR.TobiiXR_AdvancedEyeTrackingData;
+
+
 public class ScriptedSessionController : MonoBehaviour
 {
     public Session session { get; private set; }
@@ -37,19 +40,43 @@ public class ScriptedSessionController : MonoBehaviour
         //public float HeadPositionEulerX { get; set; }
         //public float HeadPositionEulerY { get; set; }
         //public float HeadPositionEulerZ { get; set; }
-        public float LeftPupilDiameterMm { get; set; }
-        public float RightPupilDiameterMm { get; set; }
-        public bool IsLeftPupilDiameterValid { get; set; }
-        public bool IsRightPupilDiameterValid { get; set; }
-        public float LeftPupilPositionX { get; set; }
-
-        public float LeftPupilPositionY { get; set; }
-        public float RightPupilPositionX { get; set; }
-        public float RightPupilPositionY { get; set; }
-        public bool IsLeftPupilPositionValid { get; set; }
-        public bool IsRightPupilPositionValid { get; set; }
-        public bool IsLeftEyeBlinking { get; set; }
-        public bool IsRightEyeBlinking { get; set; }
+        public long PupilometrySystemTimestamp { get; set; }
+        public long PupilometryDeviceTimestamp { get; set; }
+        public bool LeftIsBlinking { get; set; }
+        public bool RightIsBlinking { get; set; }
+        public bool LeftPupilDiameterValid { get; set; }
+        public float LeftPupilDiameter { get; set; }
+        public bool RightPupilDiameterValid { get; set; }
+        public float RightPupilDiameter { get; set; }
+        public bool LeftPositionGuideValid { get; set; }
+        public float LeftPositionGuideX { get; set; }
+        public float LeftPositionGuideY { get; set; }
+        public bool RightPositionGuideValid { get; set; }
+        public float RightPositionGuideX { get; set; }
+        public float RightPositionGuideY { get; set; }
+        public bool LeftGazeRayIsValid { get; set; }
+        public float LeftGazeRayOriginX { get; set; }
+        public float LeftGazeRayOriginY { get; set; }
+        public float LeftGazeRayOriginZ { get; set; }
+        public float LeftGazeRayDirectionX { get; set; }
+        public float LeftGazeRayDirectionY { get; set; }
+        public float LeftGazeRayDirectionZ { get; set; }
+        public bool RightGazeRayIsValid { get; set; }
+        public float RightGazeRayOriginX { get; set; }
+        public float RightGazeRayOriginY { get; set; }
+        public float RightGazeRayOriginZ { get; set; }
+        public float RightGazeRayDirectionX { get; set; }
+        public float RightGazeRayDirectionY { get; set; }
+        public float RightGazeRayDirectionZ { get; set; }
+        public bool ConvergenceDistanceIsValid { get; set; }
+        public float ConvergenceDistance { get; set; }
+        public bool GazeRayIsValid { get; set; }
+        public float GazeRayOriginX { get; set; }
+        public float GazeRayOriginY { get; set; }
+        public float GazeRayOriginZ { get; set; }
+        public float GazeRayDirectionX { get; set; }
+        public float GazeRayDirectionY { get; set; }
+        public float GazeRayDirectionZ { get; set; }
 
     }
     public enum State
@@ -170,8 +197,6 @@ public class ScriptedSessionController : MonoBehaviour
         using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}.csv"), true, Encoding.UTF8);
 
 
-
-
         // Speaker Amplitude
         videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
 
@@ -208,25 +233,50 @@ public class ScriptedSessionController : MonoBehaviour
             EventName = "Trial started",
         });
 
-        EventHandler<Pupilometry.Data> pupilometryCallback = (object sender, Pupilometry.Data data) =>
+        EventHandler<PupilometryData> pupilometryCallback = (object sender, PupilometryData data) =>
         {
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
             {
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Pupilometry",
-                LeftPupilDiameterMm = data.leftPupilDiameterMm,
-                RightPupilDiameterMm = data.rightPupilDiameterMm,
-                IsLeftPupilDiameterValid = data.isLeftPupilDiameterValid,
-                IsRightPupilDiameterValid = data.isRightPupilDiameterValid,
-                LeftPupilPositionX = data.leftPupilPosition.x,
-                LeftPupilPositionY = data.leftPupilPosition.y,
-                RightPupilPositionX = data.rightPupilPosition.x,
-                RightPupilPositionY = data.rightPupilPosition.y,
-                IsLeftPupilPositionValid = data.isLeftPupilPositionValid,
-                IsRightPupilPositionValid = data.isRightPupilPositionValid,
-                IsLeftEyeBlinking = data.isLeftEyeBlinking,
-                IsRightEyeBlinking = data.isRightEyeBlinking,
+                PupilometrySystemTimestamp = data.SystemTimestamp,
+                PupilometryDeviceTimestamp = data.DeviceTimestamp,
+                LeftIsBlinking = data.Left.IsBlinking,
+                RightIsBlinking = data.Right.IsBlinking,
+                LeftPupilDiameterValid = data.Left.PupilDiameterValid,
+                LeftPupilDiameter = data.Left.PupilDiameter,
+                RightPupilDiameterValid = data.Right.PupilDiameterValid,
+                RightPupilDiameter = data.Right.PupilDiameter,
+                LeftPositionGuideValid = data.Left.PositionGuideValid,
+                LeftPositionGuideX = data.Left.PositionGuide.x,
+                LeftPositionGuideY = data.Left.PositionGuide.y,
+                RightPositionGuideValid = data.Right.PositionGuideValid,
+                RightPositionGuideX = data.Right.PositionGuide.x,
+                RightPositionGuideY = data.Right.PositionGuide.y,
+                LeftGazeRayIsValid = data.Left.GazeRay.IsValid,
+                LeftGazeRayOriginX = data.Left.GazeRay.Origin.x,
+                LeftGazeRayOriginY = data.Left.GazeRay.Origin.y,
+                LeftGazeRayOriginZ = data.Left.GazeRay.Origin.z,
+                LeftGazeRayDirectionX = data.Left.GazeRay.Direction.x,
+                LeftGazeRayDirectionY = data.Left.GazeRay.Direction.y,
+                LeftGazeRayDirectionZ = data.Left.GazeRay.Direction.z,
+                RightGazeRayIsValid = data.Right.GazeRay.IsValid,
+                RightGazeRayOriginX = data.Right.GazeRay.Origin.x,
+                RightGazeRayOriginY = data.Right.GazeRay.Origin.y,
+                RightGazeRayOriginZ = data.Right.GazeRay.Origin.z,
+                RightGazeRayDirectionX = data.Right.GazeRay.Direction.x,
+                RightGazeRayDirectionY = data.Right.GazeRay.Direction.y,
+                RightGazeRayDirectionZ = data.Right.GazeRay.Direction.z,
+                ConvergenceDistanceIsValid = data.ConvergenceDistanceIsValid,
+                ConvergenceDistance = data.ConvergenceDistance,
+                GazeRayIsValid = data.GazeRay.IsValid,
+                GazeRayOriginX = data.GazeRay.Origin.x,
+                GazeRayOriginY = data.GazeRay.Origin.y,
+                GazeRayOriginZ = data.GazeRay.Origin.z,
+                GazeRayDirectionX = data.GazeRay.Direction.x,
+                GazeRayDirectionY = data.GazeRay.Direction.y,
+                GazeRayDirectionZ = data.GazeRay.Direction.z,
             });
         };
         pupilometry.DataChanged += pupilometryCallback;
