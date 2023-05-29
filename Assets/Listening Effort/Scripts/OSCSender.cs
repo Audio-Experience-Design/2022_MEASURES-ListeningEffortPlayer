@@ -10,7 +10,7 @@ using PupilometryData = Tobii.XR.TobiiXR_AdvancedEyeTrackingData;
 
 public class OSCSender : MonoBehaviour
 {
-    public Transform UserHeadPosition;
+    public TransformWatcher UserHeadTransform;
     public Pupilometry pupilometry;
     public bool LogSentOscMessages;
     public string ClientIP = "127.0.0.1";
@@ -43,6 +43,7 @@ public class OSCSender : MonoBehaviour
     void OnEnable()
     {
         pupilometry.DataChanged += OnPupilometryDataChanged;
+        UserHeadTransform.TransformChanged += OnUserHeadTransformChanged;
 
         Debug.Assert(videoPlayersWithCallbacksRegistered.Count == 0);
         OSCController controller = GetComponent<OSCController>();
@@ -56,11 +57,14 @@ public class OSCSender : MonoBehaviour
             videoPlayersWithCallbacksRegistered.Add(controller.videoPlayers[i]);
 
         }
+
+
     }
 
     void OnDisable()
     {
         pupilometry.DataChanged -= OnPupilometryDataChanged;
+        UserHeadTransform.TransformChanged -= OnUserHeadTransformChanged;
 
         foreach (VideoPlayer player in videoPlayersWithCallbacksRegistered)
         {
@@ -114,6 +118,15 @@ public class OSCSender : MonoBehaviour
         currentClientIP = ClientIP;
     }
 
+
+    private void OnUserHeadTransformChanged(object sender, Transform UserHeadTransform)
+    {
+        Send("/head_rotation", new ArrayList{
+                UserHeadTransform.rotation.eulerAngles.x,
+                UserHeadTransform.rotation.eulerAngles.y,
+                UserHeadTransform.rotation.eulerAngles.z,
+            });
+    }
 
     private void OnPupilometryDataChanged(object sender, PupilometryData data)
     {
@@ -229,15 +242,6 @@ public class OSCSender : MonoBehaviour
             UpdateClientAddress();
         }
 
-        if (UserHeadPosition.hasChanged)
-        {
-            Send("/head_rotation", new ArrayList{
-                UserHeadPosition.rotation.eulerAngles.x,
-                UserHeadPosition.rotation.eulerAngles.y,
-                UserHeadPosition.rotation.eulerAngles.z,
-            });
-            UserHeadPosition.hasChanged = false;
-        }
     }
 
     public void SendVideoPositions(Transform[] pivotTransforms, Transform[] quadTransforms)

@@ -16,7 +16,7 @@ public class ScriptedSessionController : MonoBehaviour
     public VideoCatalogue videoCatalogue;
     public AudioRecorder audioRecorder;
     public Pupilometry pupilometry;
-    public Transform headTransform;
+    public TransformWatcher headTransform;
 
     public VideoPlayer skyboxVideoPlayer;
     public VideoManager[] videoManagers;
@@ -37,9 +37,10 @@ public class ScriptedSessionController : MonoBehaviour
         public string RightVideo { get; set; }
         public string UserResponseAudioFile { get; set; }
 
-        //public float HeadPositionEulerX { get; set; }
-        //public float HeadPositionEulerY { get; set; }
-        //public float HeadPositionEulerZ { get; set; }
+        public float HeadRotationEulerX { get; set; }
+        public float HeadRotationEulerY { get; set; }
+        public float HeadRotationEulerZ { get; set; }
+
         public long PupilometrySystemTimestamp { get; set; }
         public long PupilometryDeviceTimestamp { get; set; }
         public bool LeftIsBlinking { get; set; }
@@ -281,6 +282,20 @@ public class ScriptedSessionController : MonoBehaviour
         };
         pupilometry.DataChanged += pupilometryCallback;
 
+        EventHandler<Transform> headTransformCallback = (object sender, Transform data) =>
+        {
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "HeadRotation",
+                HeadRotationEulerX = data.rotation.eulerAngles.x,
+                HeadRotationEulerY = data.rotation.eulerAngles.y,
+                HeadRotationEulerZ = data.rotation.eulerAngles.z,
+            });
+        };
+        headTransform.TransformChanged += headTransformCallback;
+
 
         for (int i = 0; i < session.Maskers.Count(); i++)
         {
@@ -356,6 +371,7 @@ public class ScriptedSessionController : MonoBehaviour
         advanceStateTo(State.Completed);
 
         pupilometry.DataChanged -= pupilometryCallback;
+        headTransform.TransformChanged -= headTransformCallback;
 
         LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
         {

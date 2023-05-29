@@ -53,16 +53,17 @@ public class Pupilometry : MonoBehaviour
 
     void FixedUpdate()
     {
-#if !UNITY_EDITOR
-        var data = TobiiXR.Advanced.LatestData;
-        if (data == null && !hasWarningBeenIssuedForNoData)
+        if (!TobiiXR.IsAdvancedInitialized)
         {
-            Debug.LogWarning($"Unable to get pupilometry data from TobiiXR SDK (data was null).");
-            hasWarningBeenIssuedForNoData = true;
+            if (!hasWarningBeenIssuedForNoData)
+            {
+                Debug.LogError($"Unable to get pupilometry data from TobiiXR SDK (cannot access Advanced Data - likely due to licensing issue).");
+                hasWarningBeenIssuedForNoData = true;
+            }
         }
-
         else
         {
+            TobiiXR_AdvancedEyeTrackingData data = TobiiXR.Advanced.LatestData;
             hasWarningBeenIssuedForNoData = false;
             Debug.Assert(data.DeviceTimestamp >= lastTimestamp);
             if (data.DeviceTimestamp > lastTimestamp)
@@ -112,6 +113,5 @@ public class Pupilometry : MonoBehaviour
                 lastTimestamp = data.DeviceTimestamp;
             }
         }
-#endif
     }
 }
