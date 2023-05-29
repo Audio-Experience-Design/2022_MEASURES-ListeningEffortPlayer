@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -132,59 +133,44 @@ public class OSCSender : MonoBehaviour
     {
         Send("/pupilometry", new ArrayList
         {
-		//	data.hasUser? 1 : 0,
-		//	data.leftPupilDiameterMm,
-		//	data.rightPupilDiameterMm,
-		//	data.isLeftPupilDiameterValid? 1 : 0,
-		//	data.isRightPupilDiameterValid? 1 : 0,
-		//	data.leftPupilPosition.x,
-		//	data.leftPupilPosition.y,
-		//	data.rightPupilPosition.x,
-		//	data.rightPupilPosition.y,
-		//	data.isLeftPupilPositionValid? 1 : 0,
-		//	data.isRightPupilPositionValid? 1 : 0,
-		//	data.isLeftEyeBlinking? 1 : 0,
-		//	data.isRightEyeBlinking? 1 : 0,
-		//}
-
-			data.SystemTimestamp,
-            data.DeviceTimestamp,
-            data.Left.IsBlinking,
-            data.Right.IsBlinking,
-            data.Left.PupilDiameterValid,
+            (Int64) data.SystemTimestamp,
+            (Int64) data.DeviceTimestamp,
+            Convert.ToInt32(data.Left.IsBlinking),
+            Convert.ToInt32(data.Right.IsBlinking),
+            Convert.ToInt32(data.Left.PupilDiameterValid),
             data.Left.PupilDiameter,
-            data.Right.PupilDiameterValid,
+            Convert.ToInt32(data.Right.PupilDiameterValid),
             data.Right.PupilDiameter,
-            data.Left.PositionGuideValid,
+            Convert.ToInt32(data.Left.PositionGuideValid),
             data.Left.PositionGuide.x,
             data.Left.PositionGuide.y,
-            data.Right.PositionGuideValid,
+            Convert.ToInt32(data.Right.PositionGuideValid),
             data.Right.PositionGuide.x,
             data.Right.PositionGuide.y,
-            data.Left.GazeRay.IsValid,
+            Convert.ToInt32(data.Left.GazeRay.IsValid),
             data.Left.GazeRay.Origin.x,
             data.Left.GazeRay.Origin.y,
             data.Left.GazeRay.Origin.z,
             data.Left.GazeRay.Direction.x,
             data.Left.GazeRay.Direction.y,
             data.Left.GazeRay.Direction.z,
-            data.Right.GazeRay.IsValid,
+            Convert.ToInt32(data.Right.GazeRay.IsValid),
             data.Right.GazeRay.Origin.x,
             data.Right.GazeRay.Origin.y,
             data.Right.GazeRay.Origin.z,
             data.Left.GazeRay.Direction.x,
             data.Left.GazeRay.Direction.y,
             data.Left.GazeRay.Direction.z,
-            data.ConvergenceDistanceIsValid,
+            Convert.ToInt32(data.ConvergenceDistanceIsValid),
             data.ConvergenceDistance,
-            data.GazeRay.IsValid,
+            Convert.ToInt32(data.GazeRay.IsValid),
             data.GazeRay.Origin.x,
             data.GazeRay.Origin.y,
             data.GazeRay.Origin.z,
             data.GazeRay.Direction.x,
             data.GazeRay.Direction.y,
             data.GazeRay.Direction.z,
-            }
+        }
         );
     }
 

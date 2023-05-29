@@ -40,6 +40,18 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-180",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 814.0, 967.0, 50.0, 22.0 ],
+					"text" : "clear all"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-176",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -126,10 +138,10 @@
 					"id" : "obj-160",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 688.0, 926.0, 29.5, 22.0 ],
-					"text" : "t l l"
+					"numoutlets" : 3,
+					"outlettype" : [ "", "", "bang" ],
+					"patching_rect" : [ 688.0, 926.0, 40.0, 22.0 ],
+					"text" : "t l l b"
 				}
 
 			}
@@ -1274,7 +1286,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1456.0, 866.5, 238.0, 34.0 ],
+					"patching_rect" : [ 1554.5, 869.5, 238.0, 34.0 ],
 					"text" : "3. This value can be saved and reused for the next time you start the Unity app"
 				}
 
@@ -2398,7 +2410,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 200.0, 765.0, 214.0, 22.0 ],
-					"text" : "341.651245 113.052361 359.777496"
+					"text" : "349.09549 112.25705 1.625998"
 				}
 
 			}
@@ -2998,7 +3010,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
-					"midpoints" : [ 818.5, 954.0, 88.5, 954.0 ],
+					"midpoints" : [ 818.5, 936.0, 88.5, 936.0 ],
 					"source" : [ "obj-158", 1 ]
 				}
 
@@ -3028,6 +3040,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-161", 0 ],
 					"source" : [ "obj-160", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-180", 0 ],
+					"source" : [ "obj-160", 2 ]
 				}
 
 			}
@@ -3077,6 +3096,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-18", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-153", 0 ],
+					"source" : [ "obj-180", 0 ]
 				}
 
 			}

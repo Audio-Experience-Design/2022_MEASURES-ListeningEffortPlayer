@@ -8,7 +8,7 @@ public class TransformWatcher : MonoBehaviour
     public event EventHandler<Transform> TransformChanged;
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if (transform.hasChanged)
         {

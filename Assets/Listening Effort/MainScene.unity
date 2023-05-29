@@ -2933,8 +2933,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoCatalogue: {fileID: 833115702}
   audioRecorder: {fileID: 8843222}
-  pupilometry: {fileID: 0}
-  headTransform: {fileID: 0}
+  pupilometry: {fileID: 905427547}
+  headTransform: {fileID: 1451777308}
   skyboxVideoPlayer: {fileID: 165716338}
   videoManagers:
   - {fileID: 1674470798}
@@ -7222,7 +7222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7858a65072f41324dbdef46f90229f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UserHeadTransform: {fileID: 0}
+  UserHeadTransform: {fileID: 1451777308}
   pupilometry: {fileID: 905427547}
   LogSentOscMessages: 0
   ClientIP: 127.0.0.1
