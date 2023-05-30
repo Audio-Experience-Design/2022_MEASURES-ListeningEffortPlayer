@@ -9,14 +9,11 @@ using System;
 [RequireComponent(typeof(AudioSource))]
 public class AudioRecorder : MonoBehaviour
 {
-    //private AudioClip recordedClip;
     private AudioSource audioSource;
-    public string subfolder = "Recordings";
-    //private string microphone;
     private int frequency;
     private bool hasMicrophone = false;
 
-    private string saveDirectory => Path.Combine(Application.persistentDataPath, subfolder);
+    public string saveDirectory = null;
     private double recordingStartTime = -1f;
     public bool isRecording => recordingStartTime > 0.0f;
     private string recordingFilename;
@@ -28,6 +25,10 @@ public class AudioRecorder : MonoBehaviour
 
     public void Start()
     {
+        if (saveDirectory == null || saveDirectory == "")
+        {
+            saveDirectory = Path.Combine(Application.persistentDataPath, "Recordings");
+        }
         audioSource = GetComponent<AudioSource>();
         Debug.Log($"Microphone devices: {Microphone.devices.Length}");
         foreach (string device in Microphone.devices)

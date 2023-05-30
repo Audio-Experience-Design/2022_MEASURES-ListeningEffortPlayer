@@ -190,8 +190,8 @@ public class ScriptedSessionController : MonoBehaviour
         string localTimestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string subjectLabel = PlayerPrefs.GetString("subjectLabel", "");
         string sessionLabel = $"{localTimestamp}_{session.Name}{(subjectLabel != "" ? "_" : "")}{subjectLabel}";
-        audioRecorder.subfolder = sessionLabel;
-        string sessionFolder = Path.Join(Application.persistentDataPath, sessionLabel);
+        string sessionFolder = Path.Join(Path.Join(Application.persistentDataPath, "RecordedSessions"), sessionLabel);
+        audioRecorder.saveDirectory = sessionFolder;
         Directory.CreateDirectory(sessionFolder);
         File.WriteAllText(Path.Join(sessionFolder, "session.yaml"), localTimestamp);
 
