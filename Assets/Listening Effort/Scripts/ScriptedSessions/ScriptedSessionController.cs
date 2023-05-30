@@ -300,6 +300,8 @@ public class ScriptedSessionController : MonoBehaviour
         for (int i = 0; i < session.Maskers.Count(); i++)
         {
             advanceStateTo(State.WaitingForUserToStartChallenge);
+            string userResponseAudioFile = $"{sessionLabel}_{i:000}.wav";
+
 
             while (state == State.WaitingForUserToStartChallenge)
             {
@@ -313,6 +315,7 @@ public class ScriptedSessionController : MonoBehaviour
             Debug.Assert(numVideosPlaying == 0);
 
             advanceStateTo(State.PlayingVideo);
+
 
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
             {
@@ -329,6 +332,12 @@ public class ScriptedSessionController : MonoBehaviour
                 numVideosPlaying++;
                 videoManagers[k].PlayVideo(session.Challenges[i][k]);
             }
+            // start recording now because pico loses the first few seconds
+            double expectedPlaybackDuration = videoManagers.Aggregate(0.0, (acc, vm) => Math.Max(acc, vm.player.length));
+            int maximumRecordingDuration = session.MaximumRecordingDuration + (int)Math.Ceiling(expectedPlaybackDuration);
+            Debug.Log($"Starting off recorder. Max duration (including playback): {maximumRecordingDuration}");
+            audioRecorder.StartRecording(userResponseAudioFile, maximumRecordingDuration);
+
             while (numVideosPlaying > 0)
             {
                 yield return null;
@@ -336,7 +345,7 @@ public class ScriptedSessionController : MonoBehaviour
 
             advanceStateTo(State.RecordingUserResponse);
 
-            string userResponseAudioFile = $"{sessionLabel}_{i:000}.wav";
+            audioRecorder.MarkRecordingInPoint();
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
             {
                 Timestamp = LogUtilities.localTimestamp(),
@@ -347,7 +356,6 @@ public class ScriptedSessionController : MonoBehaviour
                 MiddleVideo = session.Challenges[i][1],
                 RightVideo = session.Challenges[i][2],
             });
-            audioRecorder.StartRecording(userResponseAudioFile, session.MaximumRecordingDuration);
             while (state == State.RecordingUserResponse)
             {
                 yield return null;

@@ -21,6 +21,7 @@ public class AudioRecorder : MonoBehaviour
     public bool isRecording => recordingStartTime > 0.0f;
     private string recordingFilename;
     private Coroutine waitForRecordingCoroutine;
+    private double durationToTrimFromBeginning = 0.0;
 
     public event EventHandler<string> recordingFinished;
 
@@ -64,6 +65,15 @@ public class AudioRecorder : MonoBehaviour
         waitForRecordingCoroutine = StartCoroutine(WaitForRecording(lengthSec));
     }
 
+    // Because the Pico loses the first few seconds of recording, we start early.
+    // This lets you mark when the saved part of the recording should begin
+    // Can only be called while isRecording is true
+    public void MarkRecordingInPoint()
+    {
+        Debug.Assert(isRecording);
+        durationToTrimFromBeginning = AudioSettings.dspTime - recordingStartTime;
+    }
+
     private IEnumerator WaitForRecording(double lengthSec)
     {
         while (isRecording && AudioSettings.dspTime - recordingStartTime < lengthSec)
@@ -78,20 +88,25 @@ public class AudioRecorder : MonoBehaviour
     private void CloseRecording()
     {
         Microphone.End(null);
-        double length = Math.Max(AudioSettings.dspTime - recordingStartTime, (double)audioSource.clip.length);
-
-        int lengthSamples = (int)(length * audioSource.clip.frequency);
-        AudioClip trimmedClip = AudioClip.Create(audioSource.clip.name, lengthSamples, audioSource.clip.channels, audioSource.clip.frequency, false);
-        float[] samples = new float[lengthSamples * audioSource.clip.channels];
-        audioSource.clip.GetData(samples, 0);
-        trimmedClip.SetData(samples, 0);
+        // removes extra from end
+        double outPoint = Math.Max(AudioSettings.dspTime - recordingStartTime, 0.0);
+        int endpointSamples = (int)(outPoint * audioSource.clip.frequency);
+        double inPoint = Math.Min(durationToTrimFromBeginning, outPoint);
+        int inPointSamples = (int)(inPoint * audioSource.clip.frequency);
+        // also removes extra from beginning
+        int trimmedLengthSamples = endpointSamples - inPointSamples;
+        AudioClip trimmedClip = AudioClip.Create(audioSource.clip.name, trimmedLengthSamples, audioSource.clip.channels, audioSource.clip.frequency, false);
+        float[] trimmedSamples = new float[trimmedLengthSamples * audioSource.clip.channels];
+        audioSource.clip.GetData(trimmedSamples, inPointSamples);
+        trimmedClip.SetData(trimmedSamples, 0);
         string savePath = Path.Combine(saveDirectory, recordingFilename);
         SaveAudio(trimmedClip, savePath);
-        Debug.Log($"{length} seconds recorded and saved to {savePath}");
+        Debug.Log($"{trimmedClip.length} seconds recorded and saved to {savePath}. Inpoint: {inPoint}. OutPoint: {outPoint}");
         recordingFinished?.Invoke(this, savePath);
 
         recordingStartTime = -2.0f;
         waitForRecordingCoroutine = null;
+        durationToTrimFromBeginning = 0.0;
     }
 
     /// Warning: The saved file will still be of the requested length, but the remainder will be silence.
@@ -112,6 +127,5 @@ public class AudioRecorder : MonoBehaviour
         byte[] audioBytes = WavUtility.FromAudioClip(clip);
         fileStream.Write(audioBytes, 0, audioBytes.Length);
         fileStream.Close();
-        Debug.Log($"Audio saved to {path}");
     }
 }
