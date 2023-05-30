@@ -28,6 +28,7 @@ public class PreparationDialog : MonoBehaviour
     public Dropdown hrtfDropdown;
     public Dropdown reverbDropdown;
     public Dropdown scriptedSessionDropdown;
+    public Dropdown participantIDDropdown;
 
     private string GetOSCAddresses()
     {
@@ -95,6 +96,14 @@ public class PreparationDialog : MonoBehaviour
             developerConsole.SetActive(toggle);
             PlayerPrefs.SetInt("developerConsole", toggle ? 1 : 0);
             PlayerPrefs.Save();
+        });
+
+        participantIDDropdown.ClearOptions();
+        participantIDDropdown.AddOptions(new List<string> { "No ID set" });
+        participantIDDropdown.AddOptions(Enumerable.Range(1, 1000).Select(i => $"{i.ToString()}").ToList());
+        participantIDDropdown.onValueChanged.AddListener(index =>
+        {
+            manager.automaticSessionController.participantID = participantIDDropdown.options[index].text;
         });
 
 

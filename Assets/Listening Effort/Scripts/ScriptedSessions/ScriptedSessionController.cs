@@ -22,6 +22,9 @@ public class ScriptedSessionController : MonoBehaviour
     public VideoManager[] videoManagers;
     public GameObject[] babblePrefabs;
 
+    [NonSerialized]
+    public string participantID;
+
     public event EventHandler<State> stateChanged;
     /// current number (0 indexed), current label (1 indexed), total number
     public event EventHandler<(int current, string currentLabel, int total)> challengeNumberChanged;
@@ -31,6 +34,7 @@ public class ScriptedSessionController : MonoBehaviour
         public string Timestamp { get; set; }
         public string SessionTime { get; set; }
         public string EventName { get; set; }
+        public string ParticipantID { get; set; }
         public string ChallengeNumber { get; set; }
         public string LeftVideo { get; set; }
         public string MiddleVideo { get; set; }
@@ -232,6 +236,7 @@ public class ScriptedSessionController : MonoBehaviour
             Timestamp = LogUtilities.localTimestamp(),
             SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
             EventName = "Trial started",
+            ParticipantID = participantID,
         });
 
         EventHandler<PupilometryData> pupilometryCallback = (object sender, PupilometryData data) =>
@@ -240,6 +245,7 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                ParticipantID = participantID,
                 EventName = "Pupilometry",
                 PupilometrySystemTimestamp = data.SystemTimestamp.ToString(),
                 PupilometryDeviceTimestamp = data.DeviceTimestamp.ToString(),
@@ -288,6 +294,7 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                ParticipantID = participantID,
                 EventName = "HeadRotation",
                 HeadRotationEulerX = data.rotation.eulerAngles.x.ToString(),
                 HeadRotationEulerY = data.rotation.eulerAngles.y.ToString(),
@@ -321,6 +328,7 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                ParticipantID = participantID,
                 EventName = "Playing videos",
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
@@ -351,6 +359,7 @@ public class ScriptedSessionController : MonoBehaviour
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Recording response",
+                ParticipantID = participantID,
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
                 MiddleVideo = session.Challenges[i][1],
@@ -368,6 +377,7 @@ public class ScriptedSessionController : MonoBehaviour
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Response received",
+            ParticipantID = participantID,
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
                 MiddleVideo = session.Challenges[i][1],
@@ -386,6 +396,7 @@ public class ScriptedSessionController : MonoBehaviour
             Timestamp = LogUtilities.localTimestamp(),
             SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
             EventName = "Trial completed",
+            ParticipantID = participantID,
         });
 
         sessionEventLogWriter.Close();
