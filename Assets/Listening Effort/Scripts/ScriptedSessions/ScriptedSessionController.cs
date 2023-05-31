@@ -133,7 +133,7 @@ public class ScriptedSessionController : MonoBehaviour
         session = Session.LoadFromYamlPath(yamlPath, videoCatalogue);
         Debug.Assert(session.IdleVideos.Count() == 3);
         Debug.Assert(videoManagers.Count() == 3);
-        Debug.Log($"Loaded {yamlPath}.yaml");
+        Debug.Log($"Loaded {yamlPath}");
 
         StartCoroutine(SessionCoroutine());
     }
@@ -215,10 +215,12 @@ public class ScriptedSessionController : MonoBehaviour
             Debug.Assert(babblePrefabs[i].GetComponentsInChildren<AudioSource>().Count() == 1);
             babblePrefabs[i].GetComponentInChildren<AudioSource>().volume = session.Maskers[i].Amplitude;
             babblePrefabs[i].transform.localRotation = Quaternion.Euler(0, session.Maskers[i].Rotation, 0);
+            Debug.Log($"Set masker {i} to {session.Maskers[i].Amplitude} amplitude and {session.Maskers[i].Rotation} rotation.");
         }
         for (int i = session.Maskers.Count(); i < babblePrefabs.Count(); i++)
         {
             babblePrefabs[i].SetActive(false);
+            Debug.Log($"Deactivated masker {i} as not set in session YAML.");
         }
 
         // Idle videos
