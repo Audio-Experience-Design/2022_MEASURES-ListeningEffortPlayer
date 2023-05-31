@@ -32,6 +32,7 @@ public class VideoCatalogue : MonoBehaviour
     public Dictionary<string, string> UserIdleVideos = new Dictionary<string, string>();
     //public bool UseDemoVideos = true;
     public bool HasUserVideos => UserMaskingVideos.Count + UserSpeechVideos.Count + UserIdleVideos.Count > 0;
+    public string[] VideoTypes => new string[] { "masking", "speech", "idle" };
 
     public Dictionary<string, string> GetDownloadedVideoDictionary(string type)
     {

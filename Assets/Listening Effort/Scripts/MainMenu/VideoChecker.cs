@@ -88,6 +88,12 @@ public class VideoChecker : MonoBehaviour
         isCheckingVideos = true;
         setStatus("Checking videos");
         yield return null;
+
+        foreach (string type in videoCatalogue.VideoTypes)
+        {
+            videoCatalogue.GetDownloadedVideoDictionary(type).Clear();
+        }
+
         // create an array to hold the number of videos of each type, initialize it with zeros
         int[] videoCounts = new int[3] { 0, 0, 0 };
         (string type, string[] names)[] foundVideoPaths = GetVideoPaths();
