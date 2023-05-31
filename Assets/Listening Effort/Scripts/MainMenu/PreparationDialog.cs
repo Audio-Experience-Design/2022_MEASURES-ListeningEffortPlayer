@@ -174,11 +174,7 @@ public class PreparationDialog : MonoBehaviour
             scriptedSessionDropdown.AddOptions(new List<string> { "Select a script" });
             scriptedSessionDropdown.AddOptions(scripts.Select(s => Path.GetFileName(s)).ToList());
 
-            string savedScript = PlayerPrefs.GetString("scriptedSession", "");
-            if (scripts.Contains(savedScript))
-            {
-                scriptedSessionDropdown.SetValueWithoutNotify(Array.IndexOf(scripts, savedScript));
-            }
+            
 
             scriptedSessionDropdown.onValueChanged.AddListener(listboxIndex =>
             {
@@ -212,6 +208,12 @@ public class PreparationDialog : MonoBehaviour
                 Debug.Assert(0 <= scriptIndex && scriptIndex < scripts.Length);
                 manager.startAutomaticSession(scripts[scriptIndex]); ;
             });
+
+            string savedScript = PlayerPrefs.GetString("scriptedSession", "");
+            if (scripts.Contains(savedScript))
+            {
+                scriptedSessionDropdown.value = Array.IndexOf(scripts, savedScript);
+            }
         }
         catch (Exception e)
         {
