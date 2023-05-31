@@ -105,6 +105,7 @@ public class Session
                 .Where(video => !videoCatalogue.Contains(video));
             if (videosMissingFromCatalogue.Count() > 0)
             {
+                videoCatalogue.LogVideoNames();
                 throw new Exception($"The following videos are missing from the catalogue: {string.Join(", ", videosMissingFromCatalogue)}");
             }
 

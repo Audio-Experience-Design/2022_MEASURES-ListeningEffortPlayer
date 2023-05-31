@@ -240,12 +240,12 @@ public class ScriptedSessionController : MonoBehaviour
 
 
 
-        for (int i = 0; i < session.Maskers.Count(); i++)
+        for (int i = 0; i < session.Challenges.Count(); i++)
         {
             advanceStateTo(State.WaitingForUserToStartChallenge);
 
             string challengeLabel = (i + 1).ToString();
-            challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Maskers.Count()));
+            challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
             string challengeLabelPadded = $"{i+1:000}";
 
             string userResponseAudioFile = $"{sessionLabel}_response_{challengeLabelPadded:000}.wav";

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,7 @@ using UnityEngine.Video;
 
 public class VideoChecker : MonoBehaviour
 {
+    public VideoCatalogue videoCatalogue;
     public Text statusText;
     public string rootVideoDirectory => Application.persistentDataPath + "/Videos";
     public string[] videoTypes => new string[] { "masking", "speech", "idle" };
@@ -24,6 +26,7 @@ public class VideoChecker : MonoBehaviour
     }
     public event System.EventHandler<bool> videosAreOKChanged;
 
+    [NonSerialized]
     public bool _isCheckingVideos = false;
     public bool isCheckingVideos
     {
@@ -40,7 +43,8 @@ public class VideoChecker : MonoBehaviour
     void Start()
     {
         // check video directories exist and make them if they don't
-        System.Array.ForEach(videoDirectories, dir => {
+        System.Array.ForEach(videoDirectories, dir =>
+        {
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -61,17 +65,32 @@ public class VideoChecker : MonoBehaviour
         StartCoroutine(CheckVideos());
     }
 
+    public (string type, string[] names)[] GetVideoPaths()
+    {
+        Debug.Assert(videoDirectories.Length == videoTypes.Length);
+        var paths = new (string type, string[] names)[videoTypes.Length];
+        for (int i = 0; i < paths.Length; i++)
+        {
+            string videoDirectory = videoDirectories[i];
+            paths[i].type = videoTypes[i];
+            paths[i].names = System.IO.Directory.GetFiles(videoDirectory);
+        }
+        return paths;
+    }
+
     private IEnumerator CheckVideos()
     {
-        if (isCheckingVideos) {
+        if (isCheckingVideos)
+        {
             Debug.LogWarning("Cannot call CheckVideos as it's already running.", this);
-            yield break; 
+            yield break;
         }
         isCheckingVideos = true;
         setStatus("Checking videos");
         yield return null;
         // create an array to hold the number of videos of each type, initialize it with zeros
         int[] videoCounts = new int[3] { 0, 0, 0 };
+        (string type, string[] names)[] foundVideoPaths = GetVideoPaths();
         List<string> failedVideoPaths = new List<string>();
         // iterate through the videoDirectories, loading each video one at a time to check its resolution is non zero
         for (int i = 0; i < videoDirectories.Length; i++)
@@ -79,9 +98,9 @@ public class VideoChecker : MonoBehaviour
             string videoDirectory = videoDirectories[i];
             string videoType = videoTypes[i];
             setStatus($"Checking {videoType} videos");
-            yield return null;
-            string[] videoPaths = System.IO.Directory.GetFiles(videoDirectory);
+            string[] videoPaths = foundVideoPaths[i].names;
             videoCounts[i] = videoPaths.Length;
+            yield return null;
             foreach (string videoPath in videoPaths)
             {
                 setStatus($"Checking {videoType} video {videoPath}");
@@ -97,7 +116,7 @@ public class VideoChecker : MonoBehaviour
                     yield return new WaitForSeconds(1);
                     timeLeft--;
                 }
-                if (timeLeft==0 || player.width == 0 || player.height == 0)
+                if (timeLeft == 0 || player.width == 0 || player.height == 0)
                 {
                     setStatus($"Video {videoPath} failed to load");
                     failedVideoPaths.Add(videoPath);
@@ -108,16 +127,18 @@ public class VideoChecker : MonoBehaviour
                     setStatus($"Video {videoPath} loaded successfully");
                     videoCounts[i]++;
                     // add the video to VideoCatalogue
-                    VideoCatalogue.GetDownloadedVideoDictionary(videoType).Add(Path.GetFileNameWithoutExtension(videoPath), videoPath);
+                    videoCatalogue.GetDownloadedVideoDictionary(videoType).Add(Path.GetFileName(videoPath), videoPath);
+                    Debug.Assert(videoCatalogue.GetDownloadedVideoDictionary(videoType).ContainsKey(Path.GetFileName(videoPath)));
                     yield return null;
                 }
                 Destroy(player);
             }
         }
         videosAreOK = failedVideoPaths.Count == 0 && videoCounts.All(i => i > 0);
-        setStatus($"{(videosAreOK? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
-            videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a,b) => a + " " + b)
+        setStatus($"{(videosAreOK ? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
+            videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a, b) => a + " " + b)
             );
+        videoCatalogue.LogVideoNames();
         isCheckingVideos = false;
     }
 }

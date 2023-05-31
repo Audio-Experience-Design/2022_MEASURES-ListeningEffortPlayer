@@ -4938,6 +4938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e0ba3d9cda6984b814686ef75183b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoCatalogue: {fileID: 833115702}
   statusText: {fileID: 1067244970}
   _isCheckingVideos: 0
 --- !u!4 &895771030

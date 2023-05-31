@@ -24,13 +24,16 @@ public class VideoCatalogue : MonoBehaviour
 
     // If downloaded they are left here.
     // name -> path
-    public static Dictionary<string, string> UserMaskingVideos = new Dictionary<string, string>();
-    public static Dictionary<string, string> UserSpeechVideos = new Dictionary<string, string>();
-    public static Dictionary<string, string> UserIdleVideos = new Dictionary<string, string>();
-    //public static bool UseDemoVideos = true;
-    public static bool HasUserVideos = UserMaskingVideos.Count + UserSpeechVideos.Count > 0;
+    [NonSerialized]
+    public Dictionary<string, string> UserMaskingVideos = new Dictionary<string, string>();
+    [NonSerialized]
+    public Dictionary<string, string> UserSpeechVideos = new Dictionary<string, string>();
+    [NonSerialized]
+    public Dictionary<string, string> UserIdleVideos = new Dictionary<string, string>();
+    //public bool UseDemoVideos = true;
+    public bool HasUserVideos => UserMaskingVideos.Count + UserSpeechVideos.Count + UserIdleVideos.Count > 0;
 
-    public static Dictionary<string, string> GetDownloadedVideoDictionary(string type)
+    public Dictionary<string, string> GetDownloadedVideoDictionary(string type)
     {
         switch (type)
         {
@@ -70,7 +73,6 @@ public class VideoCatalogue : MonoBehaviour
 
     public void Start()
     {
-        Debug.Log($"VideoCatalogue started with {UserMaskingVideos.Count} + {UserSpeechVideos.Count} + {UserIdleVideos.Count} user videos and {DemoMaskingVideos.Length} + {DemoSpeechVideos.Length} + {DemoIdleVideos.Length} in-built demo videos.");
     }
 
 
@@ -78,12 +80,12 @@ public class VideoCatalogue : MonoBehaviour
 
     private bool Invariant()
     {
-        return UserMaskingVideos.Keys.All(name => GetURL(name) != null)
-            && UserSpeechVideos.Keys.All(name => GetURL(name) != null)
-            && UserIdleVideos.Keys.All(name => GetURL(name) != null)
-            && DemoMaskingVideos.All(clip => GetClip(clip.name) != null)
-            && DemoSpeechVideos.All(clip => GetClip(clip.name) != null)
-            && DemoIdleVideos.All(clip => GetClip(clip.name) != null)
+        return UserMaskingVideos.Keys.All(name => GetURL(name) != null && Contains(name))
+            && UserSpeechVideos.Keys.All(name => GetURL(name) != null && Contains(name))
+            && UserIdleVideos.Keys.All(name => GetURL(name) != null && Contains(name))
+            && DemoMaskingVideos.All(clip => GetClip(clip.name) != null && Contains(clip.name))
+            && DemoSpeechVideos.All(clip => GetClip(clip.name) != null && Contains(clip.name))
+            && DemoIdleVideos.All(clip => GetClip(clip.name) != null && Contains(clip.name))
             // and each demo type must have at least one video
             && DemoMaskingVideos.Length > 0
             && DemoSpeechVideos.Length > 0
@@ -146,4 +148,11 @@ public class VideoCatalogue : MonoBehaviour
         }
     }
 
+    public void LogVideoNames()
+    {
+        Debug.Log($"VideoCatalogue haswith {UserMaskingVideos.Count} + {UserSpeechVideos.Count} + {UserIdleVideos.Count} user videos and {DemoMaskingVideos.Length} + {DemoSpeechVideos.Length} + {DemoIdleVideos.Length} in-built demo videos.");
+        Debug.Log($"These masking videos are in the catalogue: {string.Join(", ", GetVideoNames()[0].names)}");
+        Debug.Log($"These speech videos are in the catalogue: {string.Join(", ", GetVideoNames()[1].names)}");
+        Debug.Log($"These idle videos are in the catalogue: {string.Join(", ", GetVideoNames()[2].names)}");
+    }
 }
