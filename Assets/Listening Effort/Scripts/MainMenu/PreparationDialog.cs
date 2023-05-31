@@ -18,7 +18,6 @@ public class PreparationDialog : MonoBehaviour
     public Text[] textsForSubstitution;
     public VideoChecker videoChecker;
     public Button startOSCButton;
-    public Button demoButton;
     public Button reloadVideosButton;
     public Button startScriptedSessionButton;
     public Toggle developerConsoleToggle;
@@ -28,6 +27,8 @@ public class PreparationDialog : MonoBehaviour
     public Dropdown hrtfDropdown;
     public Dropdown reverbDropdown;
     public Dropdown scriptedSessionDropdown;
+
+    public Text loadScriptStatus;
 
     private string GetOSCAddresses()
     {
@@ -71,10 +72,6 @@ public class PreparationDialog : MonoBehaviour
             manager.startOSCSession();
         });
 
-        demoButton.onClick.AddListener(() =>
-        {
-            manager.startOSCSession();
-        });
 
         reloadVideosButton.onClick.AddListener(() =>
         {
@@ -174,6 +171,7 @@ public class PreparationDialog : MonoBehaviour
         {
             string[] scripts = scriptedSessionFileManager.scripts;
             scriptedSessionDropdown.ClearOptions();
+            scriptedSessionDropdown.AddOptions(new List<string> { "Select a script" });
             scriptedSessionDropdown.AddOptions(scripts.Select(s => Path.GetFileName(s)).ToList());
 
             string savedScript = PlayerPrefs.GetString("scriptedSession", "");
@@ -182,16 +180,37 @@ public class PreparationDialog : MonoBehaviour
                 scriptedSessionDropdown.SetValueWithoutNotify(Array.IndexOf(scripts, savedScript));
             }
 
-            scriptedSessionDropdown.onValueChanged.AddListener(index =>
+            scriptedSessionDropdown.onValueChanged.AddListener(listboxIndex =>
             {
-                PlayerPrefs.SetString("scriptedSession", scripts[index]);
+                startScriptedSessionButton.interactable = false;
+                if (listboxIndex == 0)
+                {
+                    PlayerPrefs.DeleteKey("scriptedSession");
+                    loadScriptStatus.text = $"No script selected";
+                }
+                else
+                {
+                    int scriptIndex = listboxIndex - 1;
+                    PlayerPrefs.SetString("scriptedSession", scripts[scriptIndex]);
+                    try
+                    {
+                        Session.LoadFromYamlPath(scripts[scriptIndex], videoChecker.videoCatalogue);
+                        loadScriptStatus.text = $"{Path.GetFileName(scripts[scriptIndex])} loaded successfully";
+                        startScriptedSessionButton.interactable = true;
+                    }
+                    catch (Exception e)
+                    {
+                        loadScriptStatus.text = $"Error loading {scripts[scriptIndex]}: {e.Message}";
+                    }
+
+                }
             });
 
-            startScriptedSessionButton.interactable = scripts.Length > 0;
             startScriptedSessionButton.onClick.AddListener(() =>
             {
-                Debug.Assert(0 <= scriptedSessionDropdown.value && scriptedSessionDropdown.value < scripts.Length);
-                manager.startAutomaticSession(scripts[scriptedSessionDropdown.value]); ;
+                int scriptIndex = scriptedSessionDropdown.value - 1;
+                Debug.Assert(0 <= scriptIndex && scriptIndex < scripts.Length);
+                manager.startAutomaticSession(scripts[scriptIndex]); ;
             });
         }
         catch (Exception e)

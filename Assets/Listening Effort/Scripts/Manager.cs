@@ -16,6 +16,7 @@ public class Manager : MonoBehaviour
         RunningAutomatedSession, // set here on user request
         Error, // set here if something goes wrong
     }
+    public AudioSource[] babbles;
 
     private State state_ = State.MainMenu;
     public State state
@@ -32,6 +33,8 @@ public class Manager : MonoBehaviour
     public string errorMessage { get; private set; } = "";
 
     private VideoChecker videoChecker;
+
+    public bool checkVideosOnStart = true;
 
     void Start()
     {
@@ -62,6 +65,11 @@ public class Manager : MonoBehaviour
                 state = State.RunningOSC;
             }
         };
+
+        if (checkVideosOnStart)
+        {
+            videoChecker.StartCheckingVideos();
+        }
     }
 
     // yamlFile should be an absolute path including extension.
@@ -98,6 +106,10 @@ public class Manager : MonoBehaviour
         else
         {
             state = State.WaitingForOSCConnection;
+        }
+        foreach (AudioSource babble in babbles)
+        {
+            babble.Play();
         }
     }
 

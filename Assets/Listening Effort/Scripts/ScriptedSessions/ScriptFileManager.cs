@@ -26,23 +26,23 @@ public class ScriptFileManager : MonoBehaviour
                     File.WriteAllText($"{scriptsDirectory}/demo.yaml", demoScript.text);
                 }
 
-                List<string> validatedScripts = new List<string>();
+                List<string> scriptPaths = new List<string>();
                 foreach (string path in Directory.GetFiles(scriptsDirectory))
                 {
                     if (path.EndsWith(".yaml") || path.EndsWith(".yml"))
                     {
-                        try
-                        {
-                            Session session = Session.LoadFromYamlPath(path, videoCatalogue);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError($"Error reading session at {path}\n{e}", this);
-                        }
-                        validatedScripts.Add(path);
+                        //try
+                        //{
+                        //    Session session = Session.LoadFromYamlPath(path, videoCatalogue);
+                        //}
+                        //catch (Exception e)
+                        //{
+                        //    Debug.LogError($"Error reading session at {path}\n{e}", this);
+                        //}
+                        scriptPaths.Add(path);
                     }
                 }
-                _scripts = validatedScripts.ToArray();
+                _scripts = scriptPaths.ToArray();
             }
             return _scripts;
         }
