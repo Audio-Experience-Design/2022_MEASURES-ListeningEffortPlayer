@@ -4329,7 +4329,6 @@ GameObject:
   - component: {fileID: 786235064}
   - component: {fileID: 786235063}
   - component: {fileID: 786235062}
-  - component: {fileID: 786235065}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -4401,19 +4400,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 786235063}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 786235065}
-        m_TargetAssemblyTypeName: DebugPrinter, Assembly-CSharp
-        m_MethodName: testButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &786235063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4452,18 +4439,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 786235060}
   m_CullTransparentMesh: 1
---- !u!114 &786235065
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 786235060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 698cf62bf03877246afabcac05769bb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &797230984
 GameObject:
   m_ObjectHideFlags: 0
@@ -9661,6 +9636,7 @@ MonoBehaviour:
   - {fileID: 1509881922}
   - {fileID: 165585585}
   - {fileID: 1600812348}
+  checkVideosOnStart: 1
 --- !u!1 &2146942469
 GameObject:
   m_ObjectHideFlags: 0
