@@ -27,7 +27,8 @@ public class VideoCatalogue : MonoBehaviour
     public static Dictionary<string, string> UserMaskingVideos = new Dictionary<string, string>();
     public static Dictionary<string, string> UserSpeechVideos = new Dictionary<string, string>();
     public static Dictionary<string, string> UserIdleVideos = new Dictionary<string, string>();
-    public static bool UseDemoVideos = true;
+    //public static bool UseDemoVideos = true;
+    public static bool HasUserVideos = UserMaskingVideos.Count + UserSpeechVideos.Count > 0;
 
     public static Dictionary<string, string> GetDownloadedVideoDictionary(string type)
     {
@@ -47,7 +48,7 @@ public class VideoCatalogue : MonoBehaviour
 
     public (string type, IEnumerable<string> names)[] GetVideoNames()
     {
-        if (IsUsingUserVideos)
+        if (HasUserVideos)
         {
             return new (string type, IEnumerable<string> names)[]
             {
@@ -67,93 +68,31 @@ public class VideoCatalogue : MonoBehaviour
         }
     }
 
-    //public VideoType getType(string videoName)
-    //{
-    //    if (IsUsingUserVideos)
-    //    {
-    //        if (UserMaskingVideos.ContainsKey(name))
-    //        {
-    //            return VideoType.Masking;
-    //        }
-    //        else if (UserSpeechVideos.ContainsKey(name))
-    //        {
-    //            return VideoType.Speech;
-    //        }
-    //        else if (UserIdleVideos.ContainsKey(name))
-    //        {
-    //            return VideoType.Idle;
-    //        }
-    //        else
-    //        {
-    //            throw new Exception($"Unrecognised video name {name}");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (DemoMaskingVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
-    //        {
-    //            return VideoType.Masking;
-    //        }
-    //        else if (DemoSpeechVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
-    //        {
-    //            return VideoType.Speech;
-    //        }
-    //        else if (DemoIdleVideos.Any(clip => clip.name == name || clip.name + ".mp4" == name))
-    //        {
-    //            return VideoType.Idle;
-    //        }
-    //        else
-    //        {
-    //            throw new Exception($"Unrecognised video name {name}");
-    //        }
-    //    }
-    //}
-
     public void Start()
     {
-        if (IsUsingUserVideos)
-        {
-            Debug.Log($"VideoCatalogue started with {UserMaskingVideos.Count} + {UserSpeechVideos.Count} + {UserIdleVideos.Count} downloaded videos.");
-        }
+        Debug.Log($"VideoCatalogue started with {UserMaskingVideos.Count} + {UserSpeechVideos.Count} + {UserIdleVideos.Count} user videos and {DemoMaskingVideos.Length} + {DemoSpeechVideos.Length} + {DemoIdleVideos.Length} in-built demo videos.");
     }
 
 
-    public bool IsUsingUserVideos => !UseDemoVideos;
+    //public bool IsUsingUserVideos => !UseDemoVideos;
 
     private bool Invariant()
     {
-        if (IsUsingUserVideos)
-        {
-            return UserMaskingVideos.Keys.All(name => GetURL(name) != null)
-                && UserSpeechVideos.Keys.All(name => GetURL(name) != null)
-                && UserIdleVideos.Keys.All(name => GetURL(name) != null)
-                // and each type must have at least one video
-                && UserMaskingVideos.Count > 0
-                && UserSpeechVideos.Count > 0
-                && UserIdleVideos.Count > 0;
-        }
-        else
-        {
-            return DemoMaskingVideos.All(clip => GetClip(clip.name) != null)
-                && DemoSpeechVideos.All(clip => GetClip(clip.name) != null)
-                && DemoIdleVideos.All(clip => GetClip(clip.name) != null)
-                // and each type must have at least one video
-                && DemoMaskingVideos.Length > 0
-                && DemoSpeechVideos.Length > 0
-                && DemoIdleVideos.Length > 0;
-        }
+        return UserMaskingVideos.Keys.All(name => GetURL(name) != null)
+            && UserSpeechVideos.Keys.All(name => GetURL(name) != null)
+            && UserIdleVideos.Keys.All(name => GetURL(name) != null)
+            && DemoMaskingVideos.All(clip => GetClip(clip.name) != null)
+            && DemoSpeechVideos.All(clip => GetClip(clip.name) != null)
+            && DemoIdleVideos.All(clip => GetClip(clip.name) != null)
+            // and each demo type must have at least one video
+            && DemoMaskingVideos.Length > 0
+            && DemoSpeechVideos.Length > 0
+            && DemoIdleVideos.Length > 0;
     }
 
     public bool Contains(string name)
     {
-        if (IsUsingUserVideos)
-        {
-            return GetURL(name) != null;
-        }
-        else
-        {
-            return GetClip(name) != null;
-        }
+        return GetURL(name) != null || GetClip(name) != null;
     }
 
     public VideoClip GetClip(string name)
@@ -186,26 +125,25 @@ public class VideoCatalogue : MonoBehaviour
 
     public void SetPlayerSource(VideoPlayer player, string name)
     {
-        if (IsUsingUserVideos)
+        string url = GetURL(name);
+        if (url != null)
         {
-            string url = GetURL(name);
-            if (url == null)
-            {
-                throw new Exception($"VideoCatalogue.LoadVideoIntoPlayer: No video with name {name}.");
-            }
             player.source = VideoSource.Url;
             player.url = url;
         }
         else
         {
             VideoClip clip = GetClip(name);
-            if (clip == null)
+            if (clip != null)
+            {
+                player.source = VideoSource.VideoClip;
+                player.clip = clip;
+            }
+            else
             {
                 throw new Exception($"VideoCatalogue.LoadVideoIntoPlayer: No video with name {name}.");
             }
-            player.source = VideoSource.VideoClip;
-            player.clip = clip;
         }
     }
-    
+
 }

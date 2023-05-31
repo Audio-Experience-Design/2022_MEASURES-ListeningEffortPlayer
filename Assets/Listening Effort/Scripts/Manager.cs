@@ -77,11 +77,6 @@ public class Manager : MonoBehaviour
         }
         try
         {
-            if (yamlFile.EndsWith("demo.yaml"))
-            {
-                Debug.Log($"Setting to use demo videos as script filename is 'demo.yaml'");
-                VideoCatalogue.UseDemoVideos = true;
-            }
             automaticSessionController.StartSession(yamlFile);
         }
         catch (Exception e)

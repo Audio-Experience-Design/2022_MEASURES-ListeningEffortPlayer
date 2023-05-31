@@ -3,7 +3,7 @@ session:
   name: "demo session"
   speakerAmplitude: 1.0
   maximumRecordingDuration: 10
-  masking_video: "Condition_1.mp4"
+  masking_video: "DEMO_Condition_1.mp4"
   maskers:
     - rotation: -135.0
       amplitude: 1.0
@@ -14,19 +14,19 @@ session:
     - rotation: 135.0
       amplitude: 1.0
   idle_videos:
-    - "T1_Idling.mp4"
-    - "T2_Idling.mp4"
-    - "T4_Idling.mp4"
+    - "DEMO_T1_Idling.mp4"
+    - "DEMO_T2_Idling.mp4"
+    - "DEMO_T4_Idling.mp4"
   challenges:
-    - - "T1_matrix0101.mp4"
-      - "T2_matrix0101.mp4"
-      - "T4_matrix0101.mp4"
-    - - "T1_matrix0102.mp4"
-      - "T2_matrix0102.mp4"
-      - "T4_matrix0102.mp4"
-    - - "T1_matrix0103.mp4"
-      - "T2_matrix0103.mp4"
-      - "T4_matrix0103.mp4"
-    - - "T1_matrix0103.mp4"
-      - "T2_matrix0103.mp4"
-      - "T4_matrix0103.mp4"
+    - - "DEMO_T1_matrix0101.mp4"
+      - "DEMO_T2_matrix0101.mp4"
+      - "DEMO_T4_matrix0101.mp4"
+    - - "DEMO_T1_matrix0102.mp4"
+      - "DEMO_T2_matrix0102.mp4"
+      - "DEMO_T4_matrix0102.mp4"
+    - - "DEMO_T1_matrix0103.mp4"
+      - "DEMO_T2_matrix0103.mp4"
+      - "DEMO_T4_matrix0103.mp4"
+    - - "DEMO_T1_matrix0103.mp4"
+      - "DEMO_T2_matrix0103.mp4"
+      - "DEMO_T4_matrix0103.mp4"

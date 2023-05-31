@@ -68,13 +68,11 @@ public class PreparationDialog : MonoBehaviour
 
         startOSCButton.onClick.AddListener(() =>
         {
-            VideoCatalogue.UseDemoVideos = false;
             manager.startOSCSession();
         });
 
         demoButton.onClick.AddListener(() =>
         {
-            VideoCatalogue.UseDemoVideos = true;
             manager.startOSCSession();
         });
 
