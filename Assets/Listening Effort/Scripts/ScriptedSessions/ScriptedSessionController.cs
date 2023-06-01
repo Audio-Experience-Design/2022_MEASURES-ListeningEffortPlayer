@@ -194,7 +194,7 @@ public class ScriptedSessionController : MonoBehaviour
         string sessionFolder = Path.Join(Path.Join(Application.persistentDataPath, "RecordedSessions"), sessionLabel);
         audioRecorder.saveDirectory = sessionFolder;
         Directory.CreateDirectory(sessionFolder);
-        File.WriteAllText(Path.Join(sessionFolder, "session.yaml"), localTimestamp);
+        File.WriteAllText(Path.Join(sessionFolder, session.Name != ""? session.Name+".yaml" : "session.yaml"), localTimestamp);
 
 
 

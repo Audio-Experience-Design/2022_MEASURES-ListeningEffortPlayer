@@ -21,7 +21,7 @@ public static class LogUtilities
             writer.WriteLine(string.Join(separator, headerLine));
         }
 
-        string[] line = properties.Select(prop => (string)prop.GetValue(logEntry) ?? "").ToArray();
+        string[] line = properties.Select(prop => ((string)prop.GetValue(logEntry) ?? "").Replace(",","_")).ToArray();
         writer.WriteLine(string.Join(separator, line));
         writer.Flush();
     }

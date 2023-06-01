@@ -20,10 +20,12 @@ public class Session
     public static Session LoadFromYamlPath(string yamlPath, VideoCatalogue videoCatalogue)
     {
         string yamlText = File.ReadAllText(yamlPath);
-        return LoadFromYamlString(yamlText, videoCatalogue);
+        Session session = LoadFromYamlString(yamlText, videoCatalogue);
+        session.Name = Path.GetFileNameWithoutExtension(yamlPath);
+        return session;
     }
 
-    public static Session LoadFromYamlString(string yamlText, VideoCatalogue videoCatalogue)
+    private static Session LoadFromYamlString(string yamlText, VideoCatalogue videoCatalogue)
     {
         try
         {
@@ -35,7 +37,6 @@ public class Session
 
             Session session = new Session
             {
-                Name = sessionNode.Children[new YamlScalarNode("name")].ToString(),
                 SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speakerAmplitude")].ToString()),
                 MaximumRecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("maximumRecordingDuration")].ToString()),
                 MaskingVideo = sessionNode.Children[new YamlScalarNode("masking_video")].ToString(),
