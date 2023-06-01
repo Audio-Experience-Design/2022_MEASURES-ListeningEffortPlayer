@@ -173,6 +173,7 @@ public class PreparationDialog : MonoBehaviour
             scriptedSessionDropdown.ClearOptions();
             scriptedSessionDropdown.AddOptions(new List<string> { "Select a script" });
             scriptedSessionDropdown.AddOptions(scripts.Select(s => Path.GetFileName(s)).ToList());
+            scriptedSessionDropdown.SetValueWithoutNotify(0);
 
             
 
@@ -181,13 +182,11 @@ public class PreparationDialog : MonoBehaviour
                 startScriptedSessionButton.interactable = false;
                 if (listboxIndex == 0)
                 {
-                    PlayerPrefs.DeleteKey("scriptedSession");
                     loadScriptStatus.text = $"No script selected";
                 }
                 else
                 {
                     int scriptIndex = listboxIndex - 1;
-                    PlayerPrefs.SetString("scriptedSession", scripts[scriptIndex]);
                     try
                     {
                         Session.LoadFromYamlPath(scripts[scriptIndex], videoChecker.videoCatalogue);
@@ -209,11 +208,6 @@ public class PreparationDialog : MonoBehaviour
                 manager.startAutomaticSession(scripts[scriptIndex]); ;
             });
 
-            string savedScript = PlayerPrefs.GetString("scriptedSession", "");
-            if (scripts.Contains(savedScript))
-            {
-                scriptedSessionDropdown.value = Array.IndexOf(scripts, savedScript);
-            }
         }
         catch (Exception e)
         {
