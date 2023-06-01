@@ -30,6 +30,7 @@ public class PreparationDialog : MonoBehaviour
 
     public Text loadScriptStatus;
 
+    private bool selectedScriptTestedOK = false;
     private string GetOSCAddresses()
     {
         return Dns.GetHostEntry(Dns.GetHostName())
@@ -179,7 +180,8 @@ public class PreparationDialog : MonoBehaviour
 
             scriptedSessionDropdown.onValueChanged.AddListener(listboxIndex =>
             {
-                startScriptedSessionButton.interactable = false;
+                selectedScriptTestedOK = false;
+                updateButtons();
                 if (listboxIndex == 0)
                 {
                     loadScriptStatus.text = $"No script selected";
@@ -191,7 +193,8 @@ public class PreparationDialog : MonoBehaviour
                     {
                         Session.LoadFromYamlPath(scripts[scriptIndex], videoChecker.videoCatalogue);
                         loadScriptStatus.text = $"{Path.GetFileName(scripts[scriptIndex])} loaded successfully";
-                        startScriptedSessionButton.interactable = true;
+                        selectedScriptTestedOK = true;
+                        updateButtons();
                     }
                     catch (Exception e)
                     {
@@ -222,6 +225,7 @@ public class PreparationDialog : MonoBehaviour
     {
         startOSCButton.interactable = videoChecker.videosAreOK;
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
+        startScriptedSessionButton.interactable = selectedScriptTestedOK;
     }
 
 
