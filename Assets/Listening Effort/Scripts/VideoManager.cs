@@ -153,8 +153,8 @@ public class VideoManager : MonoBehaviour
     {
         transform.localEulerAngles = new Vector3(inclination, azimuth, twist);
         var quad = GetComponentInChildren<MeshFilter>();
-        quad.transform.localEulerAngles.Set(quadXRotation, quadYRotation, quad.transform.localEulerAngles.z);
-        quad.transform.localScale.Set(quadScaleX, quadScaleY, quad.transform.localScale.z);
+        quad.transform.localEulerAngles = new Vector3(quadXRotation, quadYRotation, quad.transform.localEulerAngles.z);
+        quad.transform.localScale = new Vector3(quadScaleX, quadScaleY, quad.transform.localScale.z);
     }
 
     public Transform PivotTransform => transform;

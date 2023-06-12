@@ -223,16 +223,19 @@ public class OSCSender : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ClientIP != currentClientIP || Port != oscClient.Port)
+        if (ClientIP != currentClientIP || oscClient == null || Port != oscClient.Port)
         {
             UpdateClientAddress();
         }
 
     }
 
-    public void SendVideoPositions(VideoManager[] videoManagers)
+    public void SendVideoPositions()
     {
-        for (int i = 0; i < videoManagers.Length; i++)
+        VideoPlayer[] videoPlayers = oscController.videoPlayers;
+        // sky + 3 positionable
+        Debug.Assert(videoPlayers.Length == 4);
+        for (int i = 1; i < videoPlayers.Length; i++)
         {
             //(typeof(float), "Azimuth (degrees)"),
             //(typeof(float), "Inclination (degrees)"),
@@ -241,17 +244,18 @@ public class OSCSender : MonoBehaviour
             //(typeof(float), "Rotation around Y axis (degrees)"),
             //(typeof(float), "Width (scale)"),
             //(typeof(float), "Height (scale)"),
+            VideoManager videoManager = videoPlayers[i].GetComponent<VideoManager>();
 
             Send("/video/position", new ArrayList
             {
                 i,
-                videoManagers[i].PivotTransform.localEulerAngles.x,
-                videoManagers[i].PivotTransform.localEulerAngles.y,
-                videoManagers[i].PivotTransform.localEulerAngles.z,
-                videoManagers[i].QuadTransform.localEulerAngles.x,
-                videoManagers[i].QuadTransform.localEulerAngles.y,
-                videoManagers[i].QuadTransform.localScale.x,
-                videoManagers[i].QuadTransform.localScale.y,
+                videoManager.PivotTransform.localEulerAngles.x,
+                videoManager.PivotTransform.localEulerAngles.y,
+                videoManager.PivotTransform.localEulerAngles.z,
+                videoManager.QuadTransform.localEulerAngles.x,
+                videoManager.QuadTransform.localEulerAngles.y,
+                videoManager.QuadTransform.localScale.x,
+                videoManager.QuadTransform.localScale.y,
             });
         }
     }

@@ -372,7 +372,7 @@ public class OSCController : MonoBehaviour
                 onClientConnected?.Invoke(this, (ip, port));
             }
             // player 0 is the skybox and has no position
-            oscSender.SendVideoPositions(videoPlayers.Skip(1).Select(x => x.GetComponent<VideoManager>()).ToArray());
+            oscSender.SendVideoPositions();
         }
 
         else if (isMatch(message, videoPositionMessageSpecification))

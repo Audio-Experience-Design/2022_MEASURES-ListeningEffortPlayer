@@ -201,8 +201,6 @@ public class ScriptedSessionController : MonoBehaviour
         Directory.CreateDirectory(sessionFolder);
         File.WriteAllText(Path.Join(sessionFolder, session.Name != ""? session.Name+".yaml" : "session.yaml"), session.yaml);
 
-
-
         // Speaker Amplitude
         videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
 
