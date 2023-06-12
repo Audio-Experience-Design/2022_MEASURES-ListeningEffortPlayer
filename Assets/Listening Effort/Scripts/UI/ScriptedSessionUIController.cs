@@ -44,26 +44,35 @@ public class ScriptedSessionUIController : MonoBehaviour
                     statusText.text = $"Loading session '{sessionController.session?.Name ?? "(null)"}'.";
                     button.gameObject.SetActive(false);
                     break;
-                case ScriptedSessionController.State.WaitingForUserToStartChallenge:
+                case ScriptedSessionController.State.WaitingForUserToStartChallenges:
                     statusText.text = $"";
-                    buttonLabel.text = $"Start challenge";
+                    buttonLabel.text = $"Start";
                     button.gameObject.SetActive(true);
                     button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
                     break;
-                case ScriptedSessionController.State.UserReadyToStartChallenge:
+                case ScriptedSessionController.State.UserReadyToStartChallenges:
+                    button.gameObject.SetActive(false);
+                    break;
+                case ScriptedSessionController.State.DelayingBeforePlayingVideo:
+                    statusText.text = $"Preparing...";
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.PlayingVideo:
                     statusText.text = $"Listen...";
+                    button.gameObject.SetActive(false);
+                    break;
+                case ScriptedSessionController.State.DelayingAfterPlayingVideos:
+                    button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.RecordingUserResponse:
-                    statusText.text = $"Recording your response...";
-                    buttonLabel.text = $"Done";
-                    button.gameObject.SetActive(true);
-                    button.onClick.AddListener(() => sessionController.onUserReadyToStopRecording());
+                    statusText.text = $"Speak your response...";
+                    button.gameObject.SetActive(false);
+                    //buttonLabel.text = $"Done";
+                    //button.gameObject.SetActive(true);
+                    //button.onClick.AddListener(() => sessionController.onUserReadyToStopRecording());
                     break;
                 case ScriptedSessionController.State.AudioRecordingComplete:
-                    statusText.text = $"Audio recording complete.";
+                    statusText.text = $"";
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.Completed:

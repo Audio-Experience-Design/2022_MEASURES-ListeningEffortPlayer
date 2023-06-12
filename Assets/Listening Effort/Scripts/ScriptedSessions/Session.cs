@@ -10,7 +10,9 @@ public class Session
 {
     public string Name { get; private set; }
     public float SpeakerAmplitude { get; private set; }
-    public int MaximumRecordingDuration { get; private set; }
+    public float DelayBeforePlayingVideos { get; private set; }
+    public float DelayAfterPlayingVideos { get; private set; }
+    public int RecordingDuration { get; private set; }
     public string MaskingVideo { get; private set; }
     public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
@@ -37,9 +39,11 @@ public class Session
 
             Session session = new Session
             {
-                SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speakerAmplitude")].ToString()),
-                MaximumRecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("maximumRecordingDuration")].ToString()),
-                MaskingVideo = sessionNode.Children[new YamlScalarNode("masking_video")].ToString(),
+                SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speaker amplitude")].ToString()),
+                DelayBeforePlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay before playing videos")].ToString()),
+                DelayAfterPlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay after playing videos")].ToString()),
+                RecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("recording duration")].ToString()),
+                MaskingVideo = sessionNode.Children[new YamlScalarNode("masking video")].ToString(),
                 Maskers = new List<(float Rotation, float Amplitude)>(),
                 IdleVideos = new List<string>(),
                 Challenges = new List<List<string>>()
@@ -69,14 +73,14 @@ public class Session
                 throw new Exception("The 'maskers' array must have exactly 4 elements.");
             }
 
-            var idleVideosNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("idle_videos")];
+            var idleVideosNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("idle videos")];
             foreach (YamlScalarNode idleVideoNode in idleVideosNode)
             {
                 session.IdleVideos.Add(idleVideoNode.ToString());
             }
             if (session.IdleVideos.Count != 3)
             {
-                throw new Exception("The 'idle_videos' array must have exactly 3 elements.");
+                throw new Exception("The 'idle videos' array must have exactly 3 elements.");
             }
 
             var challengesNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("challenges")];

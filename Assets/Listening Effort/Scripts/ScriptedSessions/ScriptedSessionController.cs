@@ -85,9 +85,11 @@ public class ScriptedSessionController : MonoBehaviour
     {
         Inactive,
         LoadingSession,
-        WaitingForUserToStartChallenge,
-        UserReadyToStartChallenge,
+        WaitingForUserToStartChallenges,
+        UserReadyToStartChallenges,
+        DelayingBeforePlayingVideo,
         PlayingVideo,
+        DelayingAfterPlayingVideos,
         RecordingUserResponse,
         AudioRecordingComplete,
         Completed,
@@ -141,8 +143,8 @@ public class ScriptedSessionController : MonoBehaviour
 
     public void onUserReadyToContinue()
     {
-        Debug.Assert(state == State.WaitingForUserToStartChallenge);
-        advanceStateTo(State.UserReadyToStartChallenge);
+        Debug.Assert(state == State.WaitingForUserToStartChallenges);
+        advanceStateTo(State.UserReadyToStartChallenges);
     }
 
     public void onUserReadyToStopRecording()
@@ -158,18 +160,22 @@ public class ScriptedSessionController : MonoBehaviour
         switch (state)
         {
             case State.LoadingSession:
-                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenge || expectedNewState == State.Completed);
+                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenges || expectedNewState == State.Completed);
                 state = expectedNewState; break;
-            case State.WaitingForUserToStartChallenge:
-                state = State.UserReadyToStartChallenge; break;
-            case State.UserReadyToStartChallenge:
-                state = State.PlayingVideo; break;
+            case State.WaitingForUserToStartChallenges:
+                state = State.UserReadyToStartChallenges; break;
+            case State.UserReadyToStartChallenges:
+                state = State.DelayingBeforePlayingVideo; break;
+            case State.DelayingBeforePlayingVideo:
+                state = State.PlayingVideo;  break;
             case State.PlayingVideo:
+                state = State.DelayingAfterPlayingVideos; break;
+            case State.DelayingAfterPlayingVideos:
                 state = State.RecordingUserResponse; break;
             case State.RecordingUserResponse:
                 state = State.AudioRecordingComplete; break;
             case State.AudioRecordingComplete:
-                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenge || expectedNewState == State.Completed);
+                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenges || expectedNewState == State.Completed);
                 state = expectedNewState; break;
             case State.Completed:
                 throw new Exception($"Cannot advance state as session has completed.");
@@ -239,11 +245,17 @@ public class ScriptedSessionController : MonoBehaviour
             Configuration = session.Name,
         });
 
+        advanceStateTo(State.WaitingForUserToStartChallenges);
 
+        while (state == State.WaitingForUserToStartChallenges)
+        {
+            yield return null;
+        }
+        Debug.Assert(state == State.UserReadyToStartChallenges);
 
         for (int i = 0; i < session.Challenges.Count(); i++)
         {
-            advanceStateTo(State.WaitingForUserToStartChallenge);
+            advanceStateTo(State.DelayingBeforePlayingVideo);
 
             string challengeLabel = (i + 1).ToString();
             challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
@@ -259,14 +271,9 @@ public class ScriptedSessionController : MonoBehaviour
             EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
             headTransform.TransformChanged += headTransformCallback;
 
-            while (state == State.WaitingForUserToStartChallenge)
-            {
-                yield return null;
-            }
-
-            Debug.Assert(state == State.UserReadyToStartChallenge);
-            Debug.Assert(numVideosPlaying == 0);
+            yield return new WaitForSeconds(session.DelayBeforePlayingVideos);
             advanceStateTo(State.PlayingVideo);
+            Debug.Assert(numVideosPlaying == 0);
 
 
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
@@ -287,7 +294,7 @@ public class ScriptedSessionController : MonoBehaviour
             }
             // start recording now because pico loses the first few seconds
             double expectedPlaybackDuration = videoManagers.Aggregate(0.0, (acc, vm) => Math.Max(acc, vm.player.length));
-            int maximumRecordingDuration = session.MaximumRecordingDuration + (int)Math.Ceiling(expectedPlaybackDuration);
+            int maximumRecordingDuration = session.RecordingDuration + (int)Math.Ceiling(expectedPlaybackDuration);
             Debug.Log($"Starting off recorder. Max duration (including playback): {maximumRecordingDuration}");
             audioRecorder.StartRecording(userResponseAudioFile, maximumRecordingDuration);
 
@@ -295,7 +302,8 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 yield return null;
             }
-
+            advanceStateTo(State.DelayingAfterPlayingVideos);
+            yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
             advanceStateTo(State.RecordingUserResponse);
 
             audioRecorder.MarkRecordingInPoint();

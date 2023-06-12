@@ -19,12 +19,12 @@ public class ScriptFileManager : MonoBehaviour
                 VideoCatalogue videoCatalogue = FindObjectOfType<VideoCatalogue>();
                 Debug.Assert(videoCatalogue != null);
 
-                if (!Directory.Exists(scriptsDirectory))
-                {
-                    Debug.Log("Scripts directory does not exist. Will create and copy in the demo script.");
+                //if (!Directory.Exists(scriptsDirectory))
+                //{
+                    //Debug.Log("Scripts directory does not exist. Will create and copy in the demo script.");
                     Directory.CreateDirectory(scriptsDirectory);
                     File.WriteAllText($"{scriptsDirectory}/demo.yaml", demoScript.text);
-                }
+                //}
 
                 List<string> scriptPaths = new List<string>();
                 foreach (string path in Directory.GetFiles(scriptsDirectory))

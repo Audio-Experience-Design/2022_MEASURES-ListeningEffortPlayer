@@ -225,7 +225,7 @@ public class PreparationDialog : MonoBehaviour
     {
         startOSCButton.interactable = videoChecker.videosAreOK;
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
-        startScriptedSessionButton.interactable = selectedScriptTestedOK;
+        startScriptedSessionButton.interactable = selectedScriptTestedOK && !videoChecker.isCheckingVideos;
     }
 
 
