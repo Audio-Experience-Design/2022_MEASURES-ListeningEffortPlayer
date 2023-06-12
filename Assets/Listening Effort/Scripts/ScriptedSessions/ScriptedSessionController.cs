@@ -247,11 +247,9 @@ public class ScriptedSessionController : MonoBehaviour
         if (session.BrightnessCalibrationDurationFromBlackToWhite>0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
         {
             state = State.WaitingForUserToStartBrightnessCalibration;
-            while (state == State.WaitingForUserToStartBrightnessCalibration)
-            {
-                yield return null;
-            }
+            yield return new WaitUntil(() => state != State.WaitingForUserToStartBrightnessCalibration);
             Debug.Assert(state ==State.PerformingBrightnessCalibration);
+
             brightnessCalibrationSphere.gameObject.SetActive(true);
             brightnessCalibrationSphere.brightness = 0.0f;
             float startTime = Time.time;
@@ -266,11 +264,8 @@ public class ScriptedSessionController : MonoBehaviour
         }
 
         state = State.WaitingForUserToStartChallenges;
+        yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
 
-        while (state == State.WaitingForUserToStartChallenges)
-        {
-            yield return null;
-        }
         Debug.Assert(state == State.UserReadyToStartChallenges);
 
         for (int i = 0; i < session.Challenges.Count(); i++)
@@ -338,10 +333,8 @@ public class ScriptedSessionController : MonoBehaviour
                 MiddleVideo = session.Challenges[i][1],
                 RightVideo = session.Challenges[i][2],
             });
-            while (state == State.RecordingUserResponse)
-            {
-                yield return null;
-            }
+
+            yield return new WaitUntil(() => state != State.RecordingUserResponse);
 
             Debug.Assert(state == State.AudioRecordingComplete);
 
@@ -350,7 +343,7 @@ public class ScriptedSessionController : MonoBehaviour
                 Timestamp = LogUtilities.localTimestamp(),
                 SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Response received",
-            Configuration = session.Name,
+                Configuration = session.Name,
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
                 MiddleVideo = session.Challenges[i][1],
