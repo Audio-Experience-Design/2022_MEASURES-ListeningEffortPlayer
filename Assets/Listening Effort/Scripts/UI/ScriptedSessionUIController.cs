@@ -39,6 +39,7 @@ public class ScriptedSessionUIController : MonoBehaviour
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
 
+            Dictionary<string, string> texts = sessionController.session.UITexts;
             switch (state)
             {
                 case ScriptedSessionController.State.LoadingSession:
@@ -46,7 +47,7 @@ public class ScriptedSessionUIController : MonoBehaviour
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.WaitingForUserToStartBrightnessCalibration:
-                    statusText.text = $"Press Start to start the brightness calibration";
+                    statusText.text = texts["prompt to start brightness calibration"];
                     button.gameObject.SetActive(true);
                     buttonLabel.text = $"Start";
                     break;
@@ -55,7 +56,7 @@ public class ScriptedSessionUIController : MonoBehaviour
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.WaitingForUserToStartChallenges:
-                    statusText.text = $"Press start to begin the challenges";
+                    statusText.text = texts["prompt to start challenges"];
                     buttonLabel.text = $"Start";
                     button.gameObject.SetActive(true);
                     break;
@@ -63,29 +64,27 @@ public class ScriptedSessionUIController : MonoBehaviour
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.DelayingBeforePlayingVideo:
-                    statusText.text = $"Preparing...";
+                    statusText.text = texts["delay before playing video"];
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.PlayingVideo:
-                    statusText.text = $"Listen...";
+                    statusText.text = texts["during video playback"];
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.DelayingAfterPlayingVideos:
+                    statusText.text = texts["delay after playing video"];
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.RecordingUserResponse:
-                    statusText.text = $"Speak your response...";
+                    statusText.text = texts["recording user response"];
                     button.gameObject.SetActive(false);
-                    //buttonLabel.text = $"Done";
-                    //button.gameObject.SetActive(true);
-                    //button.onClick.AddListener(() => sessionController.onUserReadyToStopRecording());
                     break;
                 case ScriptedSessionController.State.AudioRecordingComplete:
                     statusText.text = $"";
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.Completed:
-                    statusText.text = $"Session completed.";
+                    statusText.text = texts["session completion"];
                     button.gameObject.SetActive(false);
                     break;
             }

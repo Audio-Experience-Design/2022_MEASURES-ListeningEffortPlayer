@@ -20,6 +20,14 @@ session:
       amplitude: 1.0
     - rotation: 135.0
       amplitude: 1.0
+  texts:
+    prompt to start brightness calibration: "Press Start to start the brightness calibration"
+    prompt to start challenges: "Press start to begin the challenges"
+    delay before playing video: "Preparing..."
+    during video playback: "Listen..."
+    delay after playing video: "Listen..."
+    recording user response: "Speak your response..."
+    session completion: "Session completed."
   idle videos:
     - "DEMO_T1_Idling.mp4"
     - "DEMO_T2_Idling.mp4"

@@ -19,6 +19,7 @@ public class Session
     public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
     public List<List<string>> Challenges { get; private set; }
+    public Dictionary<string, string> UITexts { get; private set; }
     public string yaml { get; private set; }
 
     public static Session LoadFromYamlPath(string yamlPath, VideoCatalogue videoCatalogue)
@@ -39,6 +40,7 @@ public class Session
             YamlMappingNode rootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
             YamlMappingNode sessionNode = (YamlMappingNode)rootNode.Children[new YamlScalarNode("session")];
             YamlMappingNode brightnessCalibrationNode = (YamlMappingNode)sessionNode.Children[new YamlScalarNode("brightness calibration")];
+            YamlMappingNode textsNode = (YamlMappingNode)sessionNode.Children[new YamlScalarNode("texts")];
 
             Session session = new Session
             {
@@ -51,7 +53,17 @@ public class Session
                 MaskingVideo = sessionNode.Children[new YamlScalarNode("masking video")].ToString(),
                 Maskers = new List<(float Rotation, float Amplitude)>(),
                 IdleVideos = new List<string>(),
-                Challenges = new List<List<string>>()
+                Challenges = new List<List<string>>(),
+                UITexts = new Dictionary<string, string>
+                {
+                    { "prompt to start brightness calibration", textsNode.Children[new YamlScalarNode("prompt to start brightness calibration")].ToString() },
+                    { "prompt to start challenges", textsNode.Children[new YamlScalarNode("prompt to start challenges")].ToString() },
+                    { "delay before playing video", textsNode.Children[new YamlScalarNode("delay before playing video")].ToString() },
+                    { "during video playback", textsNode.Children[new YamlScalarNode("during video playback")].ToString() },
+                    { "delay after playing video", textsNode.Children[new YamlScalarNode("delay after playing video")].ToString() },
+                    { "recording user response", textsNode.Children[new YamlScalarNode("recording user response")].ToString() },
+                    { "session completion", textsNode.Children[new YamlScalarNode("session completion")].ToString() },
+                },
             };
             if (session.Name == "")
             {
