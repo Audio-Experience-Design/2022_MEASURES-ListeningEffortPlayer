@@ -1,6 +1,9 @@
 # This is a demo YAML configuration for a scripted session. Make a copy with a different filename for your own configurations.
 # Note: If this file has the filename demo.yaml it will be overwritten!
 session:
+  brightness calibration:
+    duration from black to white: 2.0
+    duration to hold on white: 2.0
   speaker amplitude: 1.0
   # Preparation time at the start of each challenge
   delay before playing videos: 2.0

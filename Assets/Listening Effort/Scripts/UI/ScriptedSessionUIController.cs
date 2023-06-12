@@ -37,6 +37,7 @@ public class ScriptedSessionUIController : MonoBehaviour
             Debug.Assert(button.onClick.GetPersistentEventCount() <= 1);
             // set up new listener each time state changes
             button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
 
             switch (state)
             {
@@ -44,11 +45,19 @@ public class ScriptedSessionUIController : MonoBehaviour
                     statusText.text = $"Loading session '{sessionController.session?.Name ?? "(null)"}'.";
                     button.gameObject.SetActive(false);
                     break;
+                case ScriptedSessionController.State.WaitingForUserToStartBrightnessCalibration:
+                    statusText.text = $"Press Start to start the brightness calibration";
+                    button.gameObject.SetActive(true);
+                    buttonLabel.text = $"Start";
+                    break;
+                case ScriptedSessionController.State.PerformingBrightnessCalibration:
+                    statusText.text = "";
+                    button.gameObject.SetActive(false);
+                    break;
                 case ScriptedSessionController.State.WaitingForUserToStartChallenges:
-                    statusText.text = $"";
+                    statusText.text = $"Press start to begin the challenges";
                     buttonLabel.text = $"Start";
                     button.gameObject.SetActive(true);
-                    button.onClick.AddListener(() => sessionController.onUserReadyToContinue());
                     break;
                 case ScriptedSessionController.State.UserReadyToStartChallenges:
                     button.gameObject.SetActive(false);

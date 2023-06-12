@@ -2945,6 +2945,7 @@ MonoBehaviour:
   audioRecorder: {fileID: 8843222}
   pupilometry: {fileID: 905427547}
   headTransform: {fileID: 1451777308}
+  brightnessCalibrationSphere: {fileID: 1055803638}
   skyboxVideoPlayer: {fileID: 165716338}
   videoManagers:
   - {fileID: 1674470798}

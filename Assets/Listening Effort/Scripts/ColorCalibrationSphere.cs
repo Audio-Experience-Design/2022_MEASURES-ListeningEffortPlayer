@@ -5,7 +5,11 @@ using System.Linq;
 
 public class ColorCalibrationSphere : MonoBehaviour
 {
-
+	public float brightness
+	{
+		get => GetComponent<Renderer>().material.color.r;
+		set => SetBrightness(value);
+	}
 
     // Start is called before the first frame update
     void Awake()

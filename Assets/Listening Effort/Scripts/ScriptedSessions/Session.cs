@@ -9,6 +9,8 @@ using YamlDotNet.RepresentationModel;
 public class Session
 {
     public string Name { get; private set; }
+    public float BrightnessCalibrationDurationFromBlackToWhite { get; private set; }
+    public float BrightnessCalibrationDurationToHoldOnWhite { get; private set; }
     public float SpeakerAmplitude { get; private set; }
     public float DelayBeforePlayingVideos { get; private set; }
     public float DelayAfterPlayingVideos { get; private set; }
@@ -36,10 +38,13 @@ public class Session
 
             YamlMappingNode rootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
             YamlMappingNode sessionNode = (YamlMappingNode)rootNode.Children[new YamlScalarNode("session")];
+            YamlMappingNode brightnessCalibrationNode = (YamlMappingNode)sessionNode.Children[new YamlScalarNode("brightness calibration")];
 
             Session session = new Session
             {
                 SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speaker amplitude")].ToString()),
+                BrightnessCalibrationDurationFromBlackToWhite = Convert.ToSingle(brightnessCalibrationNode.Children[new YamlScalarNode("duration from black to white")].ToString()),
+                BrightnessCalibrationDurationToHoldOnWhite = Convert.ToSingle(brightnessCalibrationNode.Children[new YamlScalarNode("duration to hold on white")].ToString()),
                 DelayBeforePlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay before playing videos")].ToString()),
                 DelayAfterPlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay after playing videos")].ToString()),
                 RecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("recording duration")].ToString()),

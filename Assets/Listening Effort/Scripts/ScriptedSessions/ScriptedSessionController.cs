@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -17,6 +19,7 @@ public class ScriptedSessionController : MonoBehaviour
     public AudioRecorder audioRecorder;
     public Pupilometry pupilometry;
     public TransformWatcher headTransform;
+    public ColorCalibrationSphere brightnessCalibrationSphere;
 
     public VideoPlayer skyboxVideoPlayer;
     public VideoManager[] videoManagers;
@@ -85,6 +88,8 @@ public class ScriptedSessionController : MonoBehaviour
     {
         Inactive,
         LoadingSession,
+        WaitingForUserToStartBrightnessCalibration,
+        PerformingBrightnessCalibration,
         WaitingForUserToStartChallenges,
         UserReadyToStartChallenges,
         DelayingBeforePlayingVideo,
@@ -99,11 +104,29 @@ public class ScriptedSessionController : MonoBehaviour
     {
         get => _state; private set
         {
-            Debug.Log($"State changed from {this._state} to {value}");
+            Debug.Log($"Changing state from {_state} to {value}");
+            Debug.Assert(AllowedTransitions[_state].Contains(value));
             _state = value;
             stateChanged?.Invoke(this, _state);
         }
     }
+
+    static readonly Dictionary<State, State[]> AllowedTransitions = new Dictionary<State, State[]>
+        {
+            {State.Inactive, new State[]{ State.LoadingSession } },
+            {State.LoadingSession, new State[]{ State.WaitingForUserToStartBrightnessCalibration, State.WaitingForUserToStartChallenges, State.Completed } },
+            {State.WaitingForUserToStartBrightnessCalibration, new State[]{ State.PerformingBrightnessCalibration } },
+            {State.PerformingBrightnessCalibration, new State[]{ State.WaitingForUserToStartChallenges } },
+            {State.WaitingForUserToStartChallenges, new State[]{ State.UserReadyToStartChallenges } },
+            {State.UserReadyToStartChallenges, new State[]{ State.DelayingBeforePlayingVideo } },
+            {State.DelayingBeforePlayingVideo, new State[]{ State.PlayingVideo } },
+            {State.PlayingVideo, new State[]{ State.DelayingAfterPlayingVideos } },
+            {State.DelayingAfterPlayingVideos, new State[]{ State.RecordingUserResponse } },
+            {State.RecordingUserResponse, new State[]{ State.AudioRecordingComplete } },
+            {State.AudioRecordingComplete, new State[]{ State.WaitingForUserToStartChallenges, State.Completed } },
+            {State.Completed, new State[]{ } },
+        };
+
     private int numVideosPlaying = 0;
     private StreamWriter sessionEventLogWriter;
 
@@ -123,7 +146,7 @@ public class ScriptedSessionController : MonoBehaviour
         audioRecorder.recordingFinished += (_, _) =>
         {
             Debug.Assert(state == State.RecordingUserResponse);
-            advanceStateTo(State.AudioRecordingComplete);
+            state = State.AudioRecordingComplete;
         };
 
  
@@ -143,8 +166,18 @@ public class ScriptedSessionController : MonoBehaviour
 
     public void onUserReadyToContinue()
     {
-        Debug.Assert(state == State.WaitingForUserToStartChallenges);
-        advanceStateTo(State.UserReadyToStartChallenges);
+        if (state == State.WaitingForUserToStartBrightnessCalibration)
+        {
+            state = State.PerformingBrightnessCalibration;
+        }
+        else if (state == State.WaitingForUserToStartChallenges)
+        {
+            state = State.UserReadyToStartChallenges;
+        }
+        else
+        {
+            Debug.Assert(false);
+        }
     }
 
     public void onUserReadyToStopRecording()
@@ -152,41 +185,7 @@ public class ScriptedSessionController : MonoBehaviour
         Debug.Assert(state == State.RecordingUserResponse);
         Debug.Assert(audioRecorder.isRecording);
         audioRecorder.StopRecording();
-
     }
-
-    private void advanceStateTo(State expectedNewState)
-    {
-        switch (state)
-        {
-            case State.LoadingSession:
-                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenges || expectedNewState == State.Completed);
-                state = expectedNewState; break;
-            case State.WaitingForUserToStartChallenges:
-                state = State.UserReadyToStartChallenges; break;
-            case State.UserReadyToStartChallenges:
-                state = State.DelayingBeforePlayingVideo; break;
-            case State.DelayingBeforePlayingVideo:
-                state = State.PlayingVideo;  break;
-            case State.PlayingVideo:
-                state = State.DelayingAfterPlayingVideos; break;
-            case State.DelayingAfterPlayingVideos:
-                state = State.RecordingUserResponse; break;
-            case State.RecordingUserResponse:
-                state = State.AudioRecordingComplete; break;
-            case State.AudioRecordingComplete:
-                Debug.Assert(expectedNewState == State.WaitingForUserToStartChallenges || expectedNewState == State.Completed);
-                state = expectedNewState; break;
-            case State.Completed:
-                throw new Exception($"Cannot advance state as session has completed.");
-        }
-        if (state != expectedNewState)
-        {
-            Debug.LogWarning($"Unexpected state change. Expected state {expectedNewState}. Actual state {state}.");
-        }
-    }
-
-
 
     private IEnumerator SessionCoroutine()
     {
@@ -245,7 +244,28 @@ public class ScriptedSessionController : MonoBehaviour
             Configuration = session.Name,
         });
 
-        advanceStateTo(State.WaitingForUserToStartChallenges);
+        if (session.BrightnessCalibrationDurationFromBlackToWhite>0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
+        {
+            state = State.WaitingForUserToStartBrightnessCalibration;
+            while (state == State.WaitingForUserToStartBrightnessCalibration)
+            {
+                yield return null;
+            }
+            Debug.Assert(state ==State.PerformingBrightnessCalibration);
+            brightnessCalibrationSphere.gameObject.SetActive(true);
+            brightnessCalibrationSphere.brightness = 0.0f;
+            float startTime = Time.time;
+            while (brightnessCalibrationSphere.brightness < 1.0f)
+            {
+                float t = Time.time - startTime;
+                brightnessCalibrationSphere.brightness = Math.Min(1.0f, t / session.BrightnessCalibrationDurationFromBlackToWhite);
+                yield return null;
+            }
+            yield return new WaitForSecondsRealtime(session.BrightnessCalibrationDurationToHoldOnWhite);
+            brightnessCalibrationSphere.gameObject.SetActive(false);
+        }
+
+        state = State.WaitingForUserToStartChallenges;
 
         while (state == State.WaitingForUserToStartChallenges)
         {
@@ -255,7 +275,7 @@ public class ScriptedSessionController : MonoBehaviour
 
         for (int i = 0; i < session.Challenges.Count(); i++)
         {
-            advanceStateTo(State.DelayingBeforePlayingVideo);
+            state = State.DelayingBeforePlayingVideo;
 
             string challengeLabel = (i + 1).ToString();
             challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
@@ -272,7 +292,7 @@ public class ScriptedSessionController : MonoBehaviour
             headTransform.TransformChanged += headTransformCallback;
 
             yield return new WaitForSeconds(session.DelayBeforePlayingVideos);
-            advanceStateTo(State.PlayingVideo);
+            state = State.PlayingVideo;
             Debug.Assert(numVideosPlaying == 0);
 
 
@@ -302,9 +322,9 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 yield return null;
             }
-            advanceStateTo(State.DelayingAfterPlayingVideos);
+            state = State.DelayingAfterPlayingVideos;
             yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
-            advanceStateTo(State.RecordingUserResponse);
+            state = State.RecordingUserResponse;
 
             audioRecorder.MarkRecordingInPoint();
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
@@ -341,7 +361,7 @@ public class ScriptedSessionController : MonoBehaviour
             headTransform.TransformChanged -= headTransformCallback;
         }
 
-        advanceStateTo(State.Completed);
+        state = State.Completed;
 
 
         LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
