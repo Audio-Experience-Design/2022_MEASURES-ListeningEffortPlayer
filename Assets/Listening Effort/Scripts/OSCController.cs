@@ -15,8 +15,8 @@ public class OSCController : MonoBehaviour
     //public string videoDirectory;
 
     public VideoPlayer[] videoPlayers;
-    private Transform[] videoPlayerPivotTransforms;
-    private Transform[] videoPlayerQuadTransforms;
+    //private Transform[] videoPlayerPivotTransforms;
+    //private Transform[] videoPlayerQuadTransforms;
     [SerializeField] private ColorCalibrationSphere colorCalibrationSphere;
     public AudioSource[] maskingAudioSources;
     public AudioSource[] speechAudioSources;
@@ -174,30 +174,15 @@ public class OSCController : MonoBehaviour
         return -404;
     }
 
-    void Awake()
+    void Start()
     {
         Debug.Assert(colorCalibrationSphere != null);
 
         oscSender = GetComponent<OSCSender>();
 
-        videoPlayerPivotTransforms = new Transform[videoPlayers.Length];
-        videoPlayerQuadTransforms = new Transform[videoPlayers.Length];
-
-        for (int i = 0; i < videoPlayers.Length; i++)
+        // player 0 is skybox so has no cached position
+        for (int i = 1; i < videoPlayers.Length; i++)
         {
-            if (videoPlayers[i].GetComponentInChildren<MeshFilter>() == null)
-            {
-                videoPlayerPivotTransforms[i] = null;
-                videoPlayerQuadTransforms[i] = null;
-            }
-            else
-            {
-                videoPlayerPivotTransforms[i] = videoPlayers[i].GetComponent<Transform>();
-                videoPlayerQuadTransforms[i] = videoPlayers[i].GetComponentInChildren<MeshFilter>().GetComponent<Transform>();
-                Debug.Assert(videoPlayerPivotTransforms[i] != null);
-                Debug.Assert(videoPlayerQuadTransforms[i] != null);
-                Debug.Assert(videoPlayerPivotTransforms[i] != videoPlayerQuadTransforms[i]);
-            }
             string cachedPosition = PlayerPrefs.GetString($"videoPosition[{i}]", "");
             if (cachedPosition != "")
             {
@@ -274,13 +259,13 @@ public class OSCController : MonoBehaviour
             Debug.LogWarning($"Received OSC message with address {message.Address} of incorrect format.\nCorrect format: {correctFormat}\nReceived format: {receivedFormat}");
             return false;
         }
-        
+
         if (specification.onlyPermittedInOSCSession && !inOSCSessionMode)
         {
-        Debug.LogWarning($"OSC message '{message.Address}' ignored as it is only permitted in an OSC Session.");
+            Debug.LogWarning($"OSC message '{message.Address}' ignored as it is only permitted in an OSC Session.");
             return false;
         }
-       return true;
+        return true;
     }
 
     private void ProcessMessage(OSCMessage message)
@@ -386,21 +371,28 @@ public class OSCController : MonoBehaviour
                 isClientConnected = true;
                 onClientConnected?.Invoke(this, (ip, port));
             }
-            oscSender.SendVideoPositions(videoPlayerPivotTransforms, videoPlayerQuadTransforms);
+            // player 0 is the skybox and has no position
+            oscSender.SendVideoPositions(videoPlayers.Skip(1).Select(x => x.GetComponent<VideoManager>()).ToArray());
         }
 
         else if (isMatch(message, videoPositionMessageSpecification))
         {
             int i = (int)message.Data[0];
-            if (i < 0 || i >= videoPlayerPivotTransforms.Length || videoPlayerPivotTransforms[i] == null || videoPlayerQuadTransforms[i] == null)
+            // player 0 is the skybox and has no position
+            if (i < 1 || i >= videoPlayers.Length)
             {
                 Debug.LogWarning($"Cannot set video position for video player {i}");
             }
             else
             {
-                videoPlayerPivotTransforms[i].localEulerAngles = new Vector3((float)message.Data[1], (float)message.Data[2], (float)message.Data[3]);
-                videoPlayerQuadTransforms[i].localEulerAngles = new Vector3((float)message.Data[4], (float)message.Data[5], videoPlayerQuadTransforms[i].localEulerAngles.z);
-                videoPlayerQuadTransforms[i].localScale = new Vector3((float)message.Data[6], (float)message.Data[7], videoPlayerQuadTransforms[i].localScale.z);
+                videoPlayers[i].GetComponent<VideoManager>().SetPosition(
+                    // pivot inc, azi, twist
+                    (float)message.Data[1], (float)message.Data[2], (float)message.Data[3],
+                    // quad rot x and y
+                    (float)message.Data[4], (float)message.Data[5],
+                    // quad scale x and y
+                    (float)message.Data[6], (float)message.Data[7]
+                    );
                 Debug.Log($"Set position of video player {i}");
                 PlayerPrefs.SetString($"videoPosition[{i}]", string.Join(",", message.Data.Select(x => x.ToString())));
                 PlayerPrefs.Save();

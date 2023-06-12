@@ -1,12 +1,12 @@
 # This is a demo YAML configuration for a scripted session. Make a copy with a different filename for your own configurations.
 #Note: If this file has the filename demo.yaml it will be overwritten!
-BrightnessCalibrationDurationFromBlackToWhite: 2.0
-BrightnessCalibrationDurationToHoldOnWhite: 2.0
+BrightnessCalibrationDurationFromBlackToWhite: 1.0
+BrightnessCalibrationDurationToHoldOnWhite: 1.0
 SpeakerAmplitude: 1.0
 # Preparation time at the start of each challenge
-DelayBeforePlayingVideos: 2.0
+DelayBeforePlayingVideos: 1.0
 # After the longest video has finished, how long to wait before we start recording
-DelayAfterPlayingVideos: 2.0
+DelayAfterPlayingVideos: 1.0
 RecordingDuration: 10
 MaskingVideo: "DEMO_Condition_1.mp4"
 Maskers:
@@ -27,10 +27,33 @@ UserInterfaceTexts:
   DelayAfterPlayingVideo: "Listen..."
   RecordingUserResponse: "Speak your response..."
   SessionCompletion: "Session completed."
-IdleVideos:
-  - "DEMO_T1_Idling.mp4"
-  - "DEMO_T2_Idling.mp4"
-  - "DEMO_T4_Idling.mp4"
+VideoScreens:
+    # Relative to viewer
+  - Inclination: 328.0
+    Azimuth: 76.6
+    Twist: 357.0
+    # Relative to screen
+    RotationOnXAxis: 0.0
+    RotationOnYAxis: 0.0
+    ScaleWidth: 1.0
+    ScaleHeight: 0.56
+    IdleVideo: "DEMO_T1_Idling.mp4"
+  - Inclination: 334.0
+    Azimuth: 30.9
+    Twist: 355.0
+    RotationOnXAxis: 0.0
+    RotationOnYAxis: 0.0
+    ScaleWidth: 1.0
+    ScaleHeight: 0.56
+    IdleVideo: "DEMO_T2_Idling.mp4"
+  - Inclination: 334.0
+    Azimuth: 30.9
+    Twist: 355.0
+    RotationOnXAxis: 0.0
+    RotationOnYAxis: 0.0
+    ScaleWidth: 1.0
+    ScaleHeight: 0.56
+    IdleVideo: "DEMO_T4_Idling.mp4"
 Challenges:
   # These demo files are built in. You should place your files in the appropriate folders on the Pico and refer to them similarly by filename
   - - "DEMO_T1_matrix0101.mp4"

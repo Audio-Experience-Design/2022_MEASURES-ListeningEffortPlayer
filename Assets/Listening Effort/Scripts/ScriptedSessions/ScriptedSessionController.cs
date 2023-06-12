@@ -156,7 +156,7 @@ public class ScriptedSessionController : MonoBehaviour
     public void StartSession(string yamlPath)
     {
         session = Session.LoadFromYamlPath(yamlPath, videoCatalogue);
-        Debug.Assert(session.IdleVideos.Count() == 3);
+        Debug.Assert(session.VideoScreens.Count() == 3);
         Debug.Assert(videoManagers.Count() == 3);
         Debug.Log($"Loaded {yamlPath}");
 
@@ -233,10 +233,12 @@ public class ScriptedSessionController : MonoBehaviour
             Debug.Log($"Deactivated masker {i} as not set in session YAML.");
         }
 
-        // Idle videos
+        // Setup screens
         for (int i = 0; i < 3; i++)
         {
-            videoManagers[i].idleVideoName = session.IdleVideos[i];
+            videoManagers[i].idleVideoName = session.VideoScreens[i].IdleVideo;
+            var s = session.VideoScreens[i];
+            videoManagers[i].SetPosition(s.Inclination, s.Azimuth, s.Twist, s.RotationOnXAxis, s.RotationOnYAxis, s.ScaleWidth, s.ScaleHeight);
         }
 
         using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
@@ -271,6 +273,10 @@ public class ScriptedSessionController : MonoBehaviour
         yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
 
         Debug.Assert(state == State.UserReadyToStartChallenges);
+        for (int i = 0; i < 3; i++)
+        {
+            videoManagers[i].StartIdleVideo();
+        }
 
         for (int i = 0; i < session.Challenges.Count(); i++)
         {

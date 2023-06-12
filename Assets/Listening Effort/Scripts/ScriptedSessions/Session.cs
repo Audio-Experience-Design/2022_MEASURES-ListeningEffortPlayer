@@ -27,7 +27,18 @@ public class Session
         public float Amplitude;
     }
     public List<Masker> Maskers { get; private set; }
-    public List<string> IdleVideos { get; private set; }
+    public class VideoScreen
+    {
+        public float Inclination;
+        public float Azimuth;
+        public float Twist;
+        public float RotationOnXAxis;
+        public float RotationOnYAxis;
+        public float ScaleWidth;
+        public float ScaleHeight;
+        public string IdleVideo;
+    }
+    public List<VideoScreen> VideoScreens { get; private set; }
     public List<List<string>> Challenges { get; private set; }
     public Dictionary<string, string> UserInterfaceTexts { get; private set; }
     public string yaml { get; private set; }
@@ -61,7 +72,7 @@ public class Session
             {
                 throw new Exception("The 'maskers' array must have exactly 4 elements.");
             }
-            if (session.IdleVideos.Count != 3)
+            if (session.VideoScreens.Count != 3)
             {
                 throw new Exception("The 'idle videos' array must have exactly 3 elements.");
             }
@@ -80,7 +91,7 @@ public class Session
 
             var videosMissingFromCatalogue = session.Challenges
                 .SelectMany(subList => subList)
-                .Concat(session.IdleVideos)
+                .Concat(session.VideoScreens.Select(screen => screen.IdleVideo))
                 .Append(session.MaskingVideo)
                 .Where(video => !videoCatalogue.Contains(video));
             if (videosMissingFromCatalogue.Count() > 0)
@@ -102,7 +113,7 @@ public class Session
 
     public bool Invariant()
     {
-        if (SpeakerAmplitude <= 0 || string.IsNullOrEmpty(MaskingVideo) || Maskers == null || IdleVideos == null || Challenges == null)
+        if (SpeakerAmplitude <= 0 || string.IsNullOrEmpty(MaskingVideo) || Maskers == null || VideoScreens == null || Challenges == null)
         {
             return false;
         }
@@ -112,7 +123,7 @@ public class Session
             return false;
         }
 
-        if (IdleVideos.Count != 3)
+        if (VideoScreens.Count != 3)
         {
             return false;
         }

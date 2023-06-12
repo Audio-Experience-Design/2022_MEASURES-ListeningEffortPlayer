@@ -91,7 +91,7 @@ public class VideoManager : MonoBehaviour
                     meshRenderer.enabled = false;
                 }
             }
-            
+
         };
 
         if (player.url != "")
@@ -148,6 +148,17 @@ public class VideoManager : MonoBehaviour
             renderTexture.Release();
         }
     }
+
+    public void SetPosition(float inclination, float azimuth, float twist, float quadXRotation, float quadYRotation, float quadScaleX, float quadScaleY)
+    {
+        transform.localEulerAngles = new Vector3(inclination, azimuth, twist);
+        var quad = GetComponentInChildren<MeshFilter>();
+        quad.transform.localEulerAngles.Set(quadXRotation, quadYRotation, quad.transform.localEulerAngles.z);
+        quad.transform.localScale.Set(quadScaleX, quadScaleY, quad.transform.localScale.z);
+    }
+
+    public Transform PivotTransform => transform;
+    public Transform QuadTransform => GetComponentInChildren<MeshFilter>().transform;
 
 
 }

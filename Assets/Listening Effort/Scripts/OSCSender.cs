@@ -230,33 +230,29 @@ public class OSCSender : MonoBehaviour
 
     }
 
-    public void SendVideoPositions(Transform[] pivotTransforms, Transform[] quadTransforms)
+    public void SendVideoPositions(VideoManager[] videoManagers)
     {
-        Debug.Assert(pivotTransforms.Length == quadTransforms.Length);
-        for (int i = 0; i < pivotTransforms.Length; i++)
+        for (int i = 0; i < videoManagers.Length; i++)
         {
-            if (pivotTransforms[i] != null && quadTransforms[i] != null)
-            {
-                //(typeof(float), "Azimuth (degrees)"),
-                //(typeof(float), "Inclination (degrees)"),
-                //(typeof(float), "Twist (degrees)"),
-                //(typeof(float), "Rotation around X axis(degrees)"),
-                //(typeof(float), "Rotation around Y axis (degrees)"),
-                //(typeof(float), "Width (scale)"),
-                //(typeof(float), "Height (scale)"),
+            //(typeof(float), "Azimuth (degrees)"),
+            //(typeof(float), "Inclination (degrees)"),
+            //(typeof(float), "Twist (degrees)"),
+            //(typeof(float), "Rotation around X axis(degrees)"),
+            //(typeof(float), "Rotation around Y axis (degrees)"),
+            //(typeof(float), "Width (scale)"),
+            //(typeof(float), "Height (scale)"),
 
-                Send("/video/position", new ArrayList
-                {
-                    i,
-                    pivotTransforms[i].localEulerAngles.x,
-                    pivotTransforms[i].localEulerAngles.y,
-                    pivotTransforms[i].localEulerAngles.z,
-                    quadTransforms[i].localEulerAngles.x,
-                    quadTransforms[i].localEulerAngles.y,
-                    quadTransforms[i].localScale.x,
-                    quadTransforms[i].localScale.y,
-                });
-            }
+            Send("/video/position", new ArrayList
+            {
+                i,
+                videoManagers[i].PivotTransform.localEulerAngles.x,
+                videoManagers[i].PivotTransform.localEulerAngles.y,
+                videoManagers[i].PivotTransform.localEulerAngles.z,
+                videoManagers[i].QuadTransform.localEulerAngles.x,
+                videoManagers[i].QuadTransform.localEulerAngles.y,
+                videoManagers[i].QuadTransform.localScale.x,
+                videoManagers[i].QuadTransform.localScale.y,
+            });
         }
     }
 
