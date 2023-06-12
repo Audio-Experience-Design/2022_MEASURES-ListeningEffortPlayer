@@ -18,7 +18,7 @@ public class Session
     public float SpeakerAmplitude { get; private set; }
     public float DelayBeforePlayingVideos { get; private set; }
     public float DelayAfterPlayingVideos { get; private set; }
-    public int RecordingDuration { get; private set; }
+    public float RecordingDuration { get; private set; }
     public string MaskingVideo { get; private set; }
     public bool PlayMaskersContinuously { get; private set; }
     public class Masker

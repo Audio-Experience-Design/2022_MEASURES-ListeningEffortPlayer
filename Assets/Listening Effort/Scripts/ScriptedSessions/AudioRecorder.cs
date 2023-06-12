@@ -61,7 +61,6 @@ public class AudioRecorder : MonoBehaviour
         StopRecording();
         recordingFilename = filename;
         audioSource.clip = Microphone.Start(null, true, lengthSec, frequency);
-        Debug.Log($"Started recording {lengthSec} seconds of audio...");
         recordingStartTime = AudioSettings.dspTime;
         waitForRecordingCoroutine = StartCoroutine(WaitForRecording(lengthSec));
     }
