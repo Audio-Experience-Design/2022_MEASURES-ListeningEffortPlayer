@@ -238,6 +238,7 @@ public class ScriptedSessionController : MonoBehaviour
             videoManagers[i].SetPosition(s.Inclination, s.Azimuth, s.Twist, s.RotationOnXAxis, s.RotationOnYAxis, s.ScaleWidth, s.ScaleHeight);
         }
 
+        // Setup logging
         using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
         LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
         {
@@ -246,6 +247,8 @@ public class ScriptedSessionController : MonoBehaviour
             EventName = "Trial started",
             Configuration = session.Name,
         });
+
+        // Perform Brightness Calibration
 
         if (session.BrightnessCalibrationDurationFromBlackToWhite>0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
         {
@@ -266,8 +269,12 @@ public class ScriptedSessionController : MonoBehaviour
             brightnessCalibrationSphere.gameObject.SetActive(false);
         }
 
+        // Wait for user
+
         state = State.WaitingForUserToStartChallenges;
         yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
+
+        // Start challenges
 
         Debug.Assert(state == State.UserReadyToStartChallenges);
         for (int i = 0; i < 3; i++)
@@ -278,6 +285,8 @@ public class ScriptedSessionController : MonoBehaviour
         for (int i = 0; i < session.Challenges.Count(); i++)
         {
             state = State.DelayingBeforePlayingVideo;
+
+            // Prepare challenge
 
             if (!session.PlayMaskersContinuously)
             {
@@ -290,9 +299,7 @@ public class ScriptedSessionController : MonoBehaviour
             string challengeLabel = (i + 1).ToString();
             challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
             string challengeLabelPadded = $"{i+1:000}";
-
             string userResponseAudioFile = $"{sessionLabel}_response_{challengeLabelPadded:000}.wav";
-
 
             // Record a separate CSV for pupilometry and head rotation for each challenge
             using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{challengeLabelPadded}.csv"), true, Encoding.UTF8);
@@ -305,6 +312,7 @@ public class ScriptedSessionController : MonoBehaviour
             state = State.PlayingVideo;
             Debug.Assert(numVideosPlaying == 0);
 
+            // Play Videos
 
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
             {
@@ -341,6 +349,8 @@ public class ScriptedSessionController : MonoBehaviour
                     babblePrefab.GetComponentInChildren<AudioSource>().Pause();
                 }
             }
+
+            // Record User
 
             state = State.RecordingUserResponse;
             audioRecorder.MarkRecordingInPoint();
