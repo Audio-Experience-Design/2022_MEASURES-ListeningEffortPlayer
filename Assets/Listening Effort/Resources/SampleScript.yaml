@@ -1,48 +1,47 @@
 # This is a demo YAML configuration for a scripted session. Make a copy with a different filename for your own configurations.
-# Note: If this file has the filename demo.yaml it will be overwritten!
-session:
-  brightness calibration:
-    duration from black to white: 2.0
-    duration to hold on white: 2.0
-  speaker amplitude: 1.0
-  # Preparation time at the start of each challenge
-  delay before playing videos: 2.0
-  # After the longest video has finished, how long to wait before we start recording
-  delay after playing videos: 2.0
-  recording duration: 10
-  masking video: "DEMO_Condition_1.mp4"
-  maskers:
-    - rotation: -135.0
-      amplitude: 1.0
-    - rotation: -45.0
-      amplitude: 1.0
-    - rotation: 45.0
-      amplitude: 1.0
-    - rotation: 135.0
-      amplitude: 1.0
-  texts:
-    prompt to start brightness calibration: "Press Start to start the brightness calibration"
-    prompt to start challenges: "Press start to begin the challenges"
-    delay before playing video: "Preparing..."
-    during video playback: "Listen..."
-    delay after playing video: "Listen..."
-    recording user response: "Speak your response..."
-    session completion: "Session completed."
-  idle videos:
-    - "DEMO_T1_Idling.mp4"
-    - "DEMO_T2_Idling.mp4"
-    - "DEMO_T4_Idling.mp4"
-  challenges:
-    # These demo files are built in. You should place your files in the appropriate folders on the Pico and refer to them similarly by filename
-    - - "DEMO_T1_matrix0101.mp4"
-      - "DEMO_T2_matrix0101.mp4"
-      - "DEMO_T4_matrix0101.mp4"
-    - - "DEMO_T1_matrix0102.mp4"
-      - "DEMO_T2_matrix0102.mp4"
-      - "DEMO_T4_matrix0102.mp4"
-    - - "DEMO_T1_matrix0103.mp4"
-      - "DEMO_T2_matrix0103.mp4"
-      - "DEMO_T4_matrix0103.mp4"
-    - - "DEMO_T1_matrix0103.mp4"
-      - "DEMO_T2_matrix0103.mp4"
-      - "DEMO_T4_matrix0103.mp4"
+#Note: If this file has the filename demo.yaml it will be overwritten!
+BrightnessCalibrationDurationFromBlackToWhite: 2.0
+BrightnessCalibrationDurationToHoldOnWhite: 2.0
+SpeakerAmplitude: 1.0
+# Preparation time at the start of each challenge
+DelayBeforePlayingVideos: 2.0
+# After the longest video has finished, how long to wait before we start recording
+DelayAfterPlayingVideos: 2.0
+RecordingDuration: 10
+MaskingVideo: "DEMO_Condition_1.mp4"
+Maskers:
+  - Rotation: -135.0
+    Amplitude: 1.0
+  - Rotation: -45.0
+    Amplitude: 1.0
+  - Rotation: 45.0
+    Amplitude: 1.0
+  - Rotation: 135.0
+    Amplitude: 1.0
+PlayMaskersContinuously: false
+UserInterfaceTexts:
+  PromptToStartBrightnessCalibration: "Press Start to start the brightness calibration"
+  PromptToStartChallenges: "Press start to begin the challenges"
+  DelayBeforePlayingVideo: "Preparing..."
+  DuringVideoPlayback: "Listen..."
+  DelayAfterPlayingVideo: "Listen..."
+  RecordingUserResponse: "Speak your response..."
+  SessionCompletion: "Session completed."
+IdleVideos:
+  - "DEMO_T1_Idling.mp4"
+  - "DEMO_T2_Idling.mp4"
+  - "DEMO_T4_Idling.mp4"
+Challenges:
+  # These demo files are built in. You should place your files in the appropriate folders on the Pico and refer to them similarly by filename
+  - - "DEMO_T1_matrix0101.mp4"
+    - "DEMO_T2_matrix0101.mp4"
+    - "DEMO_T4_matrix0101.mp4"
+  - - "DEMO_T1_matrix0102.mp4"
+    - "DEMO_T2_matrix0102.mp4"
+    - "DEMO_T4_matrix0102.mp4"
+  - - "DEMO_T1_matrix0103.mp4"
+    - "DEMO_T2_matrix0103.mp4"
+    - "DEMO_T4_matrix0103.mp4"
+  - - "DEMO_T1_matrix0103.mp4"
+    - "DEMO_T2_matrix0103.mp4"
+    - "DEMO_T4_matrix0103.mp4"

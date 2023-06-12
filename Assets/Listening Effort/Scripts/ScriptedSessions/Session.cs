@@ -5,6 +5,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using YamlDotNet.RepresentationModel;
+using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.Serialization;
+using UnityEditor;
+//using UnityEngine.Windows;
 
 public class Session
 {
@@ -16,17 +20,26 @@ public class Session
     public float DelayAfterPlayingVideos { get; private set; }
     public int RecordingDuration { get; private set; }
     public string MaskingVideo { get; private set; }
-    public List<(float Rotation, float Amplitude)> Maskers { get; private set; }
+    public bool PlayMaskersContinuously { get; private set; }
+    public class Masker
+    {
+        public float Rotation;
+        public float Amplitude;
+    }
+    public List<Masker> Maskers { get; private set; }
     public List<string> IdleVideos { get; private set; }
     public List<List<string>> Challenges { get; private set; }
-    public Dictionary<string, string> UITexts { get; private set; }
+    public Dictionary<string, string> UserInterfaceTexts { get; private set; }
     public string yaml { get; private set; }
 
     public static Session LoadFromYamlPath(string yamlPath, VideoCatalogue videoCatalogue)
     {
         string yamlText = File.ReadAllText(yamlPath);
         Session session = LoadFromYamlString(yamlText, videoCatalogue);
-        session.Name = Path.GetFileNameWithoutExtension(yamlPath);
+        if (session.Name == null)
+        {
+            session.Name = Path.GetFileNameWithoutExtension(yamlPath);
+        }
         return session;
     }
 
@@ -34,82 +47,27 @@ public class Session
     {
         try
         {
-            var yamlStream = new YamlStream();
-            yamlStream.Load(new StringReader(yamlText));
+            var deserializer = new DeserializerBuilder().WithNamingConvention(PascalCaseNamingConvention.Instance).Build();
+            Session session = deserializer.Deserialize<Session>(yamlText); /* compile error */
 
-            YamlMappingNode rootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
-            YamlMappingNode sessionNode = (YamlMappingNode)rootNode.Children[new YamlScalarNode("session")];
-            YamlMappingNode brightnessCalibrationNode = (YamlMappingNode)sessionNode.Children[new YamlScalarNode("brightness calibration")];
-            YamlMappingNode textsNode = (YamlMappingNode)sessionNode.Children[new YamlScalarNode("texts")];
-
-            Session session = new Session
+            foreach (Masker masker in session.Maskers)
             {
-                SpeakerAmplitude = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("speaker amplitude")].ToString()),
-                BrightnessCalibrationDurationFromBlackToWhite = Convert.ToSingle(brightnessCalibrationNode.Children[new YamlScalarNode("duration from black to white")].ToString()),
-                BrightnessCalibrationDurationToHoldOnWhite = Convert.ToSingle(brightnessCalibrationNode.Children[new YamlScalarNode("duration to hold on white")].ToString()),
-                DelayBeforePlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay before playing videos")].ToString()),
-                DelayAfterPlayingVideos = Convert.ToSingle(sessionNode.Children[new YamlScalarNode("delay after playing videos")].ToString()),
-                RecordingDuration = Convert.ToInt32(sessionNode.Children[new YamlScalarNode("recording duration")].ToString()),
-                MaskingVideo = sessionNode.Children[new YamlScalarNode("masking video")].ToString(),
-                Maskers = new List<(float Rotation, float Amplitude)>(),
-                IdleVideos = new List<string>(),
-                Challenges = new List<List<string>>(),
-                UITexts = new Dictionary<string, string>
-                {
-                    { "prompt to start brightness calibration", textsNode.Children[new YamlScalarNode("prompt to start brightness calibration")].ToString() },
-                    { "prompt to start challenges", textsNode.Children[new YamlScalarNode("prompt to start challenges")].ToString() },
-                    { "delay before playing video", textsNode.Children[new YamlScalarNode("delay before playing video")].ToString() },
-                    { "during video playback", textsNode.Children[new YamlScalarNode("during video playback")].ToString() },
-                    { "delay after playing video", textsNode.Children[new YamlScalarNode("delay after playing video")].ToString() },
-                    { "recording user response", textsNode.Children[new YamlScalarNode("recording user response")].ToString() },
-                    { "session completion", textsNode.Children[new YamlScalarNode("session completion")].ToString() },
-                },
-            };
-            if (session.Name == "")
-            {
-                session.Name = "(untitled)";
-            }
-
-            var maskersNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("maskers")];
-            foreach (YamlMappingNode maskerNode in maskersNode)
-            {
-                (float Rotation, float Amplitude) masker = (
-                    Convert.ToSingle(maskerNode.Children[new YamlScalarNode("rotation")].ToString()),
-                    Convert.ToSingle(maskerNode.Children[new YamlScalarNode("amplitude")].ToString())
-                );
                 if (masker.Amplitude < 0.0f || 1.0f < masker.Amplitude)
                 {
                     throw new Exception("Masker amplitude must be between 0.0 and 1.0.");
                 }
-
-                session.Maskers.Add(masker);
             }
-
             if (session.Maskers.Count != 4)
             {
                 throw new Exception("The 'maskers' array must have exactly 4 elements.");
-            }
-
-            var idleVideosNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("idle videos")];
-            foreach (YamlScalarNode idleVideoNode in idleVideosNode)
-            {
-                session.IdleVideos.Add(idleVideoNode.ToString());
             }
             if (session.IdleVideos.Count != 3)
             {
                 throw new Exception("The 'idle videos' array must have exactly 3 elements.");
             }
 
-            var challengesNode = (YamlSequenceNode)sessionNode.Children[new YamlScalarNode("challenges")];
-            foreach (YamlSequenceNode challengeNode in challengesNode)
+            foreach (List<string> challenge in session.Challenges)
             {
-                List<string> challenge = new List<string>();
-                foreach (YamlScalarNode videoNode in challengeNode)
-                {
-                    challenge.Add(videoNode.ToString());
-                }
-                session.Challenges.Add(challenge);
-
                 if (challenge.Count != 3)
                 {
                     throw new Exception("The nested members of 'challenges' must have arrays with exactly 3 elements.");
@@ -133,13 +91,11 @@ public class Session
 
             Debug.Assert(session.Invariant());
 
-            session.yaml = yamlText;
-
             return session;
         }
         catch (Exception ex)
         {
-            Debug.LogError("Exception while loading YAML. Will rethrow");
+            Debug.LogError($"Exception while loading YAML. Will rethrow. Message: {ex.Message}");
             throw ex;
         }
     }

@@ -221,6 +221,10 @@ public class ScriptedSessionController : MonoBehaviour
             babblePrefabs[i].GetComponentInChildren<AudioSource>().volume = session.Maskers[i].Amplitude;
             babblePrefabs[i].transform.localRotation = Quaternion.Euler(0, session.Maskers[i].Rotation, 0);
             babblePrefabs[i].GetComponentInChildren<AudioSource>().Play();
+            if (!session.PlayMaskersContinuously)
+            {
+                babblePrefabs[i].GetComponentInChildren<AudioSource>().Pause();
+            }
             Debug.Log($"Set masker {i} to {session.Maskers[i].Amplitude} amplitude and {session.Maskers[i].Rotation} rotation.");
         }
         for (int i = session.Maskers.Count(); i < babblePrefabs.Count(); i++)
@@ -272,6 +276,14 @@ public class ScriptedSessionController : MonoBehaviour
         {
             state = State.DelayingBeforePlayingVideo;
 
+            if (!session.PlayMaskersContinuously)
+            {
+                foreach (GameObject babblePrefab in babblePrefabs)
+                {
+                    babblePrefab.GetComponentInChildren<AudioSource>().UnPause();
+                }
+            }
+
             string challengeLabel = (i + 1).ToString();
             challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
             string challengeLabelPadded = $"{i+1:000}";
@@ -319,8 +331,15 @@ public class ScriptedSessionController : MonoBehaviour
             }
             state = State.DelayingAfterPlayingVideos;
             yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
-            state = State.RecordingUserResponse;
+            if (!session.PlayMaskersContinuously)
+            {
+                foreach (GameObject babblePrefab in babblePrefabs)
+                {
+                    babblePrefab.GetComponentInChildren<AudioSource>().Pause();
+                }
+            }
 
+            state = State.RecordingUserResponse;
             audioRecorder.MarkRecordingInPoint();
             LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
             {
