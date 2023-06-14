@@ -30,8 +30,11 @@ public class ScriptedSessionController : MonoBehaviour
 
     struct SessionEventLogEntry
     {
+        // Set automatically by Log function
         public string Timestamp { get; set; }
+        // Set automatically by Log function
         public string SessionTime { get; set; }
+        // Set automatically by Log function
         public string Configuration { get; set; }
         public string EventName { get; set; }
         public string ChallengeNumber { get; set; }
@@ -127,7 +130,12 @@ public class ScriptedSessionController : MonoBehaviour
         };
 
     private int numVideosPlaying = 0;
+
+    // Details for logwriter
     private StreamWriter sessionEventLogWriter;
+    private DateTime sessionStartTimeUTC;
+    private string challengeLabel;
+    private string challengeLabelPadded => $"{int.Parse(challengeLabel):000}";
 
     void Start()
     {
@@ -191,7 +199,7 @@ public class ScriptedSessionController : MonoBehaviour
         Debug.Log($"Starting automated trial session: {session.Name}");
         state = State.LoadingSession;
 
-        DateTime sessionStartTimeUTC = DateTime.UtcNow;
+        sessionStartTimeUTC = DateTime.UtcNow;
         string localTimestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string subjectLabel = PlayerPrefs.GetString("subjectLabel", "");
         string sessionLabel = $"{localTimestamp}_{session.Name}{(subjectLabel != "" ? "_" : "")}{subjectLabel}";
@@ -239,14 +247,8 @@ public class ScriptedSessionController : MonoBehaviour
         }
 
         // Setup logging
-        using var sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
-        LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
-        {
-            Timestamp = LogUtilities.localTimestamp(),
-            SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
-            EventName = "Trial started",
-            Configuration = session.Name,
-        });
+        sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
+        Log(new SessionEventLogEntry { EventName = "Trial started" });
 
         // Perform Brightness Calibration
 
@@ -262,12 +264,9 @@ public class ScriptedSessionController : MonoBehaviour
             pupilometry.DataChanged += pupilometryCallback;
             EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, label);
             headTransform.TransformChanged += headTransformCallback;
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Brightness calibration started",
-                Configuration = session.Name,
             });
 
 
@@ -280,23 +279,17 @@ public class ScriptedSessionController : MonoBehaviour
                 brightnessCalibrationSphere.brightness = Math.Min(1.0f, t / session.BrightnessCalibrationDurationFromBlackToWhite);
                 yield return null;
             }
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Brightness calibration reached full brightness",
-                Configuration = session.Name,
             });
 
             yield return new WaitForSecondsRealtime(session.BrightnessCalibrationDurationToHoldOnWhite);
 
             brightnessCalibrationSphere.gameObject.SetActive(false);
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Brightness calibration finished",
-                Configuration = session.Name,
             });
 
             pupilometry.DataChanged -= pupilometryCallback;
@@ -319,6 +312,10 @@ public class ScriptedSessionController : MonoBehaviour
         for (int i = 0; i < session.Challenges.Count(); i++)
         {
             state = State.DelayingBeforePlayingVideo;
+            Log(new SessionEventLogEntry
+            {
+                EventName = "Delaying before playing videos",
+            });
 
             // Prepare challenge
 
@@ -330,9 +327,8 @@ public class ScriptedSessionController : MonoBehaviour
                 }
             }
 
-            string challengeLabel = (i + 1).ToString();
+            challengeLabel = (i + 1).ToString();
             challengeNumberChanged?.Invoke(this, (current: i, currentLabel: challengeLabel, total: session.Challenges.Count()));
-            string challengeLabelPadded = $"{i+1:000}";
             string userResponseAudioFile = $"{sessionLabel}_response_{challengeLabelPadded:000}.wav";
 
             // Record a separate CSV for pupilometry and head rotation for each challenge
@@ -348,11 +344,8 @@ public class ScriptedSessionController : MonoBehaviour
 
             // Play Videos
 
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
-                Configuration = session.Name,
                 EventName = "Playing videos",
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
@@ -375,6 +368,10 @@ public class ScriptedSessionController : MonoBehaviour
                 yield return null;
             }
             state = State.DelayingAfterPlayingVideos;
+            Log(new SessionEventLogEntry
+            {
+                EventName = "Delaying after playing videos",
+            });
             yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
             if (!session.PlayMaskersContinuously)
             {
@@ -388,12 +385,9 @@ public class ScriptedSessionController : MonoBehaviour
 
             state = State.RecordingUserResponse;
             audioRecorder.MarkRecordingInPoint();
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Recording response",
-                Configuration = session.Name,
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
                 MiddleVideo = session.Challenges[i][1],
@@ -404,12 +398,9 @@ public class ScriptedSessionController : MonoBehaviour
 
             Debug.Assert(state == State.AudioRecordingComplete);
 
-            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            Log(new SessionEventLogEntry
             {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
                 EventName = "Response received",
-                Configuration = session.Name,
                 ChallengeNumber = challengeLabel,
                 LeftVideo = session.Challenges[i][0],
                 MiddleVideo = session.Challenges[i][1],
@@ -423,15 +414,22 @@ public class ScriptedSessionController : MonoBehaviour
         state = State.Completed;
 
 
-        LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+        Log(new SessionEventLogEntry
         {
-            Timestamp = LogUtilities.localTimestamp(),
-            SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
             EventName = "Trial completed",
-            Configuration = session.Name,
         });
 
         sessionEventLogWriter.Close();
+    }
+
+
+    private void Log(SessionEventLogEntry entry)
+    {
+        Debug.Assert(entry.Timestamp == null && entry.SessionTime == null && entry.Configuration == null);
+        entry.Timestamp = LogUtilities.localTimestamp();
+        entry.SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3");
+        entry.EventName = "Trial completed";
+        LogUtilities.writeCSVLine(sessionEventLogWriter, entry);
     }
 
 
