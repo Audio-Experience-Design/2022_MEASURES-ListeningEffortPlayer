@@ -34,7 +34,7 @@ public class Pupilometry : MonoBehaviour
 
 
 
-    void FixedUpdate()
+    void Update()
     {
         if (!TobiiXR.IsAdvancedInitialized)
         {
