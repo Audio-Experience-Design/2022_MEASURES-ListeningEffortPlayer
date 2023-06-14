@@ -28,7 +28,7 @@ public class ScriptedSessionController : MonoBehaviour
     /// current number (0 indexed), current label (1 indexed), total number
     public event EventHandler<(int current, string currentLabel, int total)> challengeNumberChanged;
 
-    struct SessionEventLogEntry
+    public struct SessionEventLogEntry
     {
         // Set automatically by Log function
         public string Timestamp { get; set; }
@@ -273,11 +273,7 @@ public class ScriptedSessionController : MonoBehaviour
             Debug.Assert(state == State.PerformingBrightnessCalibration);
             challengeLabel = "brightness_calibration";
 
-            using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{challengeLabel}.csv"), true, Encoding.UTF8);
-            EventHandler<PupilometryData> pupilometryCallback = createPupilometryCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
-            pupilometry.DataChanged += pupilometryCallback;
-            EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
-            headTransform.TransformChanged += headTransformCallback;
+            using var pupilometryLogger = new PupilometryLogger(sessionFolder, sessionLabel, challengeLabel, session.Name, sessionStartTimeUTC, pupilometry, headTransform);
             Log(new SessionEventLogEntry
             {
                 EventName = "Brightness calibration started",
@@ -305,9 +301,6 @@ public class ScriptedSessionController : MonoBehaviour
             {
                 EventName = "Brightness calibration finished",
             });
-
-            pupilometry.DataChanged -= pupilometryCallback;
-            headTransform.TransformChanged -= headTransformCallback;
         }
 
         // Wait for user to start first challenge
@@ -346,12 +339,9 @@ public class ScriptedSessionController : MonoBehaviour
             string userResponseAudioFile = $"{sessionLabel}_response_{challengeLabelPadded:000}.wav";
 
             // Record a separate CSV for pupilometry and head rotation for each challenge
-            using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{challengeLabelPadded}.csv"), true, Encoding.UTF8);
-            EventHandler<PupilometryData> pupilometryCallback = createPupilometryCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
-            pupilometry.DataChanged += pupilometryCallback;
-            EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
-            headTransform.TransformChanged += headTransformCallback;
-
+            // This will stop logging at the end of scope of this loop iteration
+            using var pupilometryLogger = new PupilometryLogger(sessionFolder, sessionLabel, challengeLabel, session.Name, sessionStartTimeUTC, pupilometry, headTransform);
+            
             yield return new WaitForSeconds(session.DelayBeforePlayingVideos);
             state = State.PlayingVideo;
             Debug.Assert(numVideosPlaying == 0);
@@ -421,8 +411,6 @@ public class ScriptedSessionController : MonoBehaviour
                 RightVideo = session.Challenges[i][2],
                 UserResponseAudioFile = userResponseAudioFile,
             });
-            pupilometry.DataChanged -= pupilometryCallback;
-            headTransform.TransformChanged -= headTransformCallback;
         }
 
         state = State.Completed;
@@ -447,75 +435,4 @@ public class ScriptedSessionController : MonoBehaviour
     }
 
 
-    private EventHandler<PupilometryData> createPupilometryCallback(StreamWriter logWriter, DateTime sessionStartTimeUTC, string challengeNumber)
-    {
-        EventHandler<PupilometryData> pupilometryCallback = (object sender, PupilometryData data) =>
-        {
-            LogUtilities.writeCSVLine(logWriter, new SessionEventLogEntry
-            {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
-                Configuration = session.Name,
-                EventName = "Pupilometry",
-                ChallengeNumber = challengeNumber,
-                PupilometrySystemTimestamp = data.SystemTimestamp.ToString(),
-                PupilometryDeviceTimestamp = data.DeviceTimestamp.ToString(),
-                LeftIsBlinking = data.Left.IsBlinking.ToString(),
-                RightIsBlinking = data.Right.IsBlinking.ToString(),
-                LeftPupilDiameterValid = data.Left.PupilDiameterValid.ToString(),
-                LeftPupilDiameter = data.Left.PupilDiameter.ToString(),
-                RightPupilDiameterValid = data.Right.PupilDiameterValid.ToString(),
-                RightPupilDiameter = data.Right.PupilDiameter.ToString(),
-                LeftPositionGuideValid = data.Left.PositionGuideValid.ToString(),
-                LeftPositionGuideX = data.Left.PositionGuide.x.ToString(),
-                LeftPositionGuideY = data.Left.PositionGuide.y.ToString(),
-                RightPositionGuideValid = data.Right.PositionGuideValid.ToString(),
-                RightPositionGuideX = data.Right.PositionGuide.x.ToString(),
-                RightPositionGuideY = data.Right.PositionGuide.y.ToString(),
-                LeftGazeRayIsValid = data.Left.GazeRay.IsValid.ToString(),
-                LeftGazeRayOriginX = data.Left.GazeRay.Origin.x.ToString(),
-                LeftGazeRayOriginY = data.Left.GazeRay.Origin.y.ToString(),
-                LeftGazeRayOriginZ = data.Left.GazeRay.Origin.z.ToString(),
-                LeftGazeRayDirectionX = data.Left.GazeRay.Direction.x.ToString(),
-                LeftGazeRayDirectionY = data.Left.GazeRay.Direction.y.ToString(),
-                LeftGazeRayDirectionZ = data.Left.GazeRay.Direction.z.ToString(),
-                RightGazeRayIsValid = data.Right.GazeRay.IsValid.ToString(),
-                RightGazeRayOriginX = data.Right.GazeRay.Origin.x.ToString(),
-                RightGazeRayOriginY = data.Right.GazeRay.Origin.y.ToString(),
-                RightGazeRayOriginZ = data.Right.GazeRay.Origin.z.ToString(),
-                RightGazeRayDirectionX = data.Right.GazeRay.Direction.x.ToString(),
-                RightGazeRayDirectionY = data.Right.GazeRay.Direction.y.ToString(),
-                RightGazeRayDirectionZ = data.Right.GazeRay.Direction.z.ToString(),
-                ConvergenceDistanceIsValid = data.ConvergenceDistanceIsValid.ToString(),
-                ConvergenceDistance = data.ConvergenceDistance.ToString(),
-                GazeRayIsValid = data.GazeRay.IsValid.ToString(),
-                GazeRayOriginX = data.GazeRay.Origin.x.ToString(),
-                GazeRayOriginY = data.GazeRay.Origin.y.ToString(),
-                GazeRayOriginZ = data.GazeRay.Origin.z.ToString(),
-                GazeRayDirectionX = data.GazeRay.Direction.x.ToString(),
-                GazeRayDirectionY = data.GazeRay.Direction.y.ToString(),
-                GazeRayDirectionZ = data.GazeRay.Direction.z.ToString(),
-            });
-        };
-        return pupilometryCallback;
-    }
-
-    private EventHandler<Transform> createHeadTransformCallback(StreamWriter logWriter, DateTime sessionStartTimeUTC, string challengeNumber)
-    {
-        EventHandler<Transform> headTransformCallback = (object sender, Transform data) =>
-        {
-            LogUtilities.writeCSVLine(logWriter, new SessionEventLogEntry
-            {
-                Timestamp = LogUtilities.localTimestamp(),
-                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
-                Configuration = session.Name,
-                EventName = "HeadRotation",
-                ChallengeNumber = challengeNumber,
-                HeadRotationEulerX = data.rotation.eulerAngles.x.ToString(),
-                HeadRotationEulerY = data.rotation.eulerAngles.y.ToString(),
-                HeadRotationEulerZ = data.rotation.eulerAngles.z.ToString(),
-            });
-        };
-        return headTransformCallback;
-    }
 }
