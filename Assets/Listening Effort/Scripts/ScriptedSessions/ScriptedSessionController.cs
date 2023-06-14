@@ -134,8 +134,22 @@ public class ScriptedSessionController : MonoBehaviour
     // Details for logwriter
     private StreamWriter sessionEventLogWriter;
     private DateTime sessionStartTimeUTC;
+    private string sessionLabel;
     private string challengeLabel;
-    private string challengeLabelPadded => $"{int.Parse(challengeLabel):000}";
+    private string challengeLabelPadded
+    {
+        get
+        {
+            if (int.TryParse(challengeLabel, out int challengeNumber))
+            {
+                return $"{challengeNumber:000}";
+            }
+            else
+            {
+                return challengeLabel;
+            }
+        }
+    }
 
     void Start()
     {
@@ -156,7 +170,7 @@ public class ScriptedSessionController : MonoBehaviour
             state = State.AudioRecordingComplete;
         };
 
- 
+
     }
 
     // yamlPath should be an absolute path including extension
@@ -202,11 +216,11 @@ public class ScriptedSessionController : MonoBehaviour
         sessionStartTimeUTC = DateTime.UtcNow;
         string localTimestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string subjectLabel = PlayerPrefs.GetString("subjectLabel", "");
-        string sessionLabel = $"{localTimestamp}_{session.Name}{(subjectLabel != "" ? "_" : "")}{subjectLabel}";
+        sessionLabel = $"{localTimestamp}_{session.Name}{(subjectLabel != "" ? "_" : "")}{subjectLabel}";
         string sessionFolder = Path.Join(Path.Join(Application.persistentDataPath, "RecordedSessions"), sessionLabel);
         audioRecorder.saveDirectory = sessionFolder;
         Directory.CreateDirectory(sessionFolder);
-        File.WriteAllText(Path.Join(sessionFolder, session.Name != ""? session.Name+".yaml" : "session.yaml"), session.yaml);
+        File.WriteAllText(Path.Join(sessionFolder, session.Name != "" ? session.Name + ".yaml" : "session.yaml"), session.yaml);
 
         // Speaker Amplitude
         videoManagers.ToList().ForEach(vm => vm.audioSource.volume = session.SpeakerAmplitude);
@@ -252,17 +266,17 @@ public class ScriptedSessionController : MonoBehaviour
 
         // Perform Brightness Calibration
 
-        if (session.BrightnessCalibrationDurationFromBlackToWhite>0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
+        if (session.BrightnessCalibrationDurationFromBlackToWhite > 0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
         {
             state = State.WaitingForUserToStartBrightnessCalibration;
             yield return new WaitUntil(() => state != State.WaitingForUserToStartBrightnessCalibration);
-            Debug.Assert(state ==State.PerformingBrightnessCalibration);
+            Debug.Assert(state == State.PerformingBrightnessCalibration);
+            challengeLabel = "brightness_calibration";
 
-            string label = "brightness_calibration";
-            using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{label}.csv"), true, Encoding.UTF8);
-            EventHandler<PupilometryData> pupilometryCallback = createPupilometryCallback(pupilometryLogWriter, sessionStartTimeUTC, label);
+            using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{challengeLabel}.csv"), true, Encoding.UTF8);
+            EventHandler<PupilometryData> pupilometryCallback = createPupilometryCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
             pupilometry.DataChanged += pupilometryCallback;
-            EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, label);
+            EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, challengeLabel);
             headTransform.TransformChanged += headTransformCallback;
             Log(new SessionEventLogEntry
             {
