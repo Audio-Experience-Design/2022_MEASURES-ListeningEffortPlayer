@@ -29,8 +29,8 @@ UserInterfaceTexts:
   SessionCompletion: "Session completed."
 VideoScreens:
     # Relative to viewer
-  - Inclination: 328.0
-    Azimuth: 336.0
+  - Inclination: 350.0
+    Azimuth: 332.0
     Twist: 357.0
     # Relative to screen
     RotationOnXAxis: 0.0
@@ -38,15 +38,15 @@ VideoScreens:
     ScaleWidth: 1.0
     ScaleHeight: 0.56
     IdleVideo: "DEMO_T1_Idling.mp4"
-  - Inclination: 334.0
-    Azimuth: 2.1
+  - Inclination: 352.0
+    Azimuth: 0.5
     Twist: 355.0
     RotationOnXAxis: 0.0
     RotationOnYAxis: 0.0
     ScaleWidth: 1.0
     ScaleHeight: 0.56
     IdleVideo: "DEMO_T2_Idling.mp4"
-  - Inclination: 334.0
+  - Inclination: 355.0
     Azimuth: 30.9
     Twist: 355.0
     RotationOnXAxis: 0.0
