@@ -256,6 +256,21 @@ public class ScriptedSessionController : MonoBehaviour
             yield return new WaitUntil(() => state != State.WaitingForUserToStartBrightnessCalibration);
             Debug.Assert(state ==State.PerformingBrightnessCalibration);
 
+            string label = "brightness_calibration";
+            using var pupilometryLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_pupilometry_{label}.csv"), true, Encoding.UTF8);
+            EventHandler<PupilometryData> pupilometryCallback = createPupilometryCallback(pupilometryLogWriter, sessionStartTimeUTC, label);
+            pupilometry.DataChanged += pupilometryCallback;
+            EventHandler<Transform> headTransformCallback = createHeadTransformCallback(pupilometryLogWriter, sessionStartTimeUTC, label);
+            headTransform.TransformChanged += headTransformCallback;
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Brightness calibration started",
+                Configuration = session.Name,
+            });
+
+
             brightnessCalibrationSphere.gameObject.SetActive(true);
             brightnessCalibrationSphere.brightness = 0.0f;
             float startTime = Time.time;
@@ -265,11 +280,30 @@ public class ScriptedSessionController : MonoBehaviour
                 brightnessCalibrationSphere.brightness = Math.Min(1.0f, t / session.BrightnessCalibrationDurationFromBlackToWhite);
                 yield return null;
             }
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Brightness calibration reached full brightness",
+                Configuration = session.Name,
+            });
+
             yield return new WaitForSecondsRealtime(session.BrightnessCalibrationDurationToHoldOnWhite);
+
             brightnessCalibrationSphere.gameObject.SetActive(false);
+            LogUtilities.writeCSVLine(sessionEventLogWriter, new SessionEventLogEntry
+            {
+                Timestamp = LogUtilities.localTimestamp(),
+                SessionTime = (DateTime.UtcNow - sessionStartTimeUTC).TotalSeconds.ToString("F3"),
+                EventName = "Brightness calibration finished",
+                Configuration = session.Name,
+            });
+
+            pupilometry.DataChanged -= pupilometryCallback;
+            headTransform.TransformChanged -= headTransformCallback;
         }
 
-        // Wait for user
+        // Wait for user to start first challenge
 
         state = State.WaitingForUserToStartChallenges;
         yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
