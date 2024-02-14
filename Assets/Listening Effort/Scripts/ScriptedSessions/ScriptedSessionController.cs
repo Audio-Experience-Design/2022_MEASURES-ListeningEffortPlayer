@@ -125,7 +125,7 @@ public class ScriptedSessionController : MonoBehaviour
             {State.PlayingVideo, new State[]{ State.DelayingAfterPlayingVideos } },
             {State.DelayingAfterPlayingVideos, new State[]{ State.RecordingUserResponse } },
             {State.RecordingUserResponse, new State[]{ State.AudioRecordingComplete } },
-            {State.AudioRecordingComplete, new State[]{ State.WaitingForUserToStartChallenges, State.Completed } },
+            {State.AudioRecordingComplete, new State[]{ State.DelayingBeforePlayingVideo, State.Completed } },
             {State.Completed, new State[]{ } },
         };
 
