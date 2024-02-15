@@ -1,4 +1,1 @@
-tqdm
-whispercpp
-numpy
-scipy
+git+https://github.com/timmb/whispercpp.py

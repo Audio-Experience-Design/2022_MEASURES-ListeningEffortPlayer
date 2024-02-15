@@ -10,7 +10,7 @@
 			"request": "launch",
 			"program": "${file}",
 			"console": "integratedTerminal",
-			"args": ["W:/files/Clients/38 Imperial College/3 Listening effort/testing/2024-02-14 tim audio recordings/2024-02-14_16-56-00_extra-videos - later recordings are cropped and invalid"]
+			"args": []
 		}
 	]
 }
