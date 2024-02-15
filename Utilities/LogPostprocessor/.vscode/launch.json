@@ -1,0 +1,16 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Python Debugger: Current File with Arguments",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${file}",
+			"console": "integratedTerminal",
+			"args": ["W:/files/Clients/38 Imperial College/3 Listening effort/testing/2024-02-14 tim audio recordings/2024-02-14_16-56-00_extra-videos - later recordings are cropped and invalid"]
+		}
+	]
+}

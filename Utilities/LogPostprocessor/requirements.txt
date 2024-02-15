@@ -1,0 +1,4 @@
+tqdm
+whispercpp
+numpy
+scipy
