@@ -1,7 +1,6 @@
 import os
 import csv
 import re
-from tqdm import tqdm
 import whispercpp
 from whispercpp import Whisper
 import argparse
