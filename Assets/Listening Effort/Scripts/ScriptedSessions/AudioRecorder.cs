@@ -19,6 +19,7 @@ public class AudioRecorder : MonoBehaviour
     private string recordingFilename;
     private Coroutine waitForRecordingCoroutine;
     private double durationToTrimFromBeginning = 0.0;
+    private double totalRecordingDuration = 0.0;
 
     public event EventHandler<(string path, AudioClip clip)> recordingFinished;
 
@@ -48,7 +49,7 @@ public class AudioRecorder : MonoBehaviour
         }
     }
 
-    public void StartRecording(string filename, int lengthSec)
+    public void StartRecording(string filename, int maximumLengthSec)
     {
         Debug.Assert(filename != null && filename != "");
         if (!hasMicrophone)
@@ -60,27 +61,29 @@ public class AudioRecorder : MonoBehaviour
 
         StopRecording();
         recordingFilename = filename;
-        audioSource.clip = Microphone.Start(null, true, lengthSec, frequency);
+        totalRecordingDuration = maximumLengthSec;
+        audioSource.clip = Microphone.Start(null, true, maximumLengthSec, frequency);
         recordingStartTime = AudioSettings.dspTime;
-        waitForRecordingCoroutine = StartCoroutine(WaitForRecording(lengthSec));
+        waitForRecordingCoroutine = StartCoroutine(WaitForRecording());
     }
 
     // Because the Pico loses the first few seconds of recording, we start early.
     // This lets you mark when the saved part of the recording should begin
     // Can only be called while isRecording is true
-    public void MarkRecordingInPoint()
+    public void MarkRecordingInPoint(double recordingLengthFromNowInSeconds)
     {
         Debug.Assert(isRecording);
         durationToTrimFromBeginning = AudioSettings.dspTime - recordingStartTime;
+        totalRecordingDuration = durationToTrimFromBeginning + recordingLengthFromNowInSeconds;
     }
 
-    private IEnumerator WaitForRecording(double lengthSec)
+    private IEnumerator WaitForRecording()
     {
-        while (isRecording && AudioSettings.dspTime - recordingStartTime < lengthSec)
+        while (isRecording && AudioSettings.dspTime - recordingStartTime < totalRecordingDuration)
             yield return null;
         if (isRecording)
         {
-            Debug.Log($"Recording ending by timeout after {lengthSec}");
+            Debug.Log($"Recording ending after {totalRecordingDuration}");
             CloseRecording();
         }
     }

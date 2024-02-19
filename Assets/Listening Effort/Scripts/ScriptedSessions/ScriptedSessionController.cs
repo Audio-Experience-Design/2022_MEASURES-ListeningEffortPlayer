@@ -374,6 +374,8 @@ public class ScriptedSessionController : MonoBehaviour
                 }
                 // start recording now because pico loses the first few seconds
                 double expectedPlaybackDuration = videoManagers.Aggregate(0.0, (acc, vm) => Math.Max(acc, vm.player.length));
+                 // sometimes player.length gives a bad value, so put a generous minimum here.
+                expectedPlaybackDuration = Math.Max(expectedPlaybackDuration, 30.0);
                 int maximumRecordingDuration = (int)Math.Ceiling(session.RecordingDuration + expectedPlaybackDuration + session.DelayAfterPlayingVideos);
                 Debug.Log($"Starting off recorder. Max duration (including playback): {maximumRecordingDuration}");
                 audioRecorder.StartRecording(userResponseAudioFile, maximumRecordingDuration);
@@ -403,7 +405,7 @@ public class ScriptedSessionController : MonoBehaviour
             // ## Record User Audio
             {
                 state = State.RecordingUserResponse;
-                audioRecorder.MarkRecordingInPoint();
+                audioRecorder.MarkRecordingInPoint(session.RecordingDuration);
                 Log(new SessionEventLogEntry
                 {
                     EventName = "Recording response",
