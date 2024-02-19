@@ -20,7 +20,7 @@ public class AudioRecorder : MonoBehaviour
     private Coroutine waitForRecordingCoroutine;
     private double durationToTrimFromBeginning = 0.0;
 
-    public event EventHandler<string> recordingFinished;
+    public event EventHandler<(string path, AudioClip clip)> recordingFinished;
 
 
     public void Start()
@@ -102,7 +102,7 @@ public class AudioRecorder : MonoBehaviour
         string savePath = Path.Combine(saveDirectory, recordingFilename);
         SaveAudio(trimmedClip, savePath);
         Debug.Log($"{trimmedClip.length} seconds recorded and saved to {savePath}. Inpoint: {inPoint}. OutPoint: {outPoint}");
-        recordingFinished?.Invoke(this, savePath);
+        recordingFinished?.Invoke(this, (savePath, trimmedClip));
 
         recordingStartTime = -2.0f;
         waitForRecordingCoroutine = null;

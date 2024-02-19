@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
+using Whisper;
+using Debug = UnityEngine.Debug;
 
 public class Manager : MonoBehaviour
 {
@@ -36,8 +39,11 @@ public class Manager : MonoBehaviour
 
     public bool checkVideosOnStart = true;
 
+
     void Start()
     {
+
+
         // should only be one Manager
         Debug.Assert(FindObjectOfType<Manager>() == this);
 
@@ -70,6 +76,7 @@ public class Manager : MonoBehaviour
         {
             videoChecker.StartCheckingVideos();
         }
+
     }
 
     // yamlFile should be an absolute path including extension.

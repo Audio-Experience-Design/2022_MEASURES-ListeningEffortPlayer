@@ -80,7 +80,7 @@ public class ScriptedSessionUIController : MonoBehaviour
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.AudioRecordingComplete:
-                    statusText.text = $"";
+                    statusText.text = $"Processing recording. Please wait...";
                     button.gameObject.SetActive(false);
                     break;
                 case ScriptedSessionController.State.Completed:

@@ -2792,6 +2792,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423131606}
   m_CullTransparentMesh: 0
+--- !u!1 &450367689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 450367691}
+  - component: {fileID: 450367690}
+  m_Layer: 0
+  m_Name: Whisper audio transcriber
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &450367690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450367689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9370225a2ca94276b870d5f87b0db55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  logLevel: 1
+  modelPath: Whisper/ggml-tiny.en-q8_0.bin
+  isModelPathInStreamingAssets: 1
+  initOnAwake: 1
+  language: en
+  translateToEnglish: 0
+  strategy: 0
+  noContext: 1
+  singleSegment: 0
+  enableTokens: 0
+  initialPrompt: 
+  stepSec: 3
+  keepSec: 0.2
+  lengthSec: 10
+  updatePrompt: 0
+  dropOldBuffer: 0
+  useVad: 1
+  tokensTimestamps: 0
+  speedUp: 0
+  audioCtx: 0
+--- !u!4 &450367691
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450367689}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2124402874}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &463930440 stripped
 AudioSource:
   m_CorrespondingSourceObject: {fileID: 8287273603126790939, guid: 6c978cd6c4019c54ba1c44950616850d,
@@ -2956,6 +3020,7 @@ MonoBehaviour:
   - {fileID: 786166360}
   - {fileID: 919157241}
   - {fileID: 382850587}
+  whisperManager: {fileID: 450367690}
 --- !u!1 &557980718 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4799643296730111423, guid: 2c9521a26612f6948a6c6f60aa59c962,
@@ -9111,7 +9176,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &1953155018
 Canvas:
   m_ObjectHideFlags: 0
@@ -9615,6 +9680,7 @@ Transform:
   - {fileID: 1545996638}
   - {fileID: 895771030}
   - {fileID: 1520937726}
+  - {fileID: 450367691}
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9638,6 +9704,7 @@ MonoBehaviour:
   - {fileID: 165585585}
   - {fileID: 1600812348}
   checkVideosOnStart: 1
+  tempTestClip: {fileID: 8300000, guid: fa8f2302b4325d14fa1a4f0ed102d4f5, type: 3}
 --- !u!1 &2146942469
 GameObject:
   m_ObjectHideFlags: 0

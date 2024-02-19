@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Video;
-
+using Whisper;
+using Debug = UnityEngine.Debug;
 using PupilometryData = Tobii.XR.TobiiXR_AdvancedEyeTrackingData;
 
 
@@ -23,6 +25,7 @@ public class ScriptedSessionController : MonoBehaviour
     public VideoPlayer skyboxVideoPlayer;
     public VideoManager[] videoManagers;
     public GameObject[] babblePrefabs;
+    public WhisperManager whisperManager;
 
     public event EventHandler<State> stateChanged;
     /// current number (0 indexed), current label (1 indexed), total number
@@ -42,6 +45,8 @@ public class ScriptedSessionController : MonoBehaviour
         public string MiddleVideo { get; set; }
         public string RightVideo { get; set; }
         public string UserResponseAudioFile { get; set; }
+        public string UserResponseTranscription {get; set;}
+        public string UserResponseTranscriptionProcessingDurationInSeconds {get; set;}
 
         public string HeadRotationEulerX { get; set; }
         public string HeadRotationEulerY { get; set; }
@@ -112,6 +117,7 @@ public class ScriptedSessionController : MonoBehaviour
             stateChanged?.Invoke(this, _state);
         }
     }
+    private (string path, AudioClip clip) lastAudioRecording = (null, null);
 
     static readonly Dictionary<State, State[]> AllowedTransitions = new Dictionary<State, State[]>
         {
@@ -164,13 +170,12 @@ public class ScriptedSessionController : MonoBehaviour
                 };
             };
         }
-        audioRecorder.recordingFinished += (_, _) =>
+        audioRecorder.recordingFinished += (object sender, (string path, AudioClip clip) args) =>
         {
+            lastAudioRecording = args;
             Debug.Assert(state == State.RecordingUserResponse);
             state = State.AudioRecordingComplete;
         };
-
-
     }
 
     // yamlPath should be an absolute path including extension
@@ -229,43 +234,46 @@ public class ScriptedSessionController : MonoBehaviour
         videoCatalogue.SetPlayerSource(skyboxVideoPlayer, session.MaskingVideo);
         skyboxVideoPlayer.Play();
 
-        // Maskers
-        if (session.Maskers.Count() > babblePrefabs.Count())
+        // Setup Maskers
         {
-            throw new System.Exception($"There are {session.Maskers.Count()} maskers defined in YAML but only {babblePrefabs.Count()} babble sources available.");
-        }
-        for (int i = 0; i < session.Maskers.Count(); i++)
-        {
-            Debug.Assert(babblePrefabs[i].GetComponentsInChildren<AudioSource>().Count() == 1);
-            babblePrefabs[i].GetComponentInChildren<AudioSource>().volume = session.Maskers[i].Amplitude;
-            babblePrefabs[i].transform.localRotation = Quaternion.Euler(0, session.Maskers[i].Rotation, 0);
-            babblePrefabs[i].GetComponentInChildren<AudioSource>().Play();
-            if (!session.PlayMaskersContinuously)
+            if (session.Maskers.Count() > babblePrefabs.Count())
             {
-                babblePrefabs[i].GetComponentInChildren<AudioSource>().Pause();
+                throw new System.Exception($"There are {session.Maskers.Count()} maskers defined in YAML but only {babblePrefabs.Count()} babble sources available.");
             }
-            Debug.Log($"Set masker {i} to {session.Maskers[i].Amplitude} amplitude and {session.Maskers[i].Rotation} rotation.");
-        }
-        for (int i = session.Maskers.Count(); i < babblePrefabs.Count(); i++)
-        {
-            babblePrefabs[i].SetActive(false);
-            Debug.Log($"Deactivated masker {i} as not set in session YAML.");
-        }
+            for (int i = 0; i < session.Maskers.Count(); i++)
+            {
+                Debug.Assert(babblePrefabs[i].GetComponentsInChildren<AudioSource>().Count() == 1);
+                babblePrefabs[i].GetComponentInChildren<AudioSource>().volume = session.Maskers[i].Amplitude;
+                babblePrefabs[i].transform.localRotation = Quaternion.Euler(0, session.Maskers[i].Rotation, 0);
+                babblePrefabs[i].GetComponentInChildren<AudioSource>().Play();
+                if (!session.PlayMaskersContinuously)
+                {
+                    babblePrefabs[i].GetComponentInChildren<AudioSource>().Pause();
+                }
+                Debug.Log($"Set masker {i} to {session.Maskers[i].Amplitude} amplitude and {session.Maskers[i].Rotation} rotation.");
+            }
+            for (int i = session.Maskers.Count(); i < babblePrefabs.Count(); i++)
+            {
+                babblePrefabs[i].SetActive(false);
+                Debug.Log($"Deactivated masker {i} as not set in session YAML.");
+            }
 
-        // Setup screens
-        for (int i = 0; i < 3; i++)
-        {
-            videoManagers[i].idleVideoName = session.VideoScreens[i].IdleVideo;
-            var s = session.VideoScreens[i];
-            videoManagers[i].SetPosition(s.Inclination, s.Azimuth, s.Twist, s.RotationOnXAxis, s.RotationOnYAxis, s.ScaleWidth, s.ScaleHeight);
+            // Setup screens
+            for (int i = 0; i < 3; i++)
+            {
+                videoManagers[i].idleVideoName = session.VideoScreens[i].IdleVideo;
+                var s = session.VideoScreens[i];
+                videoManagers[i].SetPosition(s.Inclination, s.Azimuth, s.Twist, s.RotationOnXAxis, s.RotationOnYAxis, s.ScaleWidth, s.ScaleHeight);
+            }
         }
 
         // Setup logging
-        sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
-        Log(new SessionEventLogEntry { EventName = "Trial started" });
+        {
+            sessionEventLogWriter = new StreamWriter(Path.Join(sessionFolder, $"{sessionLabel}_events.csv"), true, Encoding.UTF8);
+            Log(new SessionEventLogEntry { EventName = "Trial started" });
+        }
 
         // Perform Brightness Calibration
-
         if (session.BrightnessCalibrationDurationFromBlackToWhite > 0.0001 && session.BrightnessCalibrationDurationToHoldOnWhite > 0.0001)
         {
             state = State.WaitingForUserToStartBrightnessCalibration;
@@ -304,18 +312,21 @@ public class ScriptedSessionController : MonoBehaviour
         }
 
         // Wait for user to start first challenge
-
-        state = State.WaitingForUserToStartChallenges;
-        yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
-
-        // Start challenges
-
-        Debug.Assert(state == State.UserReadyToStartChallenges);
-        for (int i = 0; i < 3; i++)
         {
-            videoManagers[i].StartIdleVideo();
+            state = State.WaitingForUserToStartChallenges;
+            yield return new WaitUntil(() => state != State.WaitingForUserToStartChallenges);
         }
 
+        // Start challenges
+        {
+            Debug.Assert(state == State.UserReadyToStartChallenges);
+            for (int i = 0; i < 3; i++)
+            {
+                videoManagers[i].StartIdleVideo();
+            }
+        }
+
+        // Cycle through challenges
         for (int i = 0; i < session.Challenges.Count(); i++)
         {
             state = State.DelayingBeforePlayingVideo;
@@ -324,7 +335,7 @@ public class ScriptedSessionController : MonoBehaviour
                 EventName = "Delaying before playing videos",
             });
 
-            // Prepare challenge
+            // ## Prepare challenge
 
             if (!session.PlayMaskersContinuously)
             {
@@ -341,66 +352,95 @@ public class ScriptedSessionController : MonoBehaviour
             // Record a separate CSV for pupilometry and head rotation for each challenge
             // This will stop logging at the end of scope of this loop iteration
             using var pupilometryLogger = new PupilometryLogger(sessionFolder, sessionLabel, challengeLabel, session.Name, sessionStartTimeUTC, pupilometry, headTransform);
-            
+
             yield return new WaitForSeconds(session.DelayBeforePlayingVideos);
             state = State.PlayingVideo;
             Debug.Assert(numVideosPlaying == 0);
 
-            // Play Videos
-
-            Log(new SessionEventLogEntry
+            // ## Play Videos
             {
-                EventName = "Playing videos",
-                ChallengeNumber = challengeLabel,
-                LeftVideo = session.Challenges[i][0],
-                MiddleVideo = session.Challenges[i][1],
-                RightVideo = session.Challenges[i][2],
-            });
-            for (int k = 0; k < 3; k++)
-            {
-                numVideosPlaying++;
-                videoManagers[k].PlayVideo(session.Challenges[i][k]);
-            }
-            // start recording now because pico loses the first few seconds
-            double expectedPlaybackDuration = videoManagers.Aggregate(0.0, (acc, vm) => Math.Max(acc, vm.player.length));
-            int maximumRecordingDuration = (int)Math.Ceiling(session.RecordingDuration + expectedPlaybackDuration + session.DelayAfterPlayingVideos);
-            Debug.Log($"Starting off recorder. Max duration (including playback): {maximumRecordingDuration}");
-            audioRecorder.StartRecording(userResponseAudioFile, maximumRecordingDuration);
-
-            while (numVideosPlaying > 0)
-            {
-                yield return null;
-            }
-            state = State.DelayingAfterPlayingVideos;
-            Log(new SessionEventLogEntry
-            {
-                EventName = "Delaying after playing videos",
-            });
-            yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
-            if (!session.PlayMaskersContinuously)
-            {
-                foreach (GameObject babblePrefab in babblePrefabs)
+                Log(new SessionEventLogEntry
                 {
-                    babblePrefab.GetComponentInChildren<AudioSource>().Pause();
+                    EventName = "Playing videos",
+                    ChallengeNumber = challengeLabel,
+                    LeftVideo = session.Challenges[i][0],
+                    MiddleVideo = session.Challenges[i][1],
+                    RightVideo = session.Challenges[i][2],
+                });
+                for (int k = 0; k < 3; k++)
+                {
+                    numVideosPlaying++;
+                    videoManagers[k].PlayVideo(session.Challenges[i][k]);
+                }
+                // start recording now because pico loses the first few seconds
+                double expectedPlaybackDuration = videoManagers.Aggregate(0.0, (acc, vm) => Math.Max(acc, vm.player.length));
+                int maximumRecordingDuration = (int)Math.Ceiling(session.RecordingDuration + expectedPlaybackDuration + session.DelayAfterPlayingVideos);
+                Debug.Log($"Starting off recorder. Max duration (including playback): {maximumRecordingDuration}");
+                audioRecorder.StartRecording(userResponseAudioFile, maximumRecordingDuration);
+            }
+
+            // ## Wait for videos to finish playing
+            {
+                while (numVideosPlaying > 0)
+                {
+                    yield return null;
+                }
+                state = State.DelayingAfterPlayingVideos;
+                Log(new SessionEventLogEntry
+                {
+                    EventName = "Delaying after playing videos",
+                });
+                yield return new WaitForSeconds(session.DelayAfterPlayingVideos);
+                if (!session.PlayMaskersContinuously)
+                {
+                    foreach (GameObject babblePrefab in babblePrefabs)
+                    {
+                        babblePrefab.GetComponentInChildren<AudioSource>().Pause();
+                    }
                 }
             }
 
-            // Record User
-
-            state = State.RecordingUserResponse;
-            audioRecorder.MarkRecordingInPoint();
-            Log(new SessionEventLogEntry
+            // ## Record User Audio
             {
-                EventName = "Recording response",
-                ChallengeNumber = challengeLabel,
-                LeftVideo = session.Challenges[i][0],
-                MiddleVideo = session.Challenges[i][1],
-                RightVideo = session.Challenges[i][2],
-            });
+                state = State.RecordingUserResponse;
+                audioRecorder.MarkRecordingInPoint();
+                Log(new SessionEventLogEntry
+                {
+                    EventName = "Recording response",
+                    ChallengeNumber = challengeLabel,
+                    LeftVideo = session.Challenges[i][0],
+                    MiddleVideo = session.Challenges[i][1],
+                    RightVideo = session.Challenges[i][2],
+                });
 
-            yield return new WaitUntil(() => state != State.RecordingUserResponse);
+                yield return new WaitUntil(() => state != State.RecordingUserResponse);
 
-            Debug.Assert(state == State.AudioRecordingComplete);
+                Debug.Assert(state == State.AudioRecordingComplete);
+            }
+
+            string transcription;
+            double transcriptionProcessingDuration;
+            // ## Transcribe audio recording
+            {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                Debug.Assert(Path.GetFileName(lastAudioRecording.path) == userResponseAudioFile);
+                var task = whisperManager.GetTextAsync(lastAudioRecording.clip);
+                lastAudioRecording = (null, null);
+                yield return new WaitUntil(() => task.IsCompleted);
+                stopwatch.Stop();
+                if (!task.IsCompletedSuccessfully)
+                {
+                    Debug.LogError($"Failed to transcribe audio: {task.Exception}");
+                    transcription = "[ERROR]";
+                }
+                else
+                {
+                    transcription = task.Result.Result;
+                }
+                transcriptionProcessingDuration = stopwatch.ElapsedMilliseconds * 0.001;
+                Debug.Log($"Transcription: {transcription}\nProcessing duration: {transcriptionProcessingDuration:F3} seconds");
+            }
 
             Log(new SessionEventLogEntry
             {
@@ -410,6 +450,8 @@ public class ScriptedSessionController : MonoBehaviour
                 MiddleVideo = session.Challenges[i][1],
                 RightVideo = session.Challenges[i][2],
                 UserResponseAudioFile = userResponseAudioFile,
+                UserResponseTranscription = transcription,
+                UserResponseTranscriptionProcessingDurationInSeconds = transcriptionProcessingDuration.ToString("F3"),
             });
         }
 
