@@ -2,12 +2,28 @@
 
 VR app for Pico Neo 3 headset for the Listening Effort project.
 
+Earlier versions of this project were built for the HTC Vive. The last compatible version for HTC Vive can be found on the `htc-vive` branch.
+
 ## Build instructions
+
+### Pico Neo 3
 
 - Install Unity 2021.3.26f1.
 - In Build Settings, set platform to Android.
 - Plug in Pico, enable developer permissions if needed, then select Pico as Run Device in Build Settings.
 - Build and run.
+
+## Run modes
+
+### Scripted mode (Pico Neo 3 only)
+
+Scripts may be defined in YAML and selected in the app. Audio will be played back on headset using the 3DTI Toolkit. The app will then automatically cycle through all specified videos and invite the participant to record their response using the headset microphone. Full session data is logged.
+
+### OSC mode
+
+In OSC mode, the app is fully controlled by a Max patch over an OSC connection. Audio is not played, scripts are not read and data is logged.
+
+An example Max patch demonstrating this can be found in `Utilities/Unity controller.maxpat`. (On the `htc-vive` branch this may be in a different location).
 
 ## Known issues
 
