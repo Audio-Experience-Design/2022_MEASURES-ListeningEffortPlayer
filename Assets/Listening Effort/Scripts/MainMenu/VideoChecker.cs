@@ -116,13 +116,10 @@ public class VideoChecker : MonoBehaviour
                 player.source = VideoSource.Url;
                 player.SetDirectAudioVolume(0, 0);
                 player.Prepare();
-                int timeLeft = 10;
-                while (!player.isPrepared && timeLeft > 0)
-                {
-                    yield return new WaitForSeconds(1);
-                    timeLeft--;
-                }
-                if (timeLeft == 0 || player.width == 0 || player.height == 0)
+                const float videoPreparationTimeout = 10;
+                float preparationStartTime = Time.time;
+                yield return new WaitUntil(() => player.isPrepared || Time.time - preparationStartTime > videoPreparationTimeout);
+                if (!player.isPrepared || player.width == 0 || player.height == 0)
                 {
                     setStatus($"Video {videoPath} failed to load");
                     failedVideoPaths.Add(videoPath);
