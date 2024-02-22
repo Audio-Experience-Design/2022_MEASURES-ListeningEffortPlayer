@@ -140,10 +140,20 @@ public class VideoChecker : MonoBehaviour
                 Destroy(player);
             }
         }
-        videosAreOK = failedVideoPaths.Count == 0 && videoCounts.All(i => i > 0);
-        setStatus($"{(videosAreOK ? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
+        List<string> problems = new List<string>();
+        if (failedVideoPaths.Count > 0)
+        {
+            problems.Add($"ERROR: {failedVideoPaths.Count} videos failed to load. ");
+        }
+        if (videoCounts.Any(i => i == 0))
+        {
+            problems.Add("Warning: Not all types of video have any videos loaded. ");
+        }
+        string statusText = problems.Count > 0 ? problems.Aggregate((a, b) => a + b) : "Videos loaded OK";
+        videosAreOK = failedVideoPaths.Count == 0;
+        setStatus($"{statusText}\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
             videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a, b) => a + " " + b)
-            );
+        );
         videoCatalogue.LogVideoNames();
         isCheckingVideos = false;
     }

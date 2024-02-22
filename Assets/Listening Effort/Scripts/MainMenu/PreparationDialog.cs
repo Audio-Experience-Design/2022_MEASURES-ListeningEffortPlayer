@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -31,6 +32,13 @@ public class PreparationDialog : MonoBehaviour
     public Text loadScriptStatus;
 
     private bool selectedScriptTestedOK = false;
+
+    // retained anonymous functions for removing listeners
+    private UnityAction<int> reverbDropdownListener = null;
+    private UnityAction<int> hrtfDropdownListener = null;
+    private UnityAction<int> scriptedSessionDropdownListener = null;
+    private UnityAction startScriptedSessionButtonListener = null;
+
     private string GetOSCAddresses()
     {
         return Dns.GetHostEntry(Dns.GetHostName())
@@ -40,7 +48,7 @@ public class PreparationDialog : MonoBehaviour
             .Select(ip => ip.ToString())
             .Select(ipAddresses => $"{ipAddresses}:{OSCController.listenPort}")
             .Aggregate((head, tail) => $"{head}, {tail}");
-        
+
     }
 
     public void Start()
@@ -77,6 +85,9 @@ public class PreparationDialog : MonoBehaviour
         reloadVideosButton.onClick.AddListener(() =>
         {
             videoChecker.StartCheckingVideos();
+            updateReverbs();
+            updateHRTFs();
+            updateScripts();
         });
 
 
@@ -93,81 +104,14 @@ public class PreparationDialog : MonoBehaviour
             PlayerPrefs.Save();
         });
 
+        updateReverbs();
+        updateHRTFs();
+        updateScripts();
+        updateButtons();
+    }
 
-        // REVERB
-        try
-        {
-            Debug.Log("Checking Reverb BRIRs");
-
-            reverbDropdown.ClearOptions();
-            var reverbs = SpatializerResourceChecker.getReverbs();
-            Debug.Assert(reverbs.Length > 0);
-            reverbDropdown.AddOptions(reverbs.Select((reverb, i) => reverb.name).ToList());
-
-            string savedReverbModelPath = PlayerPrefs.GetString("reverbModel", "");
-
-            if (!reverbs.Any(reverb => reverb.path == savedReverbModelPath))
-            {
-                Debug.LogWarning($"Previous reverb model not found: '{savedReverbModelPath}'.");
-                PlayerPrefs.SetString("reverbModel", reverbs[0].path);
-            }
-
-            reverbDropdown.SetValueWithoutNotify(Array.FindIndex(reverbs, reverb => reverb.path == PlayerPrefs.GetString("reverbModel")));
-            
-            reverbDropdown.onValueChanged.AddListener(index =>
-            {
-                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
-                Debug.Log($"Setting Reverb BRIR to {reverbs[index].filename}. (Current sample rate: {sampleRate})");
-                spatializer.SetBinaryResourcePath(BinaryResourceRole.ReverbBRIR, sampleRate, reverbs[index].path);
-
-                PlayerPrefs.SetString("reverbModel", reverbs[index].path);
-                PlayerPrefs.Save();
-            });
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Exception while setting up reverb UI");
-            Debug.LogException(e);
-        }
-
-
-
-        // HRTF
-        try
-        {
-            Debug.Log("Checking inbuilt and custom HRTFs");
-            var hrtfs = SpatializerResourceChecker.getHRTFs();
-            Debug.Log($"Found {hrtfs.Length} HRTFs.");
-            hrtfDropdown.ClearOptions();
-            hrtfDropdown.AddOptions(hrtfs.Select(hrtf => hrtf.name).ToList());
-            
-            string savedHRTF = PlayerPrefs.GetString("hrtf", "");
-            
-            if (!hrtfs.Any(hrtf => hrtf.path == savedHRTF))
-            {
-                Debug.LogWarning($"Previous HRTF model '{savedHRTF}' not found.");
-                PlayerPrefs.SetString("hrtf", hrtfs[0].path);
-            }
-
-            hrtfDropdown.SetValueWithoutNotify(Array.FindIndex(hrtfs, hrtf => hrtf.path == savedHRTF));
-
-            hrtfDropdown.onValueChanged.AddListener(index =>
-            {
-                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
-                Debug.Log($"Setting HRTF to {hrtfs[index].filename}. (Current sample rate: {sampleRate})");
-                spatializer.SetBinaryResourcePath(BinaryResourceRole.HighQualityHRTF, sampleRate, hrtfs[index].path);
-
-                PlayerPrefs.SetString("hrtf", hrtfs[index].path);
-                PlayerPrefs.Save();
-            });
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Exception while setting up HRTF UI");
-            Debug.LogException(e);
-        }
-
-        // SCRIPTS
+    private void updateScripts()
+    {
         try
         {
             string[] scripts = scriptedSessionFileManager.scripts;
@@ -175,10 +119,11 @@ public class PreparationDialog : MonoBehaviour
             scriptedSessionDropdown.AddOptions(new List<string> { "Select a script" });
             scriptedSessionDropdown.AddOptions(scripts.Select(s => Path.GetFileName(s)).ToList());
             scriptedSessionDropdown.SetValueWithoutNotify(0);
-
-            
-
-            scriptedSessionDropdown.onValueChanged.AddListener(listboxIndex =>
+            if (scriptedSessionDropdownListener != null)
+            {
+                scriptedSessionDropdown.onValueChanged.RemoveListener(scriptedSessionDropdownListener);
+            }
+            scriptedSessionDropdownListener = listboxIndex =>
             {
                 selectedScriptTestedOK = false;
                 updateButtons();
@@ -202,36 +147,120 @@ public class PreparationDialog : MonoBehaviour
                     }
 
                 }
-            });
+            };
+            scriptedSessionDropdown.onValueChanged.AddListener(scriptedSessionDropdownListener);
 
-            startScriptedSessionButton.onClick.AddListener(() =>
+            if (startScriptedSessionButtonListener != null)
+            {
+                startScriptedSessionButton.onClick.RemoveListener(startScriptedSessionButtonListener);
+            }
+            startScriptedSessionButtonListener = () =>
             {
                 int scriptIndex = scriptedSessionDropdown.value - 1;
                 Debug.Assert(0 <= scriptIndex && scriptIndex < scripts.Length);
                 manager.startAutomaticSession(scripts[scriptIndex]); ;
-            });
+            };
+            startScriptedSessionButton.onClick.AddListener(startScriptedSessionButtonListener);
 
         }
         catch (Exception e)
         {
             Debug.LogError($"Exception while setting up Script selection UI: {e}");
         }
-
         updateButtons();
+    }
 
+    private void updateHRTFs()
+    {
+        try
+        {
+            Debug.Log("Checking inbuilt and custom HRTFs");
+            var hrtfs = SpatializerResourceChecker.getHRTFs();
+            Debug.Log($"Found {hrtfs.Length} HRTFs.");
+            hrtfDropdown.ClearOptions();
+            hrtfDropdown.AddOptions(hrtfs.Select(hrtf => hrtf.name).ToList());
+
+            string savedHRTF = PlayerPrefs.GetString("hrtf", "");
+
+            if (!hrtfs.Any(hrtf => hrtf.path == savedHRTF))
+            {
+                Debug.LogWarning($"Previous HRTF model '{savedHRTF}' not found.");
+                PlayerPrefs.SetString("hrtf", hrtfs[0].path);
+            }
+
+            hrtfDropdown.SetValueWithoutNotify(Array.FindIndex(hrtfs, hrtf => hrtf.path == savedHRTF));
+
+            if (hrtfDropdownListener != null)
+            {
+                hrtfDropdown.onValueChanged.RemoveListener(hrtfDropdownListener);
+            }
+            hrtfDropdownListener = index =>
+            {
+                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
+                Debug.Log($"Setting HRTF to {hrtfs[index].filename}. (Current sample rate: {sampleRate})");
+                spatializer.SetBinaryResourcePath(BinaryResourceRole.HighQualityHRTF, sampleRate, hrtfs[index].path);
+
+                PlayerPrefs.SetString("hrtf", hrtfs[index].path);
+                PlayerPrefs.Save();
+            };
+            hrtfDropdown.onValueChanged.AddListener(hrtfDropdownListener);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Exception while setting up HRTF UI");
+            Debug.LogException(e);
+        }
+        updateButtons();
+    }
+
+    private void updateReverbs()
+    {
+        try
+        {
+            Debug.Log("Checking Reverb BRIRs");
+
+            reverbDropdown.ClearOptions();
+            var reverbs = SpatializerResourceChecker.getReverbs();
+            Debug.Assert(reverbs.Length > 0);
+            reverbDropdown.AddOptions(reverbs.Select((reverb, i) => reverb.name).ToList());
+
+            string savedReverbModelPath = PlayerPrefs.GetString("reverbModel", "");
+
+            if (!reverbs.Any(reverb => reverb.path == savedReverbModelPath))
+            {
+                Debug.LogWarning($"Previous reverb model not found: '{savedReverbModelPath}'.");
+                PlayerPrefs.SetString("reverbModel", reverbs[0].path);
+            }
+
+            reverbDropdown.SetValueWithoutNotify(Array.FindIndex(reverbs, reverb => reverb.path == PlayerPrefs.GetString("reverbModel")));
+
+            if (reverbDropdownListener != null)
+            {
+                reverbDropdown.onValueChanged.RemoveListener(reverbDropdownListener);
+            }
+            reverbDropdownListener = index =>
+            {
+                spatializer.GetSampleRate(out TSampleRateEnum sampleRate);
+                Debug.Log($"Setting Reverb BRIR to {reverbs[index].filename}. (Current sample rate: {sampleRate})");
+                spatializer.SetBinaryResourcePath(BinaryResourceRole.ReverbBRIR, sampleRate, reverbs[index].path);
+
+                PlayerPrefs.SetString("reverbModel", reverbs[index].path);
+                PlayerPrefs.Save();
+            };
+            reverbDropdown.onValueChanged.AddListener(reverbDropdownListener);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Exception while setting up reverb UI");
+            Debug.LogException(e);
+        }
+        updateButtons();
     }
 
     private void updateButtons()
     {
         startOSCButton.interactable = videoChecker.videosAreOK;
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
-        // Selectable[] selectablesIfVideosOK = new Selectable[] {
-        //     startScriptedSessionButton,
-        // };
-        // foreach (var selectable in selectablesIfVideosOK)
-        // {
-        //     selectable.interactable = videoChecker.videosAreOK && !videoChecker.isCheckingVideos;
-        // }
         scriptedSessionDropdown.interactable = !videoChecker.isCheckingVideos;
         startScriptedSessionButton.interactable = selectedScriptTestedOK && !videoChecker.isCheckingVideos;
 
