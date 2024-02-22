@@ -4,6 +4,15 @@ VR app for Pico Neo 3 headset for the Listening Effort project.
 
 Earlier versions of this project were built for the HTC Vive. The last compatible version for HTC Vive can be found on the `htc-vive` branch.
 
+## Copying APK files to Pico
+- Extract the APK file from the release ZIP.
+- Plug the Pico into a Windows PC with a USB cable
+- Enable USB access on the Pico. This only needs to be done once:  
+    With the headset on select the 'Pico Button' to bring up the dock and select the 'Quick settings' icon in the bottom right corner. Select the 'Settings' icon, which is located in the top right corner and navigate to the 'Developer' button. Turn on 'USB Debug'. Click on 'USB Connection' and select 'File transfer'.
+- Copy the APK file onto the Pico - you can just put it in the root of the “Internal Storage” directory that shows up in the Pico (look in “This PC” in Windows Explorer)
+- On the Pico, open File Manager and go to APKs, and you can install it from there.  
+    On a Mac, you may need to use [Android File Transfer](https://www.android.com/filetransfer/).
+
 ## Build instructions
 
 ### Pico Neo 3
@@ -13,7 +22,13 @@ Earlier versions of this project were built for the HTC Vive. The last compatibl
 - Plug in Pico, enable developer permissions if needed, then select Pico as Run Device in Build Settings.
 - Build and run.
 
-## Run modes
+## Usage instructions
+
+When the app starts it will display a screen showing the folders where you can copy your own videos, scripts, HRTFs and impulse responses (BRIR files). The log files will be recorded to an adjacent folder.
+
+The app will copy over a demo script to this location which you can use as a template for your own scripts.
+
+The first thing the app does is validate all user videos to ensure there are no problems midway through an experiment. The controls will be greyed out until it completes this.
 
 ### Scripted mode (Pico Neo 3 only)
 
@@ -21,7 +36,7 @@ Scripts may be defined in YAML and selected in the app. Audio will be played bac
 
 ### OSC mode
 
-In OSC mode, the app is fully controlled by a Max patch over an OSC connection. Audio is not played, scripts are not read and data is logged.
+In OSC mode, the app is fully controlled by a Max patch over an OSC connection. Audio is not played, scripts are not read and data is not logged.
 
 An example Max patch demonstrating this can be found in `Utilities/Unity controller.maxpat`. (On the `htc-vive` branch this may be in a different location).
 
