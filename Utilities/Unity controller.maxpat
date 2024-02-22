@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 5,
-			"revision" : 4,
+			"revision" : 6,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 823.0, 128.0, 1689.0, 1177.0 ],
+		"rect" : [ 322.0, 128.0, 1598.0, 1177.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,54 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"fontsize" : 18.877654774916149,
+					"id" : "obj-31",
+					"linecount" : 5,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 169.0, 10.126728110599082, 335.0, 115.0 ],
+					"presentation_linecount" : 6,
+					"text" : "TO START:\n1. Set LOCAL IP Below\n2. Set PICO IP\n3. Click /send_video_names to refresh video list"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontsize" : 9.897343326459339,
+					"id" : "obj-17",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 206.75, 550.0, 200.5, 18.0 ],
+					"text" : "(local connection for testing in Unity Editor)"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-16",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 806.0, 556.0, 217.0, 20.0 ],
+					"text" : "<--- SET THIS TO PICO IP"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-11",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 806.0, 518.0, 217.0, 20.0 ],
+					"text" : "<--- SET THIS TO LOCAL IP"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-287",
 					"maxclass" : "comment",
@@ -80,7 +128,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1095.0, 1469.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Scale height"
 				}
 
@@ -122,7 +169,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1035.0, 1469.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Scale width"
 				}
 
@@ -164,7 +210,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 975.0, 1469.0, 53.0, 41.0 ],
-					"presentation_linecount" : 3,
 					"text" : "Rotation on y axis (degrees)"
 				}
 
@@ -209,7 +254,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 915.0, 1469.0, 53.0, 41.0 ],
-					"presentation_linecount" : 3,
 					"text" : "Rotation on x axis (degrees)"
 				}
 
@@ -254,7 +298,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 855.0, 1469.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Twist (degrees)"
 				}
 
@@ -298,7 +341,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 795.0, 1469.0, 54.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Azimuth (degrees)"
 				}
 
@@ -354,7 +396,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 739.0, 1469.0, 57.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Inclination (degrees)"
 				}
 
@@ -446,7 +487,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 397.0, 1468.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Scale height"
 				}
 
@@ -488,7 +528,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 337.0, 1468.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Scale width"
 				}
 
@@ -530,7 +569,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 277.0, 1468.0, 53.0, 41.0 ],
-					"presentation_linecount" : 3,
 					"text" : "Rotation on y axis (degrees)"
 				}
 
@@ -575,7 +613,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 217.0, 1468.0, 53.0, 41.0 ],
-					"presentation_linecount" : 3,
 					"text" : "Rotation on x axis (degrees)"
 				}
 
@@ -620,7 +657,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 157.0, 1468.0, 53.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Twist (degrees)"
 				}
 
@@ -664,7 +700,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 97.0, 1468.0, 54.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Azimuth (degrees)"
 				}
 
@@ -720,7 +755,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 41.0, 1468.0, 57.0, 30.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Inclination (degrees)"
 				}
 
@@ -1117,7 +1151,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 826.75, 446.0, 116.0, 22.0 ],
+					"patching_rect" : [ 509.0, 47.0, 116.0, 22.0 ],
 					"text" : "/send_video_names"
 				}
 
@@ -1128,7 +1162,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 275.0, 50.0, 97.0, 22.0 ],
+					"patching_rect" : [ 60.5, 78.0, 97.0, 22.0 ],
 					"text" : "print RECEIVED"
 				}
 
@@ -1139,8 +1173,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 571.0, 556.0, 164.0, 22.0 ],
-					"text" : "udpsend 192.168.2.113 7000"
+					"patching_rect" : [ 571.0, 556.0, 171.0, 22.0 ],
+					"text" : "udpsend 192.168.16.107 7000"
 				}
 
 			}
@@ -1156,7 +1190,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 4,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1314,7 +1348,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 4,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1472,7 +1506,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 4,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1936,8 +1970,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1403.0, 841.5, 190.0, 19.0 ],
-					"text" : "359.057281 140.082169 343.174652"
+					"patching_rect" : [ 1403.0, 841.5, 190.0, 19.0 ]
 				}
 
 			}
@@ -2016,7 +2049,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-52",
-					"items" : [ "T1_Idling", ",", "T2_Idling", ",", "T4_Idling" ],
+					"items" : [ "DEMO_T1_Idling.mp4", ",", "DEMO_T2_Idling.mp4", ",", "DEMO_T4_Idling.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -2054,7 +2087,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-58",
-					"items" : [ "T1_Idling", ",", "T2_Idling", ",", "T4_Idling" ],
+					"items" : [ "DEMO_T1_Idling.mp4", ",", "DEMO_T2_Idling.mp4", ",", "DEMO_T4_Idling.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -2092,7 +2125,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-62",
-					"items" : [ "T1_Idling", ",", "T2_Idling", ",", "T4_Idling" ],
+					"items" : [ "DEMO_T1_Idling.mp4", ",", "DEMO_T2_Idling.mp4", ",", "DEMO_T4_Idling.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -2118,13 +2151,11 @@
 				"box" : 				{
 					"dontreplace" : 1,
 					"id" : "obj-94",
-					"linecount" : 6,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 180.0, 525.0, 57.0, 91.0 ],
-					"text" : "/video/position 3 355. 31. 354.82 0. 0. 1. 0.5625"
+					"patching_rect" : [ 184.0, 499.0, 57.0, 22.0 ]
 				}
 
 			}
@@ -2592,7 +2623,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 4,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2845,7 +2876,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 200.0, 765.0, 214.0, 22.0 ],
-					"text" : "352.355042 102.940422 2.049174"
+					"text" : "357.691681 95.663292 1.511193"
 				}
 
 			}
@@ -2941,8 +2972,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 571.0, 518.0, 220.0, 22.0 ],
-					"text" : "/set_client_address 192.168.2.111 7100"
+					"patching_rect" : [ 571.0, 518.0, 222.0, 22.0 ],
+					"text" : "/set_client_address 192.168.16.23 7100"
 				}
 
 			}
@@ -2961,7 +2992,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-74",
-					"items" : [ "Condition_1", ",", "Condition_2", ",", "Condition_3" ],
+					"items" : [ "DEMO_Condition_1", ",", "DEMO_Condition_2", ",", "DEMO_Condition_3" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -2999,7 +3030,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-29",
-					"items" : [ "T1_matrix0101", ",", "T1_matrix0102", ",", "T1_matrix0103", ",", "T1_matrix0104", ",", "T2_matrix0101", ",", "T2_matrix0102", ",", "T2_matrix0103", ",", "T2_matrix0104", ",", "T4_matrix0101", ",", "T4_matrix0102", ",", "T4_matrix0103", ",", "T4_matrix0104" ],
+					"items" : [ "T1_rix0201.mp4", ",", "T1_rix0202.mp4", ",", "T1_rix0203.mp4", ",", "T1_rix0204.mp4", ",", "T1_rix0301.mp4", ",", "T1_rix0302.mp4", ",", "T1_rix0303.mp4", ",", "T1_rix0304.mp4", ",", "T2_rix0201.mp4", ",", "T2_rix0202.mp4", ",", "T2_rix0203.mp4", ",", "T2_rix0204.mp4", ",", "T2_rix0301.mp4", ",", "T2_rix0302.mp4", ",", "T2_rix0303.mp4", ",", "T2_rix0304.mp4", ",", "T4_rix0201.mp4", ",", "T4_rix0202.mp4", ",", "T4_rix0203.mp4", ",", "T4_rix0204.mp4", ",", "T4_rix0301.mp4", ",", "T4_rix0302.mp4", ",", "T4_rix0303.mp4", ",", "T4_rix0304.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -3037,7 +3068,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-25",
-					"items" : [ "T1_matrix0101", ",", "T1_matrix0102", ",", "T1_matrix0103", ",", "T1_matrix0104", ",", "T2_matrix0101", ",", "T2_matrix0102", ",", "T2_matrix0103", ",", "T2_matrix0104", ",", "T4_matrix0101", ",", "T4_matrix0102", ",", "T4_matrix0103", ",", "T4_matrix0104" ],
+					"items" : [ "T1_rix0201.mp4", ",", "T1_rix0202.mp4", ",", "T1_rix0203.mp4", ",", "T1_rix0204.mp4", ",", "T1_rix0301.mp4", ",", "T1_rix0302.mp4", ",", "T1_rix0303.mp4", ",", "T1_rix0304.mp4", ",", "T2_rix0201.mp4", ",", "T2_rix0202.mp4", ",", "T2_rix0203.mp4", ",", "T2_rix0204.mp4", ",", "T2_rix0301.mp4", ",", "T2_rix0302.mp4", ",", "T2_rix0303.mp4", ",", "T2_rix0304.mp4", ",", "T4_rix0201.mp4", ",", "T4_rix0202.mp4", ",", "T4_rix0203.mp4", ",", "T4_rix0204.mp4", ",", "T4_rix0301.mp4", ",", "T4_rix0302.mp4", ",", "T4_rix0303.mp4", ",", "T4_rix0304.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -3087,7 +3118,7 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-15",
-					"items" : [ "T1_matrix0101", ",", "T1_matrix0102", ",", "T1_matrix0103", ",", "T1_matrix0104", ",", "T2_matrix0101", ",", "T2_matrix0102", ",", "T2_matrix0103", ",", "T2_matrix0104", ",", "T4_matrix0101", ",", "T4_matrix0102", ",", "T4_matrix0103", ",", "T4_matrix0104" ],
+					"items" : [ "T1_rix0201.mp4", ",", "T1_rix0202.mp4", ",", "T1_rix0203.mp4", ",", "T1_rix0204.mp4", ",", "T1_rix0301.mp4", ",", "T1_rix0302.mp4", ",", "T1_rix0303.mp4", ",", "T1_rix0304.mp4", ",", "T2_rix0201.mp4", ",", "T2_rix0202.mp4", ",", "T2_rix0203.mp4", ",", "T2_rix0204.mp4", ",", "T2_rix0301.mp4", ",", "T2_rix0302.mp4", ",", "T2_rix0303.mp4", ",", "T2_rix0304.mp4", ",", "T4_rix0201.mp4", ",", "T4_rix0202.mp4", ",", "T4_rix0203.mp4", ",", "T4_rix0204.mp4", ",", "T4_rix0301.mp4", ",", "T4_rix0302.mp4", ",", "T4_rix0303.mp4", ",", "T4_rix0304.mp4" ],
 					"maxclass" : "umenu",
 					"numinlets" : 1,
 					"numoutlets" : 3,
@@ -3116,7 +3147,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 333.0, 550.0, 67.0, 22.0 ],
+					"patching_rect" : [ 333.0, 503.0, 67.0, 22.0 ],
 					"text" : "print SENT"
 				}
 

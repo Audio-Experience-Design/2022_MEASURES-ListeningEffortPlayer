@@ -116,13 +116,10 @@ public class VideoChecker : MonoBehaviour
                 player.source = VideoSource.Url;
                 player.SetDirectAudioVolume(0, 0);
                 player.Prepare();
-                int timeLeft = 10;
-                while (!player.isPrepared && timeLeft > 0)
-                {
-                    yield return new WaitForSeconds(1);
-                    timeLeft--;
-                }
-                if (timeLeft == 0 || player.width == 0 || player.height == 0)
+                const float videoPreparationTimeout = 10;
+                float preparationStartTime = Time.time;
+                yield return new WaitUntil(() => player.isPrepared || Time.time - preparationStartTime > videoPreparationTimeout);
+                if (!player.isPrepared || player.width == 0 || player.height == 0)
                 {
                     setStatus($"Video {videoPath} failed to load");
                     failedVideoPaths.Add(videoPath);
@@ -140,10 +137,20 @@ public class VideoChecker : MonoBehaviour
                 Destroy(player);
             }
         }
-        videosAreOK = failedVideoPaths.Count == 0 && videoCounts.All(i => i > 0);
-        setStatus($"{(videosAreOK ? "Videos loaded OK" : "There's a problem with the video files")}.\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
+        List<string> problems = new List<string>();
+        if (failedVideoPaths.Count > 0)
+        {
+            problems.Add($"ERROR: {failedVideoPaths.Count} videos failed to load. ");
+        }
+        if (videoCounts.Any(i => i == 0))
+        {
+            problems.Add("Warning: Not all types of video have any videos loaded. ");
+        }
+        string statusText = problems.Count > 0 ? problems.Aggregate((a, b) => a + b) : "Videos loaded OK";
+        videosAreOK = failedVideoPaths.Count == 0;
+        setStatus($"{statusText}\n{videoCounts.Sum()} videos checked OK. {failedVideoPaths.Count} videos failed to load.\n" +
             videoTypes.Select((type, i) => $"{type}: {videoCounts[i]} videos loaded.").Aggregate((a, b) => a + " " + b)
-            );
+        );
         videoCatalogue.LogVideoNames();
         isCheckingVideos = false;
     }
