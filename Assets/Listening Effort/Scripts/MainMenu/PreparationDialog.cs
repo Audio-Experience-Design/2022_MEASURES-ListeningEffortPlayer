@@ -225,7 +225,16 @@ public class PreparationDialog : MonoBehaviour
     {
         startOSCButton.interactable = videoChecker.videosAreOK;
         reloadVideosButton.interactable = !videoChecker.isCheckingVideos;
+        // Selectable[] selectablesIfVideosOK = new Selectable[] {
+        //     startScriptedSessionButton,
+        // };
+        // foreach (var selectable in selectablesIfVideosOK)
+        // {
+        //     selectable.interactable = videoChecker.videosAreOK && !videoChecker.isCheckingVideos;
+        // }
+        scriptedSessionDropdown.interactable = !videoChecker.isCheckingVideos;
         startScriptedSessionButton.interactable = selectedScriptTestedOK && !videoChecker.isCheckingVideos;
+
     }
 
 
